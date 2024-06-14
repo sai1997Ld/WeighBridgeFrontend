@@ -1,0 +1,50 @@
+/* .create-user-form {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+} */
+
+.btn-hover:hover {
+  background-color: #d63031 !important;
+  color: #fff !important;
+}
+
+.btn-success-1 {
+  color: #008060 !important;
+}
+
+.btn-danger {
+  color: #d63031 !important;
+}
+
+.create-main-content {
+  margin-bottom: 1rem;
+}
+
+.btn-hover.btn-success-1:hover {
+  background-color: #008060 !important;
+  color: #fff !important;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,11 @@
+body {
+  font-family: nunito, sans-serif !important;
+}
+
+label {
+  color: rgb(51, 65, 85) !important;
+}
+
+.form-label {
+  font-weight: bold;
+}

@@ -1,0 +1,25 @@
+.forgot_main_div{
+    height: 100vh;
+}
+
+.eicon{
+    font-size: 25px;
+    padding: 0 5px 0 5px;
+}
+
+.box{
+    background-color: white;
+    border-radius: 10px;
+    width: 50%;
+    align-items: center;
+    display: flex;	
+    
+}
+
+.p1{
+    color: blueviolet;
+}
+
+.forgot_in{
+    align-items: center;
+}
