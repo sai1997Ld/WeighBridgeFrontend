@@ -31,7 +31,7 @@ function RoleManagement() {
       roleName,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/roles", {
+    fetch("http://localhost:8080/api/v1/roles", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -137,7 +137,7 @@ function UpdateCustomer() {
       zip,
     };
 
-    fetch(`http://172.16.20.161:8080/api/v1/customers/update/${customerId}`, {
+    fetch(`http://localhost:8080/api/v1/customers/update/${customerId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

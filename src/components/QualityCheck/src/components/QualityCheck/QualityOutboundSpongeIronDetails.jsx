@@ -58,7 +58,7 @@ const QualityOutboundSpongeIronDetails = () => {
 
     const fetchParameterRanges = async () => {
       try {
-        const response = await fetch(`http://172.16.20.161:8080/api/v1/materials/${urlData.materialOrProduct}/types/${urlData.materialTypeOrProductType}`);
+        const response = await fetch(`http://localhost:8080/api/v1/materials/${urlData.materialOrProduct}/types/${urlData.materialTypeOrProductType}`);
         const data = await response.json();
         if (data.length > 0 && data[0].parameters) {
           const ranges = data[0].parameters.reduce((acc, parameter) => {
@@ -102,7 +102,7 @@ const QualityOutboundSpongeIronDetails = () => {
     };
 
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/${formData.ticketNo}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${formData.ticketNo}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

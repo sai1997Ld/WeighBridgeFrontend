@@ -48,7 +48,7 @@ function VehicleEntryDetails() {
   // Get API for Fetching  Vehicle No if Registerd:
   useEffect(() => {
     // Fetch vehicle numbers
-    fetch("http://172.16.20.161:8080/api/v1/vehicles?size=20")
+    fetch("http://localhost:8080/api/v1/vehicles?size=20")
       .then((response) => response.json())
       .then((data) => {
         const numbers = data.map((vehicle) => ({
@@ -67,7 +67,7 @@ function VehicleEntryDetails() {
   const handleVehicleNoKeyPress = async (selectedVehicleNo) => {
     try {
       fetch(`
-http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
+http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         .then((response) => response.json())
         .then((data) => {
           // Set transporter state with the data from the API response
@@ -95,7 +95,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     const fetchSupplierList = async () => {
       try {
         const response = await fetch(
-          "http://172.16.20.161:8080/api/v1/supplier/get/list",
+          "http://localhost:8080/api/v1/supplier/get/list",
           {
             method: "GET",
             credentials: "include",
@@ -124,7 +124,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       [name]: value,
     });
 
-    fetch(`http://172.16.20.161:8080/api/v1/supplier/get/${e.target.value}`)
+    fetch(`http://localhost:8080/api/v1/supplier/get/${e.target.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -157,7 +157,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     const fetchMaterialList = async () => {
       try {
         const response = await fetch(
-          "http://172.16.20.161:8080/api/v1/materials/names",
+          "http://localhost:8080/api/v1/materials/names",
           {
             method: "GET",
             credentials: "include",
@@ -187,7 +187,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     });
     //   try {
     //     const response = await fetch(
-    //       `http://172.16.20.161:8080/api/v1/materials/${e.target.value}/types`,
+    //       `http://localhost:8080/api/v1/materials/${e.target.value}/types`,
     //       {
     //         method: "GET",
     //         credentials: "include"
@@ -204,7 +204,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     //     console.error("Error fetching Material Type:", error);
     //   }
     // };
-    fetch(`http://172.16.20.161:8080/api/v1/materials/${e.target.value}/types`)
+    fetch(`http://localhost:8080/api/v1/materials/${e.target.value}/types`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -220,7 +220,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   //   if (e.key === "Enter") {
   //     e.preventDefault(); // Prevent form submission
   //     // Call API with the entered vehicle number
-  //     fetch(`http://172.16.20.161:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
+  //     fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
   //       .then((response) => response.json())
   //       .then((data) => {
 
@@ -356,7 +356,7 @@ http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://172.16.20.161:8080/api/v1/gate", {
+    fetch("http://localhost:8080/api/v1/gate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

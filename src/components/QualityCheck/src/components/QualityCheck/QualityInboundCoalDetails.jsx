@@ -74,11 +74,11 @@ const QualityInboundCoalDetails = () => {
         let response;
         if (urlData.transactionType === "Inbound") {
           response = await fetch(
-            `http://172.16.20.161:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}`
+            `http://localhost:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}`
           );
         } else {
           response = await fetch(
-            `http://172.16.20.161:8080/api/v1/products/parameters?productName=${urlData.materialName}&customerName=${urlData.supplierOrCustomerName}&customerAddress=${urlData.supplierOrCustomerAddress}`
+            `http://localhost:8080/api/v1/products/parameters?productName=${urlData.materialName}&customerName=${urlData.supplierOrCustomerName}&customerAddress=${urlData.supplierOrCustomerAddress}`
           );
         }
         const data = await response.json();
@@ -124,7 +124,7 @@ const QualityInboundCoalDetails = () => {
 
     try {
       const response = await fetch(
-        `http://172.16.20.161:8080/api/v1/qualities/${formData.ticketNo}`,
+        `http://localhost:8080/api/v1/qualities/${formData.ticketNo}`,
         {
           method: "POST",
           headers: {

@@ -17,7 +17,7 @@ const ViewTransporter = () => {
 
   const fetchTransporterData = async () => {
     try {
-      const response = await fetch("http://172.16.20.161:8080/api/v1/transporter/details");
+      const response = await fetch("http://localhost:8080/api/v1/transporter/details");
       const data = await response.json();
       setTransporters(data);
     } catch (error) {
@@ -31,7 +31,7 @@ const ViewTransporter = () => {
         fetchTransporterData(); // Fetch all transporters if search field is empty
         return;
       }
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/transporter/${transporterIdFilter}`);
+      const response = await fetch(`http://localhost:8080/api/v1/transporter/${transporterIdFilter}`);
       if (!response.ok) {
         const errorResponse = await response.json();
         throw new Error(errorResponse.message || 'Failed to fetch transporter data');
@@ -59,7 +59,7 @@ const ViewTransporter = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/transporter/${transporterId}/activate`, {
+          const response = await fetch(`http://localhost:8080/api/v1/transporter/${transporterId}/activate`, {
             method: "PUT",
           });
           if (response.ok) {
@@ -88,7 +88,7 @@ const ViewTransporter = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/transporter/${transporterId}/deactivate`, {
+          const response = await fetch(`http://localhost:8080/api/v1/transporter/${transporterId}/deactivate`, {
             method: "DELETE",
           });
           if (response.ok) {

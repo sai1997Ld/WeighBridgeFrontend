@@ -22,7 +22,7 @@ const ViewSupplier = () => {
 
   const fetchSupplierData = async () => {
     try {
-      const response = await fetch("http://172.16.20.161:8080/api/v1/supplier");
+      const response = await fetch("http://localhost:8080/api/v1/supplier");
       const data = await response.json();
       setSuppliers(data);
     } catch (error) {
@@ -36,7 +36,7 @@ const ViewSupplier = () => {
         fetchSupplierData(); // Fetch all suppliers if search field is empty
         return;
       }
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/supplier/get/id/${supplierIdFilter}`);
+      const response = await fetch(`http://localhost:8080/api/v1/supplier/get/id/${supplierIdFilter}`);
       if (!response.ok) {
         const errorResponse = await response.json();
         throw new Error(errorResponse.message || 'Failed to fetch supplier data');
@@ -64,7 +64,7 @@ const ViewSupplier = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/supplier/active/${supplierId}`, {
+          const response = await fetch(`http://localhost:8080/api/v1/supplier/active/${supplierId}`, {
             method: "PUT",
           });
           if (response.ok) {
@@ -93,7 +93,7 @@ const ViewSupplier = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/supplier/delete/${supplierId}`, {
+          const response = await fetch(`http://localhost:8080/api/v1/supplier/delete/${supplierId}`, {
             method: "DELETE",
           });
           if (response.ok) {

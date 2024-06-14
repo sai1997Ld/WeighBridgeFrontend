@@ -128,7 +128,7 @@ function NewSupplier() {
             zip,
         };
 
-        fetch("http://172.16.20.161:8080/api/v1/supplier", {
+        fetch("http://localhost:8080/api/v1/supplier", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

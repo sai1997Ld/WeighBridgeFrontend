@@ -149,7 +149,7 @@ function UpdateSupplier() {
       zip,
     };
 
-    fetch(`http://172.16.20.161:8080/api/v1/supplier/update/${supplierId}`, {
+    fetch(`http://localhost:8080/api/v1/supplier/update/${supplierId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

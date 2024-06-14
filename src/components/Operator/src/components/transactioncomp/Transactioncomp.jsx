@@ -59,7 +59,7 @@ const OperatorTransaction2 = () => {
   const fetchData = (pageNumber) => {
     axios
       .get(
-        `http://172.16.20.161:8080/api/v1/weighment/getCompletedTransaction?page=${pageNumber}`,
+        `http://localhost:8080/api/v1/weighment/getCompletedTransaction?page=${pageNumber}`,
         {
           withCredentials: true,
         }
@@ -104,7 +104,7 @@ const OperatorTransaction2 = () => {
 
   // const { Option } = Select;
   const api = axios.create({
-    baseURL: "http://172.16.20.161:8080/search/v1/Api",
+    baseURL: "http://localhost:8080/search/v1/Api",
     headers: {
       "Content-Type": "application/json",
     },
@@ -181,7 +181,7 @@ const OperatorTransaction2 = () => {
 
   //print
   const handlePrint = async (ticketNo) => {
-    const apiUrl = `http://172.16.20.161:8080/api/v1/weighment/getPrintTicketWise/${ticketNo}`;
+    const apiUrl = `http://localhost:8080/api/v1/weighment/getPrintTicketWise/${ticketNo}`;
     try {
       const response = await axios.get(apiUrl, {
         headers: {

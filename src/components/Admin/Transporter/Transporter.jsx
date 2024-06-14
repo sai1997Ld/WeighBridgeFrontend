@@ -73,7 +73,7 @@ function Transporter() {
       transporterAddress,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/transporter", {
+    fetch("http://localhost:8080/api/v1/transporter", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

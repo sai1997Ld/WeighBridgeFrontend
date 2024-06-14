@@ -15,7 +15,7 @@ const LoginUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://172.16.20.161:8080/api/v1/auths/logIn", {
+      const response = await fetch("http://localhost:8080/api/v1/auths/logIn", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -42,7 +42,7 @@ const ResetPassword = () => {
     try {
       // Send a request to the backend to reset the password
       const response = await fetch(
-        `http://172.16.20.161:8080/api/v1/auths/reset/${userId}`,
+        `http://localhost:8080/api/v1/auths/reset/${userId}`,
         {
           method: "POST",
           headers: {

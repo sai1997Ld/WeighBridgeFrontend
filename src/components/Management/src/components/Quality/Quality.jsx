@@ -23,7 +23,7 @@ const StyledTable = styled.table`
 const fetchAllTransactions = async () => {
   try {
     const response = await fetch(
-      `http://172.16.20.161:8080/api/v1/qualities/getAllTransaction`,
+      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
       {
         credentials: "include",
       }
@@ -101,7 +101,7 @@ function ManagementQuality() {
   const fetchMaterialOptions = async () => {
     try {
       const materialResponse = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-ProductsOrMaterials",
+        "http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials",
         {
           credentials: "include",
         }
@@ -131,7 +131,7 @@ function ManagementQuality() {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-InboundTransaction",
+        "http://localhost:8080/api/v1/qualities/fetch-InboundTransaction",
         {
           credentials: "include",
         }
@@ -151,7 +151,7 @@ function ManagementQuality() {
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-OutboundTransaction",
+        "http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction",
         {
           credentials: "include",
         }
@@ -241,7 +241,7 @@ function ManagementQuality() {
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/${ticketNumber}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -287,7 +287,7 @@ function ManagementQuality() {
 
   const fetchApiData = async () => {
     try {
-      const response = await fetch('http://172.16.20.161:8080/api/v1/management/completedQualities/GoodOrBad', {
+      const response = await fetch('http://localhost:8080/api/v1/management/completedQualities/GoodOrBad', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

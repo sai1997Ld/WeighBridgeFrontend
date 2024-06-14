@@ -63,7 +63,7 @@ const OperatorTransaction = () => {
   // Function to fetch data from the API
   const fetchData = (pageNumber) => {
     axios
-      .get(`http://172.16.20.161:8080/api/v1/weighment/getAll?page=${pageNumber}`, {
+      .get(`http://localhost:8080/api/v1/weighment/getAll?page=${pageNumber}`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -72,7 +72,7 @@ const OperatorTransaction = () => {
         setPager(response.data.totalElements);
 
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/status/PendingTare/Outbound",
+          "http://localhost:8080/api/v1/status/PendingTare/Outbound",
           {
             withCredentials: true,
           }
@@ -83,7 +83,7 @@ const OperatorTransaction = () => {
         console.log("Data from the second API:", secondResponse.data);
 
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/status/pendingGross/Outbound",
+          "http://localhost:8080/api/v1/status/pendingGross/Outbound",
           {
             withCredentials: true,
           }
@@ -94,7 +94,7 @@ const OperatorTransaction = () => {
         console.log("Data from the third API:", thirdResponse.data);
 
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/status/pendingTare/Inbound",
+          "http://localhost:8080/api/v1/status/pendingTare/Inbound",
           {
             withCredentials: true,
           }
@@ -105,7 +105,7 @@ const OperatorTransaction = () => {
         console.log("Data from the fourth API:", fourthResponse.data);
 
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/status/pendingGross/Inbound",
+          "http://localhost:8080/api/v1/status/pendingGross/Inbound",
           {
             withCredentials: true,
           }
@@ -154,7 +154,7 @@ const OperatorTransaction = () => {
   }, []);
 
    const handlePrint = async (ticketNo) => {
-    const apiUrl = `http://172.16.20.161:8080/api/v1/weighment/getPrintTicketWise/${ticketNo}`;
+    const apiUrl = `http://localhost:8080/api/v1/weighment/getPrintTicketWise/${ticketNo}`;
     try {
       const response = await axios.get(apiUrl, {
         headers: {
@@ -208,7 +208,7 @@ const OperatorTransaction = () => {
       return;
     }
 
-    const url = `http://172.16.20.161:8080/search/v1/Api/searchApi/${ticketNo}`;
+    const url = `http://localhost:8080/search/v1/Api/searchApi/${ticketNo}`;
 
     try {
       const response = await axios.get(url, { withCredentials: true });

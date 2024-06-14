@@ -22,11 +22,11 @@ const HomePage6 = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      let url = `http://172.16.20.161:8080/api/v1/sales/getAll/sales/${userId}?page=${currentPage - 1}&size=${pageSize}`;
+      let url = `http://localhost:8080/api/v1/sales/getAll/sales/${userId}?page=${currentPage - 1}&size=${pageSize}`;
 
       if (searchValue.trim() !== '') {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/sales/searchBySo?saleOrderNo=${searchValue}&userId=${userId}`);
+          const response = await fetch(`http://localhost:8080/api/v1/sales/searchBySo?saleOrderNo=${searchValue}&userId=${userId}`);
           if (!response.ok) {
             const errorResponse = await response.json();
             throw new Error(errorResponse.message || 'Failed to fetch search result');

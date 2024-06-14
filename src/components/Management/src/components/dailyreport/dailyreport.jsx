@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SideBar5 from "../../../../SideBar/SideBar5";
+import Sidebar4 from "../../../../SideBar/SideBar4";
 import { Row, Col } from "antd";
 import { Typography } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 
-const DailyReport = () => {
+const ManagementDailyReport = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [weighments, setWeighments] = useState([]);
   const { Text } = Typography;
@@ -32,7 +32,7 @@ const DailyReport = () => {
   const fetchData = (startDate) => {
     axios
       .get(
-        `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}`,
+        `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela`,
         {
           withCredentials: true,
         }
@@ -50,7 +50,7 @@ const DailyReport = () => {
   };
 
   return (
-    <SideBar5>
+    <Sidebar4>
       <div className="container-fluid mt-0">
         <div className="mb-3 text-center">
           <button className="close-button" onClick={goBack}>
@@ -200,8 +200,8 @@ const DailyReport = () => {
           </div>
         ))}
       </div>
-    </SideBar5>
+    </Sidebar4>
   );
 };
 
-export default DailyReport;
+export default ManagementDailyReport;

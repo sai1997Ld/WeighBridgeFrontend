@@ -8,7 +8,7 @@ const QPrint = () => {
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `http://172.16.20.161:8080/api/v1/qualities/report-response/${ticketNo}`,
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`,
         {
           credentials: "include",
         }

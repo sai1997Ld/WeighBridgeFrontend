@@ -77,7 +77,7 @@ function UpdateTransporter() {
       transporterAddress,
     };
 
-    fetch(`http://172.16.20.161:8080/api/v1/transporter/${transporter.id}`, {
+    fetch(`http://localhost:8080/api/v1/transporter/${transporter.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

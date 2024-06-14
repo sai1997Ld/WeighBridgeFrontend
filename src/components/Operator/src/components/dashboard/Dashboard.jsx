@@ -54,28 +54,28 @@ function DashboardOperator() {
   //     navigate("/OperatorTransactionComp", { state: "Completed" });
   //   }
   //   useEffect(() => {
-  //     fetch("http://172.16.20.161:8080/api/v1/home/all-users")
+  //     fetch("http://localhost:8080/api/v1/home/all-users")
   //       .then((response) => response.json())
 
   //       .then((data) => setAllUsers(data))
 
   //       .catch((error) => console.error("Error fetching all users:", error));
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/active-users")
+  //     fetch("http://localhost:8080/api/v1/home/active-users")
   //       .then((response) => response.json())
 
   //       .then((data) => setActiveUsers(data))
 
   //       .catch((error) => console.error("Error fetching active users:", error));
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/inactive-users")
+  //     fetch("http://localhost:8080/api/v1/home/inactive-users")
   //       .then((response) => response.json())
 
   //       .then((data) => setInactiveUsers(data))
 
   //       .catch((error) => console.error("Error fetching inactive users:", error));
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/transporters")
+  //     fetch("http://localhost:8080/api/v1/home/transporters")
   //       .then((response) => response.json())
 
   //       .then((data) => setTransporters(data))
@@ -84,7 +84,7 @@ function DashboardOperator() {
   //         console.error("Error fetching registered trucks:", error)
   //       );
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/companies")
+  //     fetch("http://localhost:8080/api/v1/home/companies")
   //       .then((response) => response.json())
 
   //       .then((data) => setCompanies(data))
@@ -93,7 +93,7 @@ function DashboardOperator() {
   //         console.error("Error fetching registered companies:", error)
   //       );
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/suppliers")
+  //     fetch("http://localhost:8080/api/v1/home/suppliers")
   //       .then((response) => response.json())
 
   //       .then((data) => setSuppliers(data))
@@ -102,7 +102,7 @@ function DashboardOperator() {
   //         console.error("Error fetching registered suppliers:", error)
   //       );
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/customers")
+  //     fetch("http://localhost:8080/api/v1/home/customers")
   //       .then((response) => response.json())
 
   //       .then((data) => setCustomers(data))
@@ -111,7 +111,7 @@ function DashboardOperator() {
   //         console.error("Error fetching registered customers:", error)
   //       );
 
-  //     fetch("http://172.16.20.161:8080/api/v1/home/vehicles")
+  //     fetch("http://localhost:8080/api/v1/home/vehicles")
   //       .then((response) => response.json())
 
   //       .then((data) => setRegisteredTrucks(data))

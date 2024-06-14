@@ -20,7 +20,7 @@ function NewVehicleRegistration() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        fetch("http://172.16.20.161:8080/api/v1/transporter")
+        fetch("http://localhost:8080/api/v1/transporter")
             .then((response) => response.json())
             .then((data) => setTransporters(data))
             .catch((error) => console.error("Error fetching transporters:", error));
@@ -68,7 +68,7 @@ function NewVehicleRegistration() {
             vehicleLoadCapacity,
         };
 
-        fetch(`http://172.16.20.161:8080/api/v1/vehicles/${transporter}`, {
+        fetch(`http://localhost:8080/api/v1/vehicles/${transporter}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

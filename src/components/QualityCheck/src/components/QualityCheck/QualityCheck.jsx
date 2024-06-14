@@ -78,7 +78,7 @@ const StyledTable = styled.table`
 const fetchAllTransactions = async () => {
   try {
     const response = await fetch(
-      `http://172.16.20.161:8080/api/v1/qualities/getAllTransaction`,
+      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
       {
         credentials: "include",
       }
@@ -137,15 +137,15 @@ const disabledFutureDate = (current) => {
     const fetchPendingCounts = async () => {
       try {
         const totalPendingResponse = await fetch(
-          "http://172.16.20.161:8080/api/v1/qualities/total/pending",
+          "http://localhost:8080/api/v1/qualities/total/pending",
           { credentials: "include" }
         );
         const inboundPendingResponse = await fetch(
-          "http://172.16.20.161:8080/api/v1/qualities/inbound/pending",
+          "http://localhost:8080/api/v1/qualities/inbound/pending",
           { credentials: "include" }
         );
         const outboundPendingResponse = await fetch(
-          "http://172.16.20.161:8080/api/v1/qualities/outbound/pending",
+          "http://localhost:8080/api/v1/qualities/outbound/pending",
           { credentials: "include" }
         );
     
@@ -177,15 +177,15 @@ const disabledFutureDate = (current) => {
     const fetchCompletedCounts = async () => {
       try {
         const totalCompletedResponse = await fetch(
-          "http://172.16.20.161:8080/api/v1/qualities/total-qct-completed-size",
+          "http://localhost:8080/api/v1/qualities/total-qct-completed-size",
           { credentials: "include" }
         );
         const inboundCompletedResponse = await fetch(
-          "http://172.16.20.161:8080/api/v1/qualities/inbound-qct-completed-size",
+          "http://localhost:8080/api/v1/qualities/inbound-qct-completed-size",
           { credentials: "include" }
         );
         const outboundCompletedResponse = await fetch(
-          "http://172.16.20.161:8080/api/v1/qualities/outbound-qct-completed-size",
+          "http://localhost:8080/api/v1/qualities/outbound-qct-completed-size",
           { credentials: "include" }
         );
     
@@ -257,7 +257,7 @@ setFilteredData(data);
   const fetchMaterialOptions = async () => {
     try {
       const materialResponse = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-ProductsOrMaterials",
+        "http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials",
         {
           credentials: "include",
         }
@@ -287,7 +287,7 @@ setFilteredData(data);
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-InboundTransaction",
+        "http://localhost:8080/api/v1/qualities/fetch-InboundTransaction",
         {
           credentials: "include",
         }
@@ -307,7 +307,7 @@ setFilteredData(data);
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-OutboundTransaction",
+        "http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction",
         {
           credentials: "include",
         }
@@ -394,7 +394,7 @@ setFilteredData(data);
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/${ticketNumber}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -455,7 +455,7 @@ setFilteredData(data);
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
           {
             credentials: "include",
           }
@@ -479,7 +479,7 @@ setFilteredData(data);
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
           {
             credentials: "include",
           }
@@ -496,7 +496,7 @@ setFilteredData(data);
     } else if (searchType === "supplier") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
           {
             credentials: "include",
           }
@@ -513,7 +513,7 @@ setFilteredData(data);
     } else if (searchType === "supplierAddress") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
           {
             credentials: "include",
           }

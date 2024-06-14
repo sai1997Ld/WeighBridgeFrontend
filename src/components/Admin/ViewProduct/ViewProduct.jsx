@@ -19,14 +19,14 @@ const ViewProduct = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    fetch('http://172.16.20.161:8080/api/v1/products')
+    fetch('http://localhost:8080/api/v1/products')
       .then(response => response.json())
       .then(data => setProducts(data))
       .catch(error => console.error('Error fetching products:', error));
   }, []);
 
   const handleViewClick = (productName) => {
-    fetch(`http://172.16.20.161:8080/api/v1/products/view/${productName}/parameters`)
+    fetch(`http://localhost:8080/api/v1/products/view/${productName}/parameters`)
       .then(response => response.json())
       .then(data => {
         setModalData(data);

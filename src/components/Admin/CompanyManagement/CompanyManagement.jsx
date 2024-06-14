@@ -71,7 +71,7 @@ function CompanyManagement() {
       companyAddress,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/company", {
+    fetch("http://localhost:8080/api/v1/company", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -48,7 +48,7 @@ function TransactionFrom2() {
 
   useEffect(() => {
     axios
-      .get(`http://172.16.20.161:8080/api/v1/weighment/get/${ticketNumber}`, {
+      .get(`http://localhost:8080/api/v1/weighment/get/${ticketNumber}`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -155,7 +155,7 @@ function TransactionFrom2() {
     };
 
     axios
-      .post("http://172.16.20.161:8080/api/v1/weighment/measure", payload, {
+      .post("http://localhost:8080/api/v1/weighment/measure", payload, {
         withCredentials: true,
       })
       .then((response) => {

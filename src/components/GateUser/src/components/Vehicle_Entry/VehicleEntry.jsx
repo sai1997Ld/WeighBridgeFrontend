@@ -26,7 +26,7 @@ import PendingIcon from '@mui/icons-material/Pending';
 
 const { Option } = Select;
 const api = axios.create({
-  baseURL: 'http://172.16.20.161:8080/api/v1/gate',
+  baseURL: 'http://localhost:8080/api/v1/gate',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -201,7 +201,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   // Function to fetch material options from the API
   const fetchMaterialOptions = async () => {
     try {
-      const response = await fetch("http://172.16.20.161:8080/api/v1/gate/fetch-ProductsOrMaterials", {
+      const response = await fetch("http://localhost:8080/api/v1/gate/fetch-ProductsOrMaterials", {
         credentials: "include" // Include credentials option here
       });
       const data = await response.json();
@@ -281,7 +281,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const fetchDataByTransactionType = async (transactionType) => {
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}`, {
         credentials: "include" // Include credentials option here
       });
       if (!response.ok) {
@@ -304,7 +304,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://172.16.20.161:8080/api/v1/gate", {
+    fetch("http://localhost:8080/api/v1/gate", {
       credentials: "include"
     })
       .then(response => {
@@ -341,7 +341,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   }, [currentPage]);
 
   const fetchData = (pageNumber) => {
-    fetch(`http://172.16.20.161:8080/api/v1/gate?page=${pageNumber}`, {
+    fetch(`http://localhost:8080/api/v1/gate?page=${pageNumber}`, {
       credentials: "include"
     })
       .then(response => {
@@ -357,7 +357,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         console.log("total Page " + data.totalPages);
         //API for InboundPending Status
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/gate/count/Inbound",
+          "http://localhost:8080/api/v1/gate/count/Inbound",
           {
             withCredentials: true,
           }
@@ -368,7 +368,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         console.log("Data from the second API:", secondResponse.data);
         //API for OutboundPending Status
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/gate/count/Outbound",
+          "http://localhost:8080/api/v1/gate/count/Outbound",
           {
             withCredentials: true,
           }
@@ -379,7 +379,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         console.log("Data from the third API:", thirdResponse.data);
         //API for Completed Status
         return axios.get(
-          "http://172.16.20.161:8080/api/v1/gate/count/Complete",
+          "http://localhost:8080/api/v1/gate/count/Complete",
           {
             withCredentials: true,
           }
@@ -463,7 +463,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   //  code Of Edit API:
   const handleEdit = (ticketNo) => {
     // Make the API call using Axios with credentials
-    axios.get(`http://172.16.20.161:8080/api/v1/gate/edit/${ticketNo}`, {
+    axios.get(`http://localhost:8080/api/v1/gate/edit/${ticketNo}`, {
       withCredentials: true // Include credentials with the request
     })
       .then(response => {
@@ -486,7 +486,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const handleVehicleExit = async (ticketNo) => {
     console.log(`handleVehicleExit called with ticketNo: ${ticketNo}`); // Log the ticket number to ensure the function is called
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/gate/out/${ticketNo}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/out/${ticketNo}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -542,7 +542,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/report-response/${ticketNo}`);
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
