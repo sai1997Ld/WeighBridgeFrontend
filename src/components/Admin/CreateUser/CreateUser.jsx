@@ -24,7 +24,7 @@ function CreateUser() {
   const [roles, setRoles] = useState([]);
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/company/names")
+    fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
       .then((data) => {
         console.log("Company List:", data);
@@ -36,7 +36,7 @@ function CreateUser() {
   }, []);
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/roles/get/all/role")
+    fetch("http://localhost:8080/api/v1/roles/get/all/role")
       .then((response) => response.json())
       .then((data) => {
         console.log("Roles List:", data);
@@ -50,7 +50,7 @@ function CreateUser() {
   const handleCompanyChange = (e) => {
     setCompany(e.target.value);
 
-    fetch(`http://172.16.20.161:8080/api/v1/sites/company/${e.target.value}`)
+    fetch(`http://localhost:8080/api/v1/sites/company/${e.target.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Site List:", data);
@@ -136,7 +136,7 @@ function CreateUser() {
 
     console.log("Payload sent to the API:", userData);
 
-    fetch("http://172.16.20.161:8080/api/v1/users", {
+    fetch("http://localhost:8080/api/v1/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

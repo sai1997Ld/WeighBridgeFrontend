@@ -29,7 +29,7 @@ function ProcessOrder() {
 
   useEffect(() => {
     // Fetch vehicle numbers
-    fetch("http://172.16.20.161:8080/api/v1/vehicles")
+    fetch("http://localhost:8080/api/v1/vehicles")
       .then((response) => response.json())
       .then((data) => {
         const numbers = data.map((vehicle) => ({
@@ -46,7 +46,7 @@ function ProcessOrder() {
   useEffect(() => {
     if (vehicleNo) {
       // Fetch transporter details when a vehicle number is selected
-      fetch(`http://172.16.20.161:8080/api/v1/vehicles/${vehicleNo.value}`)
+      fetch(`http://localhost:8080/api/v1/vehicles/${vehicleNo.value}`)
         .then((response) => response.json())
         .then((data) => {
           setTransporters(data.transporter);
@@ -61,7 +61,7 @@ function ProcessOrder() {
     if (formProductName) {
       // Fetch product types based on product name
       fetch(
-        `http://172.16.20.161:8080/api/v1/products/${encodeURIComponent(
+        `http://localhost:8080/api/v1/products/${encodeURIComponent(
           formProductName
         )}/types`
       )
@@ -81,7 +81,7 @@ function ProcessOrder() {
     if (formsaleOrderNo) {
       // Fetch balance weight for the sales order
       fetch(
-        `http://172.16.20.161:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(formsaleOrderNo)}`
+        `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(formsaleOrderNo)}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -136,7 +136,7 @@ function ProcessOrder() {
       consignmentWeight,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/salesProcess/salesProcess", {
+    fetch("http://localhost:8080/api/v1/salesProcess/salesProcess", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

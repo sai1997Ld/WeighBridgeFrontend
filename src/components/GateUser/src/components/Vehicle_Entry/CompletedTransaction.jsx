@@ -22,7 +22,7 @@ import TicketComponentGU from "./TicketComponentGU";
 
 const { Option } = Select;
 const api = axios.create({
-    baseURL: 'http://172.16.20.161:8080/api/v1/gate',
+    baseURL: 'http://localhost:8080/api/v1/gate',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -148,7 +148,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://172.16.20.161:8080/api/v1/gate/completedDashboard", {
+        fetch("http://localhost:8080/api/v1/gate/completedDashboard", {
             credentials: "include"
         })
             .then(response => {
@@ -180,7 +180,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     }, [currentPage]);
 
     const fetchData = (pageNumber) => {
-        fetch(`http://172.16.20.161:8080/api/v1/gate/completedDashboard?page=${pageNumber}`, {
+        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?page=${pageNumber}`, {
             credentials: "include"
         })
             .then(response => {
@@ -278,7 +278,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
 
     const handleQualityReportDownload = async (ticketNo) => {
         try {
-            const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/report-response/${ticketNo}`);
+            const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
@@ -346,7 +346,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     // API Code for Print:
 
     const handlePrint = async (ticketNo) => {
-        const apiUrl = `http://172.16.20.161:8080/api/v1/gate/print/${ticketNo}`;
+        const apiUrl = `http://localhost:8080/api/v1/gate/print/${ticketNo}`;
         try {
             const response = await axios.get(apiUrl, {
                 headers: {

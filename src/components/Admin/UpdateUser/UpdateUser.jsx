@@ -38,7 +38,7 @@ function UpdateUser() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/company/names")
+    fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
       .then((data) => {
         console.log("Company List:", data);
@@ -52,7 +52,7 @@ function UpdateUser() {
   }, [user.company]);
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/roles/get/all/role")
+    fetch("http://localhost:8080/api/v1/roles/get/all/role")
       .then((response) => response.json())
       .then((data) => {
         console.log("Roles List:", data);
@@ -64,7 +64,7 @@ function UpdateUser() {
   }, []);
 
   const fetchSiteList = (selectedCompany) => {
-    fetch(`http://172.16.20.161:8080/api/v1/sites/company/${selectedCompany}`)
+    fetch(`http://localhost:8080/api/v1/sites/company/${selectedCompany}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Site List:", data);
@@ -144,7 +144,7 @@ function UpdateUser() {
       lastName,
     };
 
-    fetch(`http://172.16.20.161:8080/api/v1/users/updateUser/${user.userId}`, {
+    fetch(`http://localhost:8080/api/v1/users/updateUser/${user.userId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

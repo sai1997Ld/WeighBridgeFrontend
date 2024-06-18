@@ -31,7 +31,7 @@ const CustomizedReport = () => {
     if (start && end) {
       axios
         .get(
-          `http://172.16.20.161:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}`,
+          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}`,
           {
             withCredentials: true,
           }

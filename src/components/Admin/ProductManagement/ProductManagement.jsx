@@ -31,7 +31,7 @@ function ProductManagement() {
   }, []);
 
   const fetchproductNames = () => {
-    fetch("http://172.16.20.161:8080/api/v1/products/names")
+    fetch("http://localhost:8080/api/v1/products/names")
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -58,7 +58,7 @@ function ProductManagement() {
   };
 
   const fetchproductTypeNames = (name) => {
-    fetch(`http://172.16.20.161:8080/api/v1/products/${name}/types`)
+    fetch(`http://localhost:8080/api/v1/products/${name}/types`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -129,7 +129,7 @@ function ProductManagement() {
       productTypeName: finalproductTypeName,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/products/withType", {
+    fetch("http://localhost:8080/api/v1/products/withType", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -201,7 +201,7 @@ function ProductManagement() {
       })),
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/products", {
+    fetch("http://localhost:8080/api/v1/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

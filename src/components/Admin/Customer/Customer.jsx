@@ -127,7 +127,7 @@ function Customer() {
       zip,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/customers", {
+    fetch("http://localhost:8080/api/v1/customers", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

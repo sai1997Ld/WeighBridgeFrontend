@@ -26,12 +26,12 @@ function SalesOrder() {
   console.log(userId);
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/customers/names")
+    fetch("http://localhost:8080/api/v1/customers/names")
       .then((response) => response.json())
       .then((data) => setCustomerNames(data))
       .catch((error) => console.error("Error fetching customer names:", error));
 
-    fetch("http://172.16.20.161:8080/api/v1/products/names")
+    fetch("http://localhost:8080/api/v1/products/names")
       .then((response) => response.json())
       .then((data) => setProductNames(data))
       .catch((error) => console.error("Error fetching product names:", error));
@@ -46,7 +46,7 @@ function SalesOrder() {
     setCustomerName(selectedCustomerName);
 
     fetch(
-      `http://172.16.20.161:8080/api/v1/customers/get/${encodeURIComponent(
+      `http://localhost:8080/api/v1/customers/get/${encodeURIComponent(
         selectedCustomerName
       )}`
     )
@@ -103,7 +103,7 @@ function SalesOrder() {
       userId,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/sales/add/salesdetail", {
+    fetch("http://localhost:8080/api/v1/sales/add/salesdetail", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

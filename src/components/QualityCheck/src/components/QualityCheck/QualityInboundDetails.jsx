@@ -109,11 +109,11 @@ const QualityInboundDetails = () => {
         let response;
         if (urlData.transactionType === "Inbound") {
           response = await fetch(
-            `http://172.16.20.161:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}`
+            `http://localhost:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}`
           );
         } else {
           response = await fetch(
-            `http://172.16.20.161:8080/api/v1/products/parameters?productName=${urlData.materialName}`
+            `http://localhost:8080/api/v1/products/parameters?productName=${urlData.materialName}`
           );
         }
         const data = await response.json();
@@ -164,7 +164,7 @@ const QualityInboundDetails = () => {
     console.log("Form data being sent:", data);
   
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/${formData.ticketNo}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${formData.ticketNo}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

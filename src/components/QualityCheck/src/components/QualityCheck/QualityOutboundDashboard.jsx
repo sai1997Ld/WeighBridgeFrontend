@@ -23,7 +23,7 @@ const StyledTable = styled.table`
 const fetchAllTransactions = async () => {
   try {
     const response = await fetch(
-      `http://172.16.20.161:8080/api/v1/qualities/getAllTransaction`,
+      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
       {
         credentials: "include",
       }
@@ -89,7 +89,7 @@ useEffect(() => {
     try {
   
       const productResponse = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/products",
+        "http://localhost:8080/api/v1/qualities/products",
         {
           credentials: "include",
         }
@@ -119,7 +119,7 @@ useEffect(() => {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-InboundTransaction",
+        "http://localhost:8080/api/v1/qualities/fetch-InboundTransaction",
         {
           credentials: "include",
         }
@@ -139,7 +139,7 @@ useEffect(() => {
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-OutboundTransaction",
+        "http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction",
         {
           credentials: "include",
         }
@@ -222,7 +222,7 @@ useEffect(() => {
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/${ticketNumber}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -264,7 +264,7 @@ useEffect(() => {
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
           {
             credentials: "include",
           }
@@ -288,7 +288,7 @@ useEffect(() => {
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
           {
             credentials: "include",
           }
@@ -305,7 +305,7 @@ useEffect(() => {
     } else if (searchType === "customer") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
           {
             credentials: "include",
           }
@@ -322,7 +322,7 @@ useEffect(() => {
     } else if (searchType === "customerAddress") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
           {
             credentials: "include",
           }

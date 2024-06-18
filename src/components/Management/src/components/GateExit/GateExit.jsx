@@ -17,7 +17,7 @@ import SideBar4 from "../../../../SideBar/SideBar4";
 
 const { Option } = Select;
 const api = axios.create({
-    baseURL: 'http://172.16.20.161:8080/api/v1/gate',
+    baseURL: 'http://localhost:8080/api/v1/gate',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -144,7 +144,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://172.16.20.161:8080/api/v1/management/transactions/ongoing?&vehicleStatus=completed&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela", {
+        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?&vehicleStatus=completed&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela", {
             credentials: "include"
         })
             .then(response => {
@@ -176,7 +176,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     }, [currentPage]);
 
     const fetchData = (pageNumber) => {
-        fetch(`http://172.16.20.161:8080/api/v1/management/transactions/ongoing?&vehicleStatus=completed&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela&page=${pageNumber}`, {
+        fetch(`http://localhost:8080/api/v1/management/transactions/ongoing?&vehicleStatus=completed&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela&page=${pageNumber}`, {
             credentials: "include"
         })
             .then(response => {
@@ -274,7 +274,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     const handleQualityReportDownload = async (ticketNo) => {
         try {
-            const response = await fetch(`http://172.16.20.161:8080/api/v1/qualities/report-response/${ticketNo}`);
+            const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }

@@ -72,7 +72,7 @@ function HomePage5() {
           toDate: endDate,
         };
 
-        const response = await axios.post('http://172.16.20.161:8080/api/v1/management/moisture-percentage', payload);
+        const response = await axios.post('http://localhost:8080/api/v1/management/moisture-percentage', payload);
         const data = response.data.moisturePercentageData;
 
         // Process data for bar chart
@@ -102,7 +102,7 @@ function HomePage5() {
   }, [company, site, startDate, endDate, supplierName, supplierAddress]);
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/company/names")
+    fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
       .then((data) => {
         console.log("Company List:", data);
@@ -116,7 +116,7 @@ function HomePage5() {
   const handleCompanyChange = (e) => {
     setCompany(e.target.value);
 
-    fetch(`http://172.16.20.161:8080/api/v1/sites/company/${e.target.value}`)
+    fetch(`http://localhost:8080/api/v1/sites/company/${e.target.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Site List:", data);
@@ -131,7 +131,7 @@ function HomePage5() {
   };
 
   const fetchSupplierNames = () => {
-    fetch("http://172.16.20.161:8080/api/v1/supplier/get/list")
+    fetch("http://localhost:8080/api/v1/supplier/get/list")
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -158,7 +158,7 @@ function HomePage5() {
   };
 
   const fetchSupplierAddress = (supplierName) => {
-    fetch(`http://172.16.20.161:8080/api/v1/supplier/get/${supplierName}`)
+    fetch(`http://localhost:8080/api/v1/supplier/get/${supplierName}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -201,11 +201,11 @@ function HomePage5() {
         };
 
         const [lineResponse, inboundResponse, outboundResponse, materialProductResponse, materialProductQualityResponse] = await Promise.all([
-          axios.post('http://172.16.20.161:8080/api/v1/management/gate-dash', payload),
-          axios.post('http://172.16.20.161:8080/api/v1/management/getQtyByGraph?transactionType=Inbound', payload),
-          axios.post('http://172.16.20.161:8080/api/v1/management/getQtyByGraph?transactionType=Outbound', payload),
-          axios.post('http://172.16.20.161:8080/api/v1/management/material-product', payload),
-          axios.post('http://172.16.20.161:8080/api/v1/management/material-product/qualities', payload),
+          axios.post('http://localhost:8080/api/v1/management/gate-dash', payload),
+          axios.post('http://localhost:8080/api/v1/management/getQtyByGraph?transactionType=Inbound', payload),
+          axios.post('http://localhost:8080/api/v1/management/getQtyByGraph?transactionType=Outbound', payload),
+          axios.post('http://localhost:8080/api/v1/management/material-product', payload),
+          axios.post('http://localhost:8080/api/v1/management/material-product/qualities', payload),
         ]);
 
         const lineData = lineResponse.data;

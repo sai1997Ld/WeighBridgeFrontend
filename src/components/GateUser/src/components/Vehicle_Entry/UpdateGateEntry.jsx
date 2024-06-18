@@ -58,7 +58,7 @@ function UpdateVehicleEntryDetails() {
   // Get API for Fetching  Vehicle No if Registerd:
   // useEffect(() => {
   //   // Fetch vehicle numbers
-  //   fetch("http://172.16.20.161:8080/api/v1/vehicles?size=20")
+  //   fetch("http://localhost:8080/api/v1/vehicles?size=20")
   //     .then((response) => response.json())
   //     .then((data) => {
   //       const numbers = data.map((vehicle) => ({
@@ -77,7 +77,7 @@ function UpdateVehicleEntryDetails() {
   //   const handleVehicleNoKeyPress = async (selectedVehicleNo) => {
   //     try {
   //       fetch(`
-  // http://172.16.20.161:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
+  // http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   //         .then((response) => response.json())
   //         .then((data) => {
   //           // Set transporter state with the data from the API response
@@ -105,7 +105,7 @@ function UpdateVehicleEntryDetails() {
   //   const fetchSupplierList = async () => {
   //     try {
   //       const response = await fetch(
-  //         "http://172.16.20.161:8080/api/v1/supplier/get/list",
+  //         "http://localhost:8080/api/v1/supplier/get/list",
   //         {
   //           method: "GET",
   //           credentials: "include",
@@ -134,7 +134,7 @@ function UpdateVehicleEntryDetails() {
   //     [name]: value,
   //   });
 
-  //   fetch(`http://172.16.20.161:8080/api/v1/supplier/get/${e.target.value}`)
+  //   fetch(`http://localhost:8080/api/v1/supplier/get/${e.target.value}`)
   //     .then((response) => response.json())
   //     .then((data) => {
   //       console.log(data);
@@ -160,7 +160,7 @@ function UpdateVehicleEntryDetails() {
   //   const fetchMaterialList = async () => {
   //     try {
   //       const response = await fetch(
-  //         "http://172.16.20.161:8080/api/v1/materials/names",
+  //         "http://localhost:8080/api/v1/materials/names",
   //         {
   //           method: "GET",
   //           credentials: "include",
@@ -190,7 +190,7 @@ function UpdateVehicleEntryDetails() {
   //   });
   //   //   try {
   //   //     const response = await fetch(
-  //   //       `http://172.16.20.161:8080/api/v1/materials/${e.target.value}/types`,
+  //   //       `http://localhost:8080/api/v1/materials/${e.target.value}/types`,
   //   //       {
   //   //         method: "GET",
   //   //         credentials: "include"
@@ -207,7 +207,7 @@ function UpdateVehicleEntryDetails() {
   //   //     console.error("Error fetching Material Type:", error);
   //   //   }
   //   // };
-  //   fetch(`http://172.16.20.161:8080/api/v1/materials/${e.target.value}/types`)
+  //   fetch(`http://localhost:8080/api/v1/materials/${e.target.value}/types`)
   //     .then((response) => response.json())
   //     .then((data) => {
   //       console.log(data);
@@ -223,7 +223,7 @@ function UpdateVehicleEntryDetails() {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent form submission
       // Call API with the entered vehicle number
-      fetch(`http://172.16.20.161:8080/api/v1/vehicles/vehicle/${formData.vehicle}`)
+      fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicle}`)
         .then((response) => response.json())
         .then((data) => {
 
@@ -362,7 +362,7 @@ function UpdateVehicleEntryDetails() {
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://172.16.20.161:8080/api/v1/gate/update", {
+    fetch("http://localhost:8080/api/v1/gate/update", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -48,7 +48,7 @@ function ManageUser() {
       if (result.isConfirmed) {
         try {
           const response = await fetch(
-            `http://172.16.20.161:8080/api/v1/users/${userId}/deactivate`,
+            `http://localhost:8080/api/v1/users/${userId}/deactivate`,
             {
               method: "DELETE",
             }
@@ -80,7 +80,7 @@ function ManageUser() {
       if (result.isConfirmed) {
         try {
           const response = await fetch(
-            `http://172.16.20.161:8080/api/v1/users/${userId}/activate`,
+            `http://localhost:8080/api/v1/users/${userId}/activate`,
             {
               method: "PUT",
             }
@@ -101,9 +101,9 @@ function ManageUser() {
 
   const fetchUserData = async () => {
     try {
-      let url = `http://172.16.20.161:8080/api/v1/users?page=${currentPage}&size=${pageSize}`;
+      let url = `http://localhost:8080/api/v1/users?page=${currentPage}&size=${pageSize}`;
       if (status) {
-        url = `http://172.16.20.161:8080/api/v1/users/userStatus?page=${currentPage}&size=${pageSize}&userStatus=${status}`;
+        url = `http://localhost:8080/api/v1/users/userStatus?page=${currentPage}&size=${pageSize}&userStatus=${status}`;
       }
 
       const response = await fetch(url);
@@ -129,7 +129,7 @@ function ManageUser() {
         return;
       }
       const response = await fetch(
-        `http://172.16.20.161:8080/api/v1/users/${userIdFilter}`
+        `http://localhost:8080/api/v1/users/${userIdFilter}`
       );
       if (!response.ok) {
         const errorResponse = await response.json();

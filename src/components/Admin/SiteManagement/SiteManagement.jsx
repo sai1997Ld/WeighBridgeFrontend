@@ -21,7 +21,7 @@ function SiteManagement() {
   };
 
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/company")
+    fetch("http://localhost:8080/api/v1/company")
       .then((response) => response.json())
       .then((data) => setCompanies(data))
       .catch((error) => console.error("Error fetching companies:", error));
@@ -50,7 +50,7 @@ function SiteManagement() {
       siteAddress,
     };
 
-    fetch("http://172.16.20.161:8080/api/v1/sites", {
+    fetch("http://localhost:8080/api/v1/sites", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

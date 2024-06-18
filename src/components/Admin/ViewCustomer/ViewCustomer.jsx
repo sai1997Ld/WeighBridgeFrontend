@@ -22,7 +22,7 @@ const ViewCustomer = () => {
 
   const fetchCustomerData = async () => {
     try {
-      const response = await fetch("http://172.16.20.161:8080/api/v1/customers");
+      const response = await fetch("http://localhost:8080/api/v1/customers");
       const data = await response.json();
       setCustomers(data);
     } catch (error) {
@@ -36,7 +36,7 @@ const ViewCustomer = () => {
         fetchCustomerData(); // Fetch all customers if search field is empty
         return;
       }
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/customers/get/id/${customerIdFilter}`);
+      const response = await fetch(`http://localhost:8080/api/v1/customers/get/id/${customerIdFilter}`);
       if (!response.ok) {
         const errorResponse = await response.json();
         throw new Error(errorResponse.message || 'Failed to fetch customer data');
@@ -64,7 +64,7 @@ const ViewCustomer = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/customers/active/${customerId}`, {
+          const response = await fetch(`http://localhost:8080/api/v1/customers/active/${customerId}`, {
             method: "PUT",
           });
           if (response.ok) {
@@ -93,7 +93,7 @@ const ViewCustomer = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://172.16.20.161:8080/api/v1/customers/delete/${customerId}`, {
+          const response = await fetch(`http://localhost:8080/api/v1/customers/delete/${customerId}`, {
             method: "DELETE",
           });
           if (response.ok) {

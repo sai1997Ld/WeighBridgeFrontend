@@ -70,7 +70,7 @@ function VehicleEntryDetails() {
     const fetchSupplierList = async () => {
       try {
         const response = await fetch(
-          "http://172.16.20.161:8080/api/v1/supplier/get/list",
+          "http://localhost:8080/api/v1/supplier/get/list",
           {
             method: "GET",
             credentials: "include"
@@ -99,7 +99,7 @@ function VehicleEntryDetails() {
       [name]: value,
     });
 
-    fetch(`http://172.16.20.161:8080/api/v1/supplier/get/${e.target.value}`)
+    fetch(`http://localhost:8080/api/v1/supplier/get/${e.target.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -125,7 +125,7 @@ function VehicleEntryDetails() {
     const fetchMaterialList = async () => {
       try {
         const response = await fetch(
-          "http://172.16.20.161:8080/api/v1/materials/names",
+          "http://localhost:8080/api/v1/materials/names",
           {
             method: "GET",
             credentials: "include"
@@ -158,7 +158,7 @@ function VehicleEntryDetails() {
       e.preventDefault(); // Prevent form submission
       console.log(formData.vehicleNo);
       // Call API with the entered vehicle number
-      fetch(`http://172.16.20.161:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
+      fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
         .then((response) => response.json())
         .then((data) => {
 
@@ -256,7 +256,7 @@ function VehicleEntryDetails() {
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://172.16.20.161:8080/api/v1/gate", {
+    fetch("http://localhost:8080/api/v1/gate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

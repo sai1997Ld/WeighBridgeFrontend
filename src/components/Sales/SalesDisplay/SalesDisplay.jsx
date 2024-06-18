@@ -15,7 +15,7 @@ const SalesDisplay = () => {
   useEffect(() => {
     const saleOrderNo = new URLSearchParams(location.search).get('saleOrderNo');
     if (saleOrderNo) {
-      fetch(`http://172.16.20.161:8080/api/v1/salesProcess/bySaleOrderNo/View?saleOrderNo=${saleOrderNo}`)
+      fetch(`http://localhost:8080/api/v1/salesProcess/bySaleOrderNo/View?saleOrderNo=${saleOrderNo}`)
         .then(response => response.json())
         .then(data => setSalesProcessData(data))
         .catch(error => console.error('Error fetching sales process data:', error));

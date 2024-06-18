@@ -19,14 +19,14 @@ const ViewMaterial = () => {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
 
   useEffect(() => {
-    fetch('http://172.16.20.161:8080/api/v1/materials')
+    fetch('http://localhost:8080/api/v1/materials')
       .then(response => response.json())
       .then(data => setMaterials(data))
       .catch(error => console.error('Error fetching materials:', error));
   }, []);
 
   const handleViewClick = (materialName) => {
-    fetch(`http://172.16.20.161:8080/api/v1/materials/view/${materialName}/parameters`)
+    fetch(`http://localhost:8080/api/v1/materials/view/${materialName}/parameters`)
       .then(response => response.json())
       .then(data => {
         setModalData(data);

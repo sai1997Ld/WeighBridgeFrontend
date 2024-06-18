@@ -42,7 +42,7 @@ function VehicleOutboundDetails() {
     const fetchCustomerList = async () => {
       try {
         const response = await fetch(
-          "http://172.16.20.161:8080/api/v1/Customer/get/list",
+          "http://localhost:8080/api/v1/Customer/get/list",
           {
             method: "GET",
             credentials: "include"
@@ -71,7 +71,7 @@ function VehicleOutboundDetails() {
       [name]: value,
     });
 
-    fetch(`http://172.16.20.161:8080/api/v1/Customer/get/${e.target.value}`)
+    fetch(`http://localhost:8080/api/v1/Customer/get/${e.target.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -97,7 +97,7 @@ function VehicleOutboundDetails() {
     const fetchProductList = async () => {
       try {
         const response = await fetch(
-          "http://172.16.20.161:8080/api/v1/Products/names",
+          "http://localhost:8080/api/v1/Products/names",
           {
             method: "GET",
             credentials: "include"
@@ -127,7 +127,7 @@ function VehicleOutboundDetails() {
     });
     //   try {
     //     const response = await fetch(
-    //       `http://172.16.20.161:8080/api/v1/Products/${e.target.value}/types`,
+    //       `http://localhost:8080/api/v1/Products/${e.target.value}/types`,
     //       {
     //         method: "GET",
     //         credentials: "include"
@@ -144,7 +144,7 @@ function VehicleOutboundDetails() {
     //     console.error("Error fetching Product Type:", error);
     //   }
     // };
-    fetch(`http://172.16.20.161:8080/api/v1/Products/${e.target.value}/types`)
+    fetch(`http://localhost:8080/api/v1/Products/${e.target.value}/types`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -163,7 +163,7 @@ function VehicleOutboundDetails() {
   //   if (e.key === "Enter") {
   //     e.preventDefault(); // Prevent form submission
   //     // Call API with the entered vehicle number
-  //     fetch(`http://172.16.20.161:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
+  //     fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
   //       .then((response) => response.json())
   //       .then((data) => {
 
@@ -187,7 +187,7 @@ function VehicleOutboundDetails() {
 
   const handleVehicleNoBlur = async () => {
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`);
+      const response = await fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -301,7 +301,7 @@ function VehicleOutboundDetails() {
     console.log("payload", payload);
     // Fetch API
 
-    fetch("http://172.16.20.161:8080/api/v1/gate", {
+    fetch("http://localhost:8080/api/v1/gate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -395,7 +395,7 @@ function VehicleOutboundDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://172.16.20.161:8080/api/v1/sales/getBySalePassNo?salePassNo=${sale}`, {
+      .get(`http://localhost:8080/api/v1/sales/getBySalePassNo?salePassNo=${sale}`, {
         withCredentials: true,
       })
       .then((response) => {

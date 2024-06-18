@@ -22,7 +22,7 @@ function ManagementReport() {
 
  
   const handleDailyReport = () => {
-    navigate("");
+    navigate("/ManagementDailyReport");
   };
  
   const handleWeeklyReport = () => {

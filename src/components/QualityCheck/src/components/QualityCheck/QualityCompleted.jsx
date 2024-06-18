@@ -25,7 +25,7 @@ const StyledTable = styled.table`
 const fetchAllTransactions = async () => {
   try {
     const response = await fetch(
-      `http://172.16.20.161:8080/api/v1/qualities/qct-completed?`,
+      `http://localhost:8080/api/v1/qualities/qct-completed?`,
       {
         credentials: "include",
       }
@@ -94,7 +94,7 @@ function QualityCompleted() {
   const fetchMaterialOptions = async () => {
     try {
       const materialResponse = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/fetch-ProductsOrMaterials",
+        "http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials",
         {
           credentials: "include",
         }
@@ -124,7 +124,7 @@ function QualityCompleted() {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/inbound-qct-completed",
+        "http://localhost:8080/api/v1/qualities/inbound-qct-completed",
         {
           credentials: "include",
         }
@@ -144,7 +144,7 @@ function QualityCompleted() {
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://172.16.20.161:8080/api/v1/qualities/outbound-qct-completed",
+        "http://localhost:8080/api/v1/qualities/outbound-qct-completed",
         {
           credentials: "include",
         }
@@ -231,7 +231,7 @@ function QualityCompleted() {
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchByTicketNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}`,
           {
             credentials: "include",
           }
@@ -255,7 +255,7 @@ function QualityCompleted() {
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
           {
             credentials: "include",
           }
@@ -272,7 +272,7 @@ function QualityCompleted() {
     } else if (searchType === "supplier") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
           {
             credentials: "include",
           }
@@ -289,7 +289,7 @@ function QualityCompleted() {
     } else if (searchType === "supplierAddress") {
       try {
         const response = await fetch(
-          `http://172.16.20.161:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
           {
             credentials: "include",
           }
@@ -308,7 +308,7 @@ function QualityCompleted() {
   const handleQualityReportDownload = async (ticketNo) => {
     try {
       const response = await fetch(
-        `http://172.16.20.161:8080/api/v1/qualities/report-response/${ticketNo}`,      );
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`,      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -392,7 +392,7 @@ function QualityCompleted() {
   const handlePrint = async (ticketNo) => {
     try {
       const response = await fetch(
-        `http://172.16.20.161:8080/api/v1/qualities/report-response/${ticketNo}`,
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`,
         {
           credentials: "include",
         }

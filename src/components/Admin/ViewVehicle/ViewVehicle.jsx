@@ -11,7 +11,7 @@ const ViewVehicle = () => {
   const [vehicles, setVehicles] = useState([]);
 
   useEffect(() => {
-    fetch('http://172.16.20.161:8080/api/v1/vehicles')
+    fetch('http://localhost:8080/api/v1/vehicles')
       .then(response => response.json())
       .then(data => setVehicles(data))
       .catch(error => console.error('Error fetching vehicles:', error));

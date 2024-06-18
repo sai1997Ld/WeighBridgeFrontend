@@ -46,7 +46,7 @@ function HomePage1Component() {
     navigate("/manage-user", { state: "INACTIVE" });
   };
   useEffect(() => {
-    fetch("http://172.16.20.161:8080/api/v1/home/all-users")
+    fetch("http://localhost:8080/api/v1/home/all-users")
       .then((response) => response.json())
 
       .then((data) => setAllUsers(data))
@@ -55,7 +55,7 @@ function HomePage1Component() {
 
     // Fetch active users
 
-    fetch("http://172.16.20.161:8080/api/v1/home/active-users")
+    fetch("http://localhost:8080/api/v1/home/active-users")
       .then((response) => response.json())
 
       .then((data) => setActiveUsers(data))
@@ -64,7 +64,7 @@ function HomePage1Component() {
 
     // Fetch inactive users
 
-    fetch("http://172.16.20.161:8080/api/v1/home/inactive-users")
+    fetch("http://localhost:8080/api/v1/home/inactive-users")
       .then((response) => response.json())
 
       .then((data) => setInactiveUsers(data))
@@ -73,7 +73,7 @@ function HomePage1Component() {
 
     // Fetch registered trucks
 
-    fetch("http://172.16.20.161:8080/api/v1/home/transporters")
+    fetch("http://localhost:8080/api/v1/home/transporters")
       .then((response) => response.json())
 
       .then((data) => setTransporters(data))
@@ -84,7 +84,7 @@ function HomePage1Component() {
 
     // Fetch registered companies
 
-    fetch("http://172.16.20.161:8080/api/v1/home/companies")
+    fetch("http://localhost:8080/api/v1/home/companies")
       .then((response) => response.json())
 
       .then((data) => setCompanies(data))
@@ -95,7 +95,7 @@ function HomePage1Component() {
 
     // Fetch registered suppliers
 
-    fetch("http://172.16.20.161:8080/api/v1/home/suppliers")
+    fetch("http://localhost:8080/api/v1/home/suppliers")
       .then((response) => response.json())
 
       .then((data) => setSuppliers(data))
@@ -106,7 +106,7 @@ function HomePage1Component() {
 
     // Fetch registered customers
 
-    fetch("http://172.16.20.161:8080/api/v1/home/customers")
+    fetch("http://localhost:8080/api/v1/home/customers")
       .then((response) => response.json())
 
       .then((data) => setCustomers(data))
@@ -117,7 +117,7 @@ function HomePage1Component() {
 
     // Fetch registered vehicles
 
-    fetch("http://172.16.20.161:8080/api/v1/home/vehicles")
+    fetch("http://localhost:8080/api/v1/home/vehicles")
       .then((response) => response.json())
 
       .then((data) => setRegisteredTrucks(data))

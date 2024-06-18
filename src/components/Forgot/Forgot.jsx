@@ -16,7 +16,7 @@ const Forgot = () => {
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://172.16.20.161:8080/api/v1/auths/forgot?emailId=${email}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/auths/forgot?emailId=${email}`, {
         method: "POST",
       });
 
@@ -52,7 +52,7 @@ const Forgot = () => {
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://172.16.20.161:8080/api/v1/auths/forget/reset-password", {
+      const response = await fetch("http://localhost:8080/api/v1/auths/forget/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

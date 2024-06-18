@@ -18,7 +18,7 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
     }, []);
 
     useEffect(() => {
-        fetch("http://172.16.20.161:8080/api/v1/sales/getAllVehicleDetails", {
+        fetch("http://localhost:8080/api/v1/sales/getAllVehicleDetails", {
             credentials: "include"
         })
             .then(response => {

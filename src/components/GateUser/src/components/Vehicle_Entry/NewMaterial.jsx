@@ -35,7 +35,7 @@ function NewMaterial() {
     }, []);
 
     const fetchMaterialNames = () => {
-        fetch("http://172.16.20.161:8080/api/v1/materials/names")
+        fetch("http://localhost:8080/api/v1/materials/names")
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -62,7 +62,7 @@ function NewMaterial() {
     };
 
     const fetchMaterialTypeNames = (name) => {
-        fetch(`http://172.16.20.161:8080/api/v1/materials/${name}/types`)
+        fetch(`http://localhost:8080/api/v1/materials/${name}/types`)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -134,7 +134,7 @@ function NewMaterial() {
             materialTypeName: finalMaterialTypeName,
         };
 
-        fetch("http://172.16.20.161:8080/api/v1/materials/withType", {
+        fetch("http://localhost:8080/api/v1/materials/withType", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -211,7 +211,7 @@ function NewMaterial() {
             })),
         };
 
-        fetch("http://172.16.20.161:8080/api/v1/materials", {
+        fetch("http://localhost:8080/api/v1/materials", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -257,7 +257,7 @@ function NewMaterial() {
     };
 
     const fetchSupplierNames = () => {
-        fetch("http://172.16.20.161:8080/api/v1/supplier/get/list")
+        fetch("http://localhost:8080/api/v1/supplier/get/list")
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -284,7 +284,7 @@ function NewMaterial() {
     };
 
     const fetchSupplierAddress = (supplierName) => {
-        fetch(`http://172.16.20.161:8080/api/v1/supplier/get/${supplierName}`)
+        fetch(`http://localhost:8080/api/v1/supplier/get/${supplierName}`)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
