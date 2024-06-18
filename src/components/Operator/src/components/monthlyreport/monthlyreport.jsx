@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Row, Col } from "antd";
+import { Row, Col , Button} from "antd";
 import { Typography, notification } from "antd";
 import moment from "moment";
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
+import { faRectangleXmark , faDownload} from "@fortawesome/free-solid-svg-icons";
+import * as XLSX from "xlsx";
 
 const { Text } = Typography;
 
@@ -58,6 +59,31 @@ const MonthlyReport = () => {
     navigate(-1);
   };
 
+  const downloadExcel = () => {
+    const fileName = "Monthly_Report.xlsx";
+
+    // Prepare data for Excel export
+    const data = weighments.flatMap((material) =>
+      material.weighbridgeResponse2List.map((response) => ({
+        Material: material.materialName,
+        SupplierOrCustomer: material.supplierOrCustomer,
+        Date: response.transactionDate,
+        Vehicle: response.vehicleNo,
+        CH_No: response.tpNo,
+        CH_Date: response.challanDate,
+        CH_Qty: response.supplyConsignmentWeight,
+        Weigh_Qty: response.weighQuantity,
+        Differences: response.excessQty,
+      }))
+    );
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Monthly Report");
+
+    // Save the file
+    XLSX.writeFile(wb, fileName);
+  };
   return (
     <SideBar5>
       <div className="container-fluid mt-0">
@@ -90,6 +116,9 @@ const MonthlyReport = () => {
                 onChange={handleMonthChange}
               />
             </Col>
+            <Button style={{backgroundColor: "#0077b6",color:"white"}} icon={<FontAwesomeIcon icon={faDownload} />} onClick={downloadExcel}>
+            Download
+          </Button> 
           </Row>
         </div>
 
@@ -203,6 +232,12 @@ const MonthlyReport = () => {
                     <td className="ant-table-cell" style={{textAlign:"center"}}>{response.excessQty}</td>
                   </tr>
                 ))}
+                  <tr>
+                  <td colSpan="4" className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold"}}></td>
+                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.ch_SumQty}</td>
+                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.weight_SumQty}</td>
+                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.shtExcess_SumQty}</td>
+                </tr>
               </tbody>
             </table>
           </div>

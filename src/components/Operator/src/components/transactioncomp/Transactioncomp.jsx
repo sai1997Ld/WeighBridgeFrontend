@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./Transactioncomp.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,7 +10,7 @@ import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button } from "antd";
 
 import { SearchOutlined } from "@ant-design/icons";
-import { Select, Input, InputNumber, DatePicker } from "antd";
+import { Select, Input } from "antd";
 import { Row, Col } from "antd";
 import TicketComponent from "./PrintCompleted";
 import { useReactToPrint } from "react-to-print";
@@ -26,6 +26,11 @@ const OperatorTransaction2 = () => {
   const [searchValue, setSearchValue] = useState("");
   const [ticketData, setTicketData] = useState(null);
   const componentRef = useRef();
+
+  const [searchPageNumber, setSearchPageNumber] = useState(0);
+  const [totalSearchPages, setTotalSearchPages] = useState(0);
+  const [searchWeighments, setSearchWeighments] = useState([]);
+  const [searchPager, setSearchPager] = useState(0);
 
   function getFormattedDate() {
     const date = new Date();
@@ -51,11 +56,6 @@ const OperatorTransaction2 = () => {
 
   const itemsPerPage = 5;
 
-  // const handlePageChange = ({ selected }) => {
-  //   setPageNumber(selected);
-  // };
-
-  // Function to fetch data from the API
   const fetchData = (pageNumber) => {
     axios
       .get(
@@ -76,6 +76,10 @@ const OperatorTransaction2 = () => {
 
   useEffect(() => {
     fetchData(pageNumber);
+    const interval = setInterval(() => {
+      fetchData(pageNumber);
+    }, 5000);
+    return () => clearInterval(interval);
   }, [pageNumber]);
 
   useEffect(() => {
@@ -100,83 +104,103 @@ const OperatorTransaction2 = () => {
       resizeObserver.disconnect();
     };
   }, []);
-  //Search
 
-  // const { Option } = Select;
   const api = axios.create({
     baseURL: "http://localhost:8080/search/v1/Api",
     headers: {
       "Content-Type": "application/json",
     },
     withCredentials: true,
-  }
-);
-  
+  });
+
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
-    setSearchValue(""); // Reset the search value when the option changes
+    setSearchValue("");
+    setSearchPageNumber(0); // Reset the search value when the option changes
   };
-  
+
   const handleInputChange = (e) => {
     setSearchValue(e.target.value);
   };
-  
-  const handleSearch = async () => {
-    if (searchValue === "") {
-      // window.location.reload();
-      fetchData(pageNumber);
 
-      setWeighments([]);
+  const reload = () => {
+    navigate(0);
+  };
+
+  const handleSearch = async (searchPageNumber = 0) => {
+    if (searchValue === "") {
+      reload();
+      fetchData(searchPageNumber);
+
+      setSearchWeighments([]);
       return;
     }
-    // Corrected endpoint path
     let apiUrl = `${api.defaults.baseURL}/serachApi`;
-  
+
     switch (searchOption) {
       case "ticketNo":
-        apiUrl += `?ticketNo=${searchValue}`;
+        apiUrl += `?ticketNo=${searchValue}&page=${searchPageNumber}`;
         break;
-  
+
       case "vehicleNo":
-        apiUrl += `?vehicleNo=${searchValue}`;
+        apiUrl += `?vehicleNo=${searchValue}&page=${searchPageNumber}`;
         break;
-  
+
       default:
         break;
     }
-  
-    console.log("API URL:", apiUrl); // Log the API URL for debugging
-  
+
     try {
       const response = await api.get(apiUrl);
-  
+
       if (response.status === 200) {
         const responseData = response.data;
         console.log("Response data:", responseData);
-        // if (Array.isArray(responseData)) {
-        //   setWeighments(responseData);
-        // } else {
-        //   setWeighments([responseData.weighmentTransactionResponses]);
-        // }
-        setWeighments(response.data.weighmentTransactionResponses)
+        setSearchWeighments(responseData.weighmentTransactionResponses);
+        setTotalSearchPages(responseData.totalPages);
+        setSearchPager(responseData.totalElements);
       } else {
-        console.error("Error: Received unexpected response status:", response.status);
+        console.error(
+          "Error: Received unexpected response status:",
+          response.status
+        );
       }
     } catch (error) {
       if (error.response) {
-        // The request was made and the server responded with a status code that falls out of the range of 2xx
         console.error("Error data:", error.response.data);
         console.error("Error status:", error.response.status);
         console.error("Error headers:", error.response.headers);
       } else if (error.request) {
-        // The request was made but no response was received
         console.error("Error request:", error.request);
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.error("Error message:", error.message);
       }
       console.error("Error config:", error.config);
     }
+  };
+
+  const debounce = (func, delay) => {
+    let debounceTimer;
+    return function (...args) {
+      const context = this;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    };
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((page) => handleSearch(page), 500),
+    [searchValue, searchOption]
+  );
+
+  useEffect(() => {
+    if ((searchOption === "vehicleNo" || searchOption === "ticketNo") && searchValue) {
+      debouncedSearch(searchPageNumber);
+    }
+  }, [searchValue, searchOption, searchPageNumber, debouncedSearch]);
+
+  const handlePageChange = (page) => {
+    setSearchPageNumber(page - 1);
   };
 
   //print
@@ -219,8 +243,6 @@ const OperatorTransaction2 = () => {
       handlePrintClick();
     }
   }, [ticketData]);
-  
-  
 
   return (
     <SideBar5>
@@ -245,7 +267,8 @@ const OperatorTransaction2 = () => {
                   display: "flex",
                   justifyContent: "start",
                   alignItems: "center",
-                }}>
+                }}
+              >
                 <input
                   type="date"
                   id="date"
@@ -256,364 +279,529 @@ const OperatorTransaction2 = () => {
                   disabled
                 />
               </Col>
+
               <Col
                 xs={24}
                 sm={12}
                 md={6}
                 style={{
                   display: "flex",
-                  justifyContent: "end",
+                  justifyContent: "start",
                   alignItems: "center",
-                }}>
-                <Select
-                  placeholder="Select a search option"
-                  style={{ width: "200px" }}
-                  onChange={handleSearchOptionChange}
-                  // suffixIcon={<SearchOutlined />}
-                >
-                  <Option value="ticketNo">Search by Ticket No</Option>
-                  <Option value="vehicleNo">Search by Vehicle No</Option>
-                  {/* <Option value="supplier">Search by Supplier</Option>
-                  <Option value="address">Search by Supplier's Address</Option> */}
-                </Select>
-                {searchOption && (
+                }}
+              >
+                <div className="d-flex" style={{ alignItems: "center" }}>
+                  <div className="mr-2">
+                    <Select
+                      value={searchOption}
+                      onChange={handleSearchOptionChange}
+                      style={{ width: "100%" }}
+                    >
+                      <Select.Option value="">Select Option</Select.Option>
+                      <Select.Option value="ticketNo">Ticket No</Select.Option>
+                      <Select.Option value="vehicleNo">
+                        Vehicle No
+                      </Select.Option>
+                    </Select>
+                  </div>
                   <Input
-                   
-                    placeholder={`Enter ${searchOption}`}
-                    style={{ width: "200px" }}
                     value={searchValue}
                     onChange={handleInputChange}
-                    onPressEnter={handleSearch}
-                    // onChange={(searchValue) => {
-            
-                    //   handleInputChange(searchValue);
-                    //   handleSearch(searchValue);
-                    // }}
+                    style={{ width: "100%",marginLeft:"5%" }}
+                    suffix={<SearchOutlined />}
                   />
-                )}
+                  {/* <Button
+                    type="primary"
+                    onClick={() => handleSearch(searchPageNumber)}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    <SearchOutlined />
+                  </Button> */}
+                </div>
               </Col>
             </Row>
           </div>
+        </div>
 
-          <div className="table-responsive" style={{ borderRadius: "10px" }}>
-            <div>
-              <table className="ant-table table table-striped">
-                <thead className="ant-table-thead">
-                  <tr className="ant-table-row">
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Ticket No.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Transaction Type
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Vehicle No.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      &nbsp;&nbsp;&nbsp;Transporter
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Supplier/Customer
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Gross Wt.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Tare Wt.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Net Wt.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Material/Product
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Print
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {weighments.map((weighment) => (
-                    <tr key={weighment.id}>
-                      <td
-                        className="ant-table-cell"
-                        style={{ textAlign: "center" }}
-                      >
-                        <Button
-                          onClick={() => {
-                            goToTransForm(
-                              weighment.ticketNo,
-                              weighment.transactionType,
-                              weighment.grossWeight,
-                              weighment.tareWeight
-                            );
-                          }}
-                          style={{ background: "#88CCFA" }}
-                        >
-                          {weighment.ticketNo}
-                        </Button>
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.transactionType}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.vehicleNo}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.transporterName}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.supplierName || weighment.customerName}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.grossWeight}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.tareWeight}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.netWeight}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {weighment.materialName}
-                      </td>
-
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                            <button
-                          className="btn btn-success btn-sm"
-                          style={{ padding: "3px 6px" }}
-                          onClick={() => {
-                            handlePrint(weighment.ticketNo);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPrint} />
-                        </button>
-                        <div style={{ display: "none" }}>
-                          <TicketComponent
-                            ref={componentRef}
-                            ticketData={ticketData}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-            <span>
-              Showing {pageNumber * itemsPerPage + 1} to{" "}
-              {Math.min(
-                (pageNumber + 1) * itemsPerPage,
-                pageNumber * itemsPerPage + weighments.length
-              )}{" "}
-              of {pager} entries
-            </span>
-            <div className="ml-auto">
-              <button
-                className="btn btn-outline-primary btn-sm me-2"
-                style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() => setPageNumber(Math.max(0, pageNumber - 5))}
-                disabled={pageNumber === 0}
-              >
-                &lt;&lt;
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm me-2"
-                style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() => setPageNumber(pageNumber - 1)}
-                disabled={pageNumber === 0}
-              >
-                &lt;
-              </button>
-
-              {Array.from({ length: 3 }, (_, index) => {
-                const pageIndex = pageNumber + index;
-                if (pageIndex >= totalPages) return null;
-                return (
-                  <button
-                    key={pageIndex}
-                    className={`btn btn-outline-primary btn-sm me-2 ${
-                      pageIndex === pageNumber ? "active" : ""
-                    }`}
+        <div className="table-responsive" style={{ borderRadius: "10px" }}>
+          <div>
+            <table className="ant-table table table-striped">
+              <thead className="ant-table-thead">
+                <tr className="ant-table-row">
+                  <th
+                    className="ant-table-cell"
                     style={{
-                      color: pageIndex === pageNumber ? "#fff" : "#0077B6",
-                      backgroundColor:
-                        pageIndex === pageNumber ? "#0077B6" : "transparent",
-                      borderColor: "#0077B6",
-                      marginRight: "2px",
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
                     }}
-                    onClick={() => setPageNumber(pageIndex)}
                   >
-                    {pageIndex + 1}
-                  </button>
-                );
-              })}
-              {pageNumber + 3 < totalPages && <span>...</span>}
-              {pageNumber + 3 < totalPages && (
+                    Ticket No.
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Transaction Type
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Vehicle No.
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    &nbsp;&nbsp;&nbsp;Transporter
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Supplier/Customer
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Gross Wt.
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Tare Wt.
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Net Wt.
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Material/Product
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    Print
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchValue
+                  ? searchWeighments.map((weighment) => (
+                      <tr key={weighment.id}>
+                        <td
+                          className="ant-table-cell"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Button
+                            onClick={() => {
+                              goToTransForm(
+                                weighment.ticketNo,
+                                weighment.transactionType,
+                                weighment.grossWeight,
+                                weighment.tareWeight
+                              );
+                            }}
+                            style={{ background: "#88CCFA" }}
+                          >
+                            {weighment.ticketNo}
+                          </Button>
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.transactionType}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.vehicleNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.transporterName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.supplierName || weighment.customerName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.grossWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.tareWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.netWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.materialName}
+                        </td>
+
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() => {
+                              handlePrint(weighment.ticketNo);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faPrint} />
+                          </button>
+                          <div style={{ display: "none" }}>
+                            <TicketComponent
+                              ref={componentRef}
+                              ticketData={ticketData}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : weighments.map((weighment) => (
+                      <tr key={weighment.id}>
+                        <td
+                          className="ant-table-cell"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Button
+                            onClick={() => {
+                              goToTransForm(
+                                weighment.ticketNo,
+                                weighment.transactionType,
+                                weighment.grossWeight,
+                                weighment.tareWeight
+                              );
+                            }}
+                            style={{ background: "#88CCFA" }}
+                          >
+                            {weighment.ticketNo}
+                          </Button>
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.transactionType}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.vehicleNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.transporterName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.supplierName || weighment.customerName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.grossWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.tareWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.netWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.materialName}
+                        </td>
+
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() => {
+                              handlePrint(weighment.ticketNo);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faPrint} />
+                          </button>
+                          <div style={{ display: "none" }}>
+                            <TicketComponent
+                              ref={componentRef}
+                              ticketData={ticketData}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
+          <span>
+            Showing{" "}
+            {Math.min(
+              (searchOption ? searchPageNumber : pageNumber) * itemsPerPage + 1,
+              searchOption ? searchPager : pager
+            )}{" "}
+            to{" "}
+            {Math.min(
+              (searchOption ? searchPageNumber : pageNumber) * itemsPerPage +
+                itemsPerPage,
+              searchOption ? searchPager : pager
+            )}{" "}
+            of {searchOption ? searchPager : pager} entries
+          </span>
+
+          <div className="ml-auto">
+            <button
+              className="btn btn-outline-primary btn-sm me-2"
+              style={{
+                color: "#0077B6",
+                borderColor: "#0077B6",
+                marginRight: "2px",
+              }}
+              onClick={() =>
+                (searchOption ? setSearchPageNumber : setPageNumber)(
+                  Math.max(
+                    0,
+                    (searchOption ? searchPageNumber : pageNumber) - 5
+                  )
+                )
+              }
+              disabled={(searchOption ? searchPageNumber : pageNumber) === 0}
+            >
+              &lt;&lt;
+            </button>
+            <button
+              className="btn btn-outline-primary btn-sm me-2"
+              style={{
+                color: "#0077B6",
+                borderColor: "#0077B6",
+                marginRight: "2px",
+              }}
+              onClick={() =>
+                (searchOption ? setSearchPageNumber : setPageNumber)(
+                  (searchOption ? searchPageNumber : pageNumber) - 1
+                )
+              }
+              disabled={(searchOption ? searchPageNumber : pageNumber) === 0}
+            >
+              &lt;
+            </button>
+
+            {Array.from({ length: 3 }, (_, index) => {
+              const pageIndex =
+                (searchOption ? searchPageNumber : pageNumber) + index;
+              if (pageIndex >= (searchOption ? totalSearchPages : totalPages))
+                return null;
+              return (
                 <button
+                  key={pageIndex}
                   className={`btn btn-outline-primary btn-sm me-2 ${
-                    pageNumber === totalPages - 1 ? "active" : ""
+                    pageIndex === (searchOption ? searchPageNumber : pageNumber)
+                      ? "active"
+                      : ""
                   }`}
                   style={{
-                    color: pageNumber === totalPages - 1 ? "#fff" : "#0077B6",
+                    color:
+                      pageIndex ===
+                      (searchOption ? searchPageNumber : pageNumber)
+                        ? "#fff"
+                        : "#0077B6",
                     backgroundColor:
-                      pageNumber === totalPages - 1 ? "#0077B6" : "transparent",
+                      pageIndex ===
+                      (searchOption ? searchPageNumber : pageNumber)
+                        ? "#0077B6"
+                        : "transparent",
                     borderColor: "#0077B6",
                     marginRight: "2px",
                   }}
-                  onClick={() => setPageNumber(totalPages - 1)}
+                  onClick={() =>
+                    (searchOption ? setSearchPageNumber : setPageNumber)(
+                      pageIndex
+                    )
+                  }
                 >
-                  {totalPages}
+                  {pageIndex + 1}
                 </button>
-              )}
+              );
+            })}
+            {(searchOption ? searchPageNumber : pageNumber) + 3 <
+              (searchOption ? totalSearchPages : totalPages) && (
+              <span>...</span>
+            )}
+            {(searchOption ? searchPageNumber : pageNumber) + 3 <
+              (searchOption ? totalSearchPages : totalPages) && (
               <button
-                className="btn btn-outline-primary btn-sm me-2"
+                className={`btn btn-outline-primary btn-sm me-2 ${
+                  (searchOption ? searchPageNumber : pageNumber) ===
+                  (searchOption ? totalSearchPages : totalPages) - 1
+                    ? "active"
+                    : ""
+                }`}
                 style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() => setPageNumber(pageNumber + 1)}
-                disabled={pageNumber === totalPages - 1}
-              >
-                &gt;
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                style={{
-                  color: "#0077B6",
+                  color:
+                    (searchOption ? searchPageNumber : pageNumber) ===
+                    (searchOption ? totalSearchPages : totalPages) - 1
+                      ? "#fff"
+                      : "#0077B6",
+                  backgroundColor:
+                    (searchOption ? searchPageNumber : pageNumber) ===
+                    (searchOption ? totalSearchPages : totalPages) - 1
+                      ? "#0077B6"
+                      : "transparent",
                   borderColor: "#0077B6",
                   marginRight: "2px",
                 }}
                 onClick={() =>
-                  setPageNumber(Math.min(totalPages - 1, pageNumber + 5))
+                  (searchOption ? setSearchPageNumber : setPageNumber)(
+                    (searchOption ? totalSearchPages : totalPages) - 1
+                  )
                 }
-                disabled={pageNumber === totalPages - 1}
               >
-                &gt;&gt;
+                {searchOption ? totalSearchPages : totalPages}
               </button>
-            </div>
+            )}
+            <button
+              className="btn btn-outline-primary btn-sm me-2"
+              style={{
+                color: "#0077B6",
+                borderColor: "#0077B6",
+                marginRight: "2px",
+              }}
+              onClick={() =>
+                (searchOption ? setSearchPageNumber : setPageNumber)(
+                  (searchOption ? searchPageNumber : pageNumber) + 1
+                )
+              }
+              disabled={
+                (searchOption ? searchPageNumber : pageNumber) ===
+                (searchOption ? totalSearchPages : totalPages) - 1
+              }
+            >
+              &gt;
+            </button>
+            <button
+              className="btn btn-outline-primary btn-sm"
+              style={{
+                color: "#0077B6",
+                borderColor: "#0077B6",
+                marginRight: "2px",
+              }}
+              onClick={() =>
+                (searchOption ? setSearchPageNumber : setPageNumber)(
+                  Math.min(
+                    (searchOption ? totalSearchPages : totalPages) - 1,
+                    (searchOption ? searchPageNumber : pageNumber) + 5
+                  )
+                )
+              }
+              disabled={
+                (searchOption ? searchPageNumber : pageNumber) ===
+                (searchOption ? totalSearchPages : totalPages) - 1
+              }
+            >
+              &gt;&gt;
+            </button>
           </div>
         </div>
+      </div>
+      <div style={{ display: "none" }}>
+        <TicketComponent ref={componentRef} data={ticketData} />
       </div>
     </SideBar5>
   );
