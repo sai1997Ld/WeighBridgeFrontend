@@ -240,12 +240,21 @@ function TransactionFrom() {
           break;
         }
         const newValue = value.trim();
-        setInputValue(newValue);
-        handleChange1({ target: { value: newValue } });
+        // setInputValue(newValue);
+        // handleChange1({ target: { value: newValue } });
+        const extractedWeight = extractWeight(newValue);
+        if (extractedWeight) {
+          setInputValue(extractedWeight);
+          handleChange1({ target: { value: extractedWeight } });
+        }
       }
     } catch (error) {
       console.error("Error reading serial data:", error);
     }
+  };
+  const extractWeight = (data) => {
+    const match = data.match(/(\d+(\.\d+)?)\s*kg/);
+    return match ? match[0] : null;
   };
   const simulateSerialData = () => {
     const simulatedWeight = (Math.random() * 1000).toFixed(2); // Generate random weight data
@@ -446,7 +455,7 @@ function TransactionFrom() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${grossWeight} ton`}
+                      value={`${grossWeight} kg`}
                       className="abcx"
                       readOnly
                     />
@@ -471,7 +480,7 @@ function TransactionFrom() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${tareWeight} ton`}
+                      value={`${tareWeight} kg`}
                       className="abcx"
                       readOnly
                     />
@@ -495,7 +504,7 @@ function TransactionFrom() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${netWeight} ton`}
+                      value={`${netWeight} kg`}
                       className="abcx"
                       readOnly
                     />
