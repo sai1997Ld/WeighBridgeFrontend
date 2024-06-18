@@ -88,41 +88,6 @@ const SideBar5 = ({ children }) => {
     }
   };
 
-  const handleSignOut2 = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to sign out.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, sign out",
-      cancelButtonText: "Cancel"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Clear session storage
-        sessionStorage.clear();
- 
-        // Clear browser history and redirect
-        window.location.href = "/";
- 
-        // Additional history manipulation to prevent users from navigating back
-        if (window.history && window.history.pushState) {
-          // Use replaceState to clear the existing history
-          window.history.replaceState(null, null, "/");
- 
-          // Add a dummy entry to the history to replace current entry
-          window.history.pushState(null, null, "/");
- 
-          // Prevent users from navigating back to the previous state
-          window.onpopstate = function (event) {
-            window.history.go(1);
-          };
-        }
-      }
-    });
-  };
-
   return (
     <>
       <Box
@@ -322,7 +287,7 @@ const SideBar5 = ({ children }) => {
 
          
 
-          <ListItemButton
+          {/* <ListItemButton
             component={Link}
             // to="/print"
             onClick={() => handleItemClick("Print")}
@@ -342,7 +307,7 @@ const SideBar5 = ({ children }) => {
               <PrintIcon />
             </ListItemIcon>
             <ListItemText primary="Print" />
-          </ListItemButton>
+          </ListItemButton> */}
           <ListItemButton
             component={Link}
             to="/OperatorReport"
@@ -366,7 +331,7 @@ const SideBar5 = ({ children }) => {
           </ListItemButton>
 
           <ListItemButton
-            onClick={handleSignOut2}
+            onClick={handleSignOut}
             sx={{
               "&.Mui-selected": {
                 backgroundColor: "#3e8ee6",
