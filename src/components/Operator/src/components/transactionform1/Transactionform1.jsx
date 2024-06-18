@@ -129,8 +129,8 @@ function TransactionFrom2() {
     }
 
     const consignment = parseFloat(ticket.consignmentWeight);
-    const lowerBound = parseFloat((consignment - 1).toFixed(3));
-    const upperBound = parseFloat((consignment + 1).toFixed(3));
+    const lowerBound = parseFloat((consignment - 100).toFixed(3));
+    const upperBound = parseFloat((consignment + 100).toFixed(3));
     if(netWeight ){
     if (netWeight < lowerBound || netWeight > upperBound) {
       Swal.fire({
@@ -391,7 +391,7 @@ function TransactionFrom2() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${grossWeight} ton`}
+                      value={`${grossWeight} kg`}
                       className="abcx"
                       readOnly
                     />
@@ -416,7 +416,7 @@ function TransactionFrom2() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${tareWeight} ton`}
+                      value={`${tareWeight} kg`}
                       required={isGrossWeightEnabled}
                       className="abcx"
                       readOnly
@@ -441,7 +441,7 @@ function TransactionFrom2() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${netWeight} ton`}
+                      value={`${netWeight} kg`}
                       // required={isGrossWeightEnabled}
                       className="abcx"
                       readOnly
