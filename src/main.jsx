@@ -82,6 +82,7 @@ import ManagementQuality from "./components/Management/src/components/Quality/Qu
 import ManagementTransaction from "./components/Management/src/components/Transaction/Transaction.jsx";
 import ManagementLocation from "./components/Management/src/components/Location/Location.jsx";
 import ManagementDailyReport from "./components/Management/src/components/dailyreport/dailyreport.jsx";
+import ManagementWeeklyReport from "./components/Management/src/components/weeklyreport/weeklyreport.jsx";
 
 import OperatorHome from "./components/Operator/src/components/homed/Homed.jsx";
 import OperatorTransaction from "./components/Operator/src/components/transaction/Transaction.jsx";
@@ -197,6 +198,7 @@ const router = createBrowserRouter(
       <Route path="/ManagementTransaction" element={<ManagementTransaction />} />
       <Route path="/ManagementLocation" element={<ManagementLocation />} />
       <Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
+      <Route path="/ManagementWeeklyReport" element={<ManagementWeeklyReport/>} />
 
 
       <Route path="/OperatorHome" element={<OperatorHome />} />

@@ -26,7 +26,7 @@ function ManagementReport() {
   };
  
   const handleWeeklyReport = () => {
-    navigate("");
+    navigate("/ManagementWeeklyReport");
   };
  
   const handleMonthlyReport = () => {

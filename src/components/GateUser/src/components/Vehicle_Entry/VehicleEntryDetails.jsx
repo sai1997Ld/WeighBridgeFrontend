@@ -310,10 +310,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
 
   const handleSave = () => {
     // Check if any mandatory field is missing
-    if (
-      !formData.poNo ||
-      !formData.tpNo ||
-      !formData.challanNo ||
+    if ( 
       !formData.challanDate ||
       !formData.material ||
       !formData.materialType ||
@@ -496,7 +493,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="challanDate"
                               value={formData.challanDate}
                               onChange={handleChange}
-                              required
+                              // required
                               className="form-control"
                             />
                           </div>
@@ -514,7 +511,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="challanNo"
                               value={formData.challanNo}
                               onChange={handleChange}
-                              required
+                              // required
                               className="form-control"
                             />
                           </div>
@@ -530,7 +527,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 name="tpNo"
                                 value={formData.tpNo}
                                 onChange={handleChange}
-                                required
+                                // required
                                 className="form-control tpscanner"
                                 // disabled={!!formData.poNo}
                                 style={{ flexGrow: 1 }}
@@ -556,7 +553,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="poNo"
                               value={formData.poNo}
                               onChange={handleChange}
-                              required
+                              // required
                               className="form-control"
                             // disabled={!!formData.tpNo}
                             />

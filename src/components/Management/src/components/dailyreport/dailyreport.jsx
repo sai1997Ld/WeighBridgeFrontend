@@ -204,4 +204,5 @@ const ManagementDailyReport = () => {
   );
 };
 
+
 export default ManagementDailyReport;

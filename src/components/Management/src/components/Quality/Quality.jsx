@@ -20,31 +20,7 @@ const StyledTable = styled.table`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const fetchAllTransactions = async () => {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
-      {
-        credentials: "include",
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        return data;
-      } else {
-        console.error("Unexpected data format:", data);
-        return [];
-      }
-    } else {
-      console.error("Failed to fetch all transactions:", response.status);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching all transactions:", error);
-    return [];
-  }
-};
+
 
 function ManagementQuality() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -79,15 +55,7 @@ function ManagementQuality() {
 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchAllTransactions();
-      setAllData(data);
-      setFilteredData(data);
-    };
 
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (searchQuery === "") {
@@ -138,13 +106,14 @@ function ManagementQuality() {
       );
       if (response.ok) {
         const data = await response.json();
-        setFilteredData(data);
-        setAllData(data);
+        return data;
       } else {
         console.error("Failed to fetch inbound transactions:", response.status);
+        return [];
       }
     } catch (error) {
       console.error("Error fetching inbound transactions:", error);
+      return [];
     }
   };
 
@@ -158,51 +127,47 @@ function ManagementQuality() {
       );
       if (response.ok) {
         const data = await response.json();
-        setFilteredData(data);
-        setAllData(data);
+        return data;
       } else {
         console.error("Failed to fetch outbound transactions:", response.status);
+        return [];
       }
     } catch (error) {
       console.error("Error fetching outbound transactions:", error);
+      return [];
     }
   };
 
-  const handleMaterialFilter = ({ key }) => {
-    if (key.startsWith("material-")) {
-      const selectedIndex = parseInt(key.split("-")[1], 10);
-      setSelectedMaterial(materialOptions[selectedIndex]);
-      setCurrentPage(0);
-      const filtered = allData.filter((item) =>
-        (selectedTransactionType === "" ||
-          item.transactionType.toLowerCase() ===
-          selectedTransactionType.toLowerCase()) &&
-        (materialOptions[selectedIndex] === "" ||
-          item.materialName.toLowerCase() === materialOptions[selectedIndex].toLowerCase())
-      );
-      setFilteredData(filtered);
-    } else if (key === "transaction-inbound") {
+  const handleMaterialFilter = async ({ key }) => {
+    if (key === "transaction-inbound") {
       setSelectedTransactionType("Inbound");
       setCurrentPage(0);
-      fetchInboundTransactions();
+      const inboundTransactions = await fetchInboundTransactions();
+      setApiData(inboundTransactions);
     } else if (key === "transaction-outbound") {
       setSelectedTransactionType("Outbound");
       setCurrentPage(0);
-      fetchOutboundTransactions();
+      const outboundTransactions = await fetchOutboundTransactions();
+      setApiData(outboundTransactions);
+    } else if (key === "quality-good") {
+      const goodQualities = await fetchGoodQualities();
+      setApiData(goodQualities);
+    } else if (key === "quality-bad") {
+      const badQualities = await fetchBadQualities();
+      setApiData(badQualities);
     }
   };
 
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
-      <Menu.SubMenu key="1" title="Product/Material">
-        {materialOptions.map((option, index) => (
-          <Menu.Item key={`material-${index}`}>{option}</Menu.Item>
-        ))}
-      </Menu.SubMenu>
       <Menu.SubMenu key="2" title="Transaction Type">
         <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
         <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
+      </Menu.SubMenu>
+      <Menu.SubMenu key="3" title="Quality Type">
+        <Menu.Item key="quality-good">Good</Menu.Item>
+        <Menu.Item key="quality-bad">Bad</Menu.Item>
       </Menu.SubMenu>
     </Menu>
   );
@@ -237,7 +202,7 @@ function ManagementQuality() {
 
 
 
-  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
+  const pageCount = Math.ceil(apiData.length / itemsPerPage);
 
   const removeTransaction = async (ticketNumber) => {
     try {
@@ -285,6 +250,62 @@ function ManagementQuality() {
     }
   };
 
+  const fetchGoodQualities = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/management/goodQualities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromDate: '2024-05-22',
+          toDate: '2024-06-17',
+          companyName: 'Vikram Private Limited',
+          siteName: 'ROURKELA,Tumkela',
+        }),
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        console.error('Failed to fetch good qualities:', response.status);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching good qualities:', error);
+      return [];
+    }
+  };
+
+  const fetchBadQualities = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/management/badQualities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromDate: '2024-05-22',
+          toDate: '2024-06-17',
+          companyName: 'Vikram Private Limited',
+          siteName: 'ROURKELA,Tumkela',
+        }),
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        console.error('Failed to fetch bad qualities:', response.status);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching bad qualities:', error);
+      return [];
+    }
+  };
+
   const fetchApiData = async () => {
     try {
       const response = await fetch('http://localhost:8080/api/v1/management/completedQualities/GoodOrBad', {
@@ -300,7 +321,7 @@ function ManagementQuality() {
         }),
         credentials: 'include',
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setApiData(data);
@@ -333,15 +354,15 @@ function ManagementQuality() {
             style={{ marginTop: "1rem", marginBottom: "1rem" }}
           >
             <div style={{ flex: "1" }}>
-            <DatePicker
-      value={selectedDate}
-      onChange={(date) => setSelectedDate(date)}
-      disabledDate={disabledFutureDate}
-      style={{
-        borderRadius: "5px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      }}
-    />
+              <DatePicker
+                value={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                disabledDate={disabledFutureDate}
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+              />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -513,12 +534,14 @@ function ManagementQuality() {
                   </tr>
                 </thead>
                 <tbody>
-  {Array.isArray(apiData) &&
-    apiData.map((item, index) => (
-      <tr key={index}>
-        <td className="ant-table-cell" style={{ whiteSpace: 'nowrap' }}>
-          {item.ticketNo}
-        </td>
+                  {Array.isArray(apiData) &&
+                    apiData
+                      .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+                      .map((item, index) => (
+                        <tr key={index}>
+                          <td className="ant-table-cell" style={{ whiteSpace: 'nowrap' }}>
+                            {item.ticketNo}
+                          </td>
                           <td
                             className="ant-table-cell"
                             style={{ whiteSpace: "nowrap" }}
@@ -584,82 +607,81 @@ function ManagementQuality() {
           <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
             <span>
               Showing {currentPage * itemsPerPage + 1} to{" "}
-              {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of{" "}
-              {filteredData.length} {" "}entries
+              {Math.min((currentPage + 1) * itemsPerPage, apiData.length)} of{" "}
+              {apiData.length} entries
             </span>
             <div className="ml-auto">
-  <button
-    className="btn btn-outline-primary btn-sm me-2"
-    style={{
-      color: "#0077B6",
-      borderColor: "#0077B6",
-      marginRight: "2px",
-    }}
-    onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
-    disabled={currentPage === 0}
-  >
-    &lt;&lt;
-  </button>
-  <button
-    className="btn btn-outline-primary btn-sm me-2"
-    style={{
-      color: "#0077B6",
-      borderColor: "#0077B6",
-      marginRight: "2px",
-    }}
-    onClick={() => setCurrentPage(currentPage - 1)}
-    disabled={currentPage === 0}
-  >
-    &lt;
-  </button>
+              <button
+                className="btn btn-outline-primary btn-sm me-2"
+                style={{
+                  color: "#0077B6",
+                  borderColor: "#0077B6",
+                  marginRight: "2px",
+                }}
+                onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
+                disabled={currentPage === 0}
+              >
+                &lt;&lt;
+              </button>
+              <button
+                className="btn btn-outline-primary btn-sm me-2"
+                style={{
+                  color: "#0077B6",
+                  borderColor: "#0077B6",
+                  marginRight: "2px",
+                }}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 0}
+              >
+                &lt;
+              </button>
 
-  {Array.from({ length: Math.min(pageCount, 5) }, (_, index) => {
-    const pageNumber = currentPage + index;
-    if (pageNumber >= pageCount) return null;
-    return (
-      <button
-        key={pageNumber}
-        className={`btn btn-outline-primary btn-sm me-2 ${
-          currentPage === pageNumber ? "active" : ""
-        }`}
-        style={{
-          color: currentPage === pageNumber ? "#fff" : "#0077B6",
-          backgroundColor: currentPage === pageNumber ? "#0077B6" : "transparent",
-          borderColor: "#0077B6",
-          marginRight: "2px",
-        }}
-        onClick={() => setCurrentPage(pageNumber)}
-      >
-        {pageNumber + 1}
-      </button>
-    );
-  })}
+              {Array.from({ length: Math.min(pageCount, 5) }, (_, index) => {
+                const pageNumber = currentPage + index;
+                if (pageNumber >= pageCount) return null;
+                return (
+                  <button
+                    key={pageNumber}
+                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
+                      }`}
+                    style={{
+                      color: currentPage === pageNumber ? "#fff" : "#0077B6",
+                      backgroundColor: currentPage === pageNumber ? "#0077B6" : "transparent",
+                      borderColor: "#0077B6",
+                      marginRight: "2px",
+                    }}
+                    onClick={() => setCurrentPage(pageNumber)}
+                  >
+                    {pageNumber + 1}
+                  </button>
+                );
+              })}
 
-  <button
-    className="btn btn-outline-primary btn-sm me-2"
-    style={{
-      color: "#0077B6",
-      borderColor: "#0077B6",
-      marginRight: "2px",
-    }}
-    onClick={() => setCurrentPage(currentPage + 1)}
-    disabled={currentPage === pageCount - 1}
-  >
-    &gt;
-  </button>
-  <button
-    className="btn btn-outline-primary btn-sm"
-    style={{
-      color: "#0077B6",
-      borderColor: "#0077B6",
-      marginRight: "2px",
-    }}
-    onClick={() => setCurrentPage(Math.min(pageCount - 1, currentPage + 5))}
-    disabled={currentPage === pageCount - 1}
-  >
-    &gt;&gt;
-  </button>
-</div>
+              <button
+                className="btn btn-outline-primary btn-sm me-2"
+                style={{
+                  color: "#0077B6",
+                  borderColor: "#0077B6",
+                  marginRight: "2px",
+                }}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === pageCount - 1}
+              >
+                &gt;
+              </button>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                style={{
+                  color: "#0077B6",
+                  borderColor: "#0077B6",
+                  marginRight: "2px",
+                }}
+                onClick={() => setCurrentPage(Math.min(pageCount - 1, currentPage + 5))}
+                disabled={currentPage === pageCount - 1}
+              >
+                &gt;&gt;
+              </button>
+            </div>
           </div>
         </div>
       </div>
