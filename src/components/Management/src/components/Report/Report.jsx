@@ -1,12 +1,11 @@
 // Report.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, {  useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileAlt,
   faChartBar,
   faCalendar,
   faUsers,
-  faRectangleXmark,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { Chart, ArcElement } from "chart.js/auto";
@@ -30,11 +29,11 @@ function ManagementReport() {
   };
  
   const handleMonthlyReport = () => {
-    navigate("");
+    navigate("/ManagementMonthlyReport");
   };
  
   const handleCustomizedReport = () => {
-    navigate("");
+    navigate("/ManagementCustomizedReport");
   };
  
   const chartRef = useRef(null);
@@ -64,38 +63,13 @@ function ManagementReport() {
     };
   }, []);
  
-  const [highlightColor, setHighlightColor] = useState("blue");
-
-  useEffect(() => {
-    const colors = ["blue", "green", "red"];
-    let colorIndex = 0;
-
-    const intervalId = setInterval(() => {
-      colorIndex = (colorIndex + 1) % colors.length;
-      setHighlightColor(colors[colorIndex]);
-    }, 1000); // Change color every second
-
-    return () => {0
-      clearInterval(intervalId);
-    };
-  }, []);
+  
   return (
    
       <SideBar4>
         <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
           
         <div className="d-flex justify-content-between align-items-center w-100"></div>
-        <div style={{ flex: "15", textAlign: "center" }}>
-        <div
-        className="work-in-progress"
-        style={{
-          fontSize: '1.5em',
-          color: highlightColor,
-          textAlign: 'center',
-        }}
-      >
-        Work in Progress
-      </div>
         <div style={{ flex: "2", textAlign: "right" }}>
           <Link to="/home5">
             <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
@@ -162,8 +136,7 @@ function ManagementReport() {
           </div>
         </div>
       </div>
-      </div>
-    </SideBar4>
+      </SideBar4>
   );
 }
  

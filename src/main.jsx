@@ -83,6 +83,8 @@ import ManagementTransaction from "./components/Management/src/components/Transa
 import ManagementLocation from "./components/Management/src/components/Location/Location.jsx";
 import ManagementDailyReport from "./components/Management/src/components/dailyreport/dailyreport.jsx";
 import ManagementWeeklyReport from "./components/Management/src/components/weeklyreport/weeklyreport.jsx";
+import ManagementMonthlyReport from  "./components/Management/src/components/monthlyreport/monthlyreport.jsx"
+import ManagementCustomizedReport from "./components/Management/src/components/customized/customized.jsx";
 
 import OperatorHome from "./components/Operator/src/components/homed/Homed.jsx";
 import OperatorTransaction from "./components/Operator/src/components/transaction/Transaction.jsx";
@@ -199,6 +201,8 @@ const router = createBrowserRouter(
       <Route path="/ManagementLocation" element={<ManagementLocation />} />
       <Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
       <Route path="/ManagementWeeklyReport" element={<ManagementWeeklyReport/>} />
+      <Route path="/ManagementMonthlyReport" element={<ManagementMonthlyReport/>} />
+      <Route path="/ManagementCustomizedReport" element={<ManagementCustomizedReport/>} />
 
 
       <Route path="/OperatorHome" element={<OperatorHome />} />
