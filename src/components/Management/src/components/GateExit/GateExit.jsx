@@ -144,7 +144,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?&vehicleStatus=completed&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela", {
+        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
             credentials: "include"
         })
             .then(response => {
@@ -176,20 +176,33 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     }, [currentPage]);
 
     const fetchData = (pageNumber) => {
-        fetch(`http://localhost:8080/api/v1/management/transactions/ongoing?&vehicleStatus=completed&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela&page=${pageNumber}`, {
-            credentials: "include"
+        const selectedCompany = sessionStorage.getItem('selectedCompany');
+        const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+        const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+    
+        if (!selectedCompany) {
+          console.error('Company not selected');
+          return;
+        }
+    
+        const apiUrl = selectedSiteName && selectedSiteAddress
+          ? `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}`
+          : `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}`;
+    
+        fetch(apiUrl, {
+          credentials: "include"
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setVehicleEntryDetails(data.transactions);
-                setTotalPage(data.totalPages);
-                setTotalEntries(data.totalElements)
-                console.log("total Page " + data.totalPages);
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            setVehicleEntryDetails(data.transactions);
+            setTotalPage(data.totalPages);
+            setTotalEntries(data.totalElements)
+            console.log("total Page " + data.totalPages);
             })
             .catch(error => {
                 console.error('Error fetching vehicle entry details:', error);
