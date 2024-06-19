@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {  faFileWord, faHome } from "@fortawesome/free-solid-svg-icons";
-import OutTimeVehicle from "../../assets/OutTimeVehicle.jpg"
+import {  faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Chart, ArcElement } from "chart.js/auto";
 import Swal from 'sweetalert2';
@@ -16,7 +15,6 @@ import styled from "styled-components";
 import SideBar4 from "../../../../SideBar/SideBar4";
 import moment from "moment";
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-
 import PendingIcon from '@mui/icons-material/Pending';
 
 
@@ -65,6 +63,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   // const [isEditDisabled, setIsEditDisabled] = useState(false);
 
+  
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
@@ -308,7 +307,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela", {
+    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
       credentials: "include"
     })
       .then(response => {
@@ -345,7 +344,20 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   }, [currentPage]);
 
   const fetchData = (pageNumber) => {
-    fetch(`http://localhost:8080/api/v1/management/transactions/ongoing?companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela&page=${pageNumber}`, {
+    const selectedCompany = sessionStorage.getItem('selectedCompany');
+    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+
+    if (!selectedCompany) {
+      console.error('Company not selected');
+      return;
+    }
+
+    const apiUrl = selectedSiteName && selectedSiteAddress
+      ? `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}`
+      : `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&page=${pageNumber}`;
+
+    fetch(apiUrl, {
       credentials: "include"
     })
       .then(response => {
@@ -360,69 +372,37 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         setTotalEntries(data.totalElements)
         console.log("total Page " + data.totalPages);
          //API for InboundPending Status
-
          return axios.get(
-
           "http://localhost:8080/api/v1/gate/count/Inbound",
-
           {
-
             withCredentials: true,
-
           }
-
         );
-
       })
-
       .then((secondResponse) => {
-
         setInboundPending(secondResponse.data); // Set the inbound pending data
-
         console.log("Data from the second API:", secondResponse.data);
-
         //API for OutboundPending Status
-
         return axios.get(
-
           "http://localhost:8080/api/v1/gate/count/Outbound",
-
           {
-
             withCredentials: true,
-
           }
-
         );
-
       })
-
       .then((thirdResponse) => {
-
         setOutboundPending(thirdResponse.data);
-
         console.log("Data from the third API:", thirdResponse.data);
-
         //API for Completed Status
-
         return axios.get(
-
           "http://localhost:8080/api/v1/gate/count/Complete",
-
           {
-
             withCredentials: true,
-
           }
-
         );
-
       })
-
       .then((fourthResponse) => {
-
         setCompleted(fourthResponse.data);
-
         console.log("Data from the fourth API:", fourthResponse.data);
       })
       .catch(error => {

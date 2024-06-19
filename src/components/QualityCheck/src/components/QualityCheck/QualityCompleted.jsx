@@ -12,8 +12,6 @@ import { FilterOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
-// import PrintTicket from "./PrintTicket";
-import axios from "axios"; // Import axios
 
 // Styled component for the table
 const StyledTable = styled.table`
@@ -72,6 +70,33 @@ function QualityCompleted() {
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
+
+  const inboundLabels = [
+    'Ticket No',
+    'Company Name',
+    'Company Address',
+    'Date',
+    'Vehicle No',
+    'Material',
+    'MaterialType',
+    'Supplier',
+    'SupplierAddress',
+    'TransactionType',
+  ];
+  
+  const outboundLabels = [
+    'Ticket No',
+    'Company Name',
+    'Company Address',
+    'Date',
+    'Vehicle No',
+    'Product',
+    'ProductType',
+    'CustomerName',
+    'CustomerAddress',
+    'TransactionType',
+  ];
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -401,7 +426,18 @@ function QualityCompleted() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-
+      const transactionType = data.transactionType ? data.transactionType.toLowerCase() : "";
+      const isOutbound = transactionType === "outbound";
+      const isInbound = transactionType === "inbound";
+      const labels = isOutbound
+        ? outboundLabels
+        : isInbound
+        ? inboundLabels
+        : transactionType === ""
+        ? [] // If transactionType is an empty string, use an empty array for labels
+        : null; // If transactionType is neither "outbound" nor "inbound", set labels to null
+  
+  
       // Open a new window or tab to print the data
       const printWindow = window.open("", "_blank");
       const formattedData = `
@@ -429,38 +465,73 @@ function QualityCompleted() {
             <p>${data.companyAddress}</p>
             <p>Generated on: ${new Date().toLocaleDateString()}</p>
             <table>
-              <tr>
-                <th>Field</th>
-                <th>Value</th>
-              </tr>
-              ${Object.entries(data)
-          .filter(([key, value]) => typeof value !== "object" || value === null)
-          .map(
-            ([key, value]) =>
-              `<tr><td>${key}</td><td>${typeof value === "object" ? JSON.stringify(value) : value
-              }</td></tr>`
-          )
-          .join("")}
-              ${data.qualityParameters
-          ? `<tr>
-                      <td>Quality Parameters</td>
-                      <td>
-                        <table>
-                          <tr>
-                            <th>Parameter</th>
-                            <th>Value</th>
-                          </tr>
-                          ${Object.entries(data.qualityParameters)
-            .map(
-              ([key, value]) =>
-                `<tr><td>${key}</td><td>${value}</td></tr>`
-            )
-            .join("")}
-                        </table>
-                      </td>
-                    </tr>`
-          : ""
-        }
+              <tbody>
+                ${labels
+                  .map((label) => {
+                    const propertyName = label.toLowerCase().replace(/ /g, "");
+                    const value =
+                      propertyName === "ticketno"
+                        ? data.ticketNo
+                        : propertyName === "companyname"
+                        ? data.companyName
+                        : propertyName === "companyaddress"
+                        ? data.companyAddress
+                        : propertyName === "date"
+                        ? data.date
+                        : propertyName === "vehicleno"
+                        ? data.vehicleNo
+                        : isOutbound
+                        ? propertyName === "product"
+                          ? data.materialOrProduct
+                          : propertyName === "producttype"
+                          ? data.materialTypeOrProductType
+                          : propertyName === "customername"
+                          ? data.supplierOrCustomerName
+                          : propertyName === "customeraddress"
+                          ? data.supplierOrCustomerAddress
+                          : undefined
+                        : propertyName === "material"
+                        ? data.materialOrProduct
+                        : propertyName === "materialtype"
+                        ? data.materialTypeOrProductType
+                        : propertyName === "supplier"
+                        ? data.supplierOrCustomerName
+                        : propertyName === "supplieraddress"
+                        ? data.supplierOrCustomerAddress
+                        : propertyName === "transactiontype"
+  ? transactionType === "inbound"
+    ? "Inbound"
+    : transactionType === "outbound"
+    ? "Outbound"
+    : ""
+  : undefined;
+                    return `<tr><th>${label}</th><td>${
+                      typeof value === "object" ? JSON.stringify(value) : value
+                    }</td></tr>`;
+                  })
+                  .join("")}
+                ${
+                  data.qualityParameters
+                    ? `<tr>
+                          <th>Quality Parameters</th>
+                          <td>
+                            <table>
+                              <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                              </tr>
+                              ${Object.entries(data.qualityParameters)
+                                .map(
+                                  ([key, value]) =>
+                                    `<tr><td>${key}</td><td>${value}</td></tr>`
+                                )
+                                .join("")}
+                            </table>
+                          </td>
+                        </tr>`
+                    : ""
+                }
+              </tbody>
             </table>
             <script>
               window.print();
