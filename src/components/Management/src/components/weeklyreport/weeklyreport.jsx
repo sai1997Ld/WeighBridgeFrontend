@@ -34,23 +34,30 @@ const ManagementWeeklyReport = () => {
   }, [startDate, endDate]);
 
   const fetchData = (start, end) => {
-    if (start && end) {
-      axios
-        .get(
-          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          setWeighments(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    const selectedCompany = sessionStorage.getItem('selectedCompany');
+    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+  
+    if (!selectedCompany) {
+      console.error('Company not selected');
+      return;
     }
+  
+    const apiUrl = selectedSiteName && selectedSiteAddress
+      ? `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
+      : `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}`;
+  
+    axios
+      .get(apiUrl, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setWeighments(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   };
-
   const goBack = () => {
     navigate(-1);
   };

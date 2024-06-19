@@ -30,14 +30,25 @@ const ManagementDailyReport = () => {
     setSelectedDate(event.target.value);
   };
 
+  
   const fetchData = (startDate) => {
-    axios
-      .get(
-        `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=Vikram Private Limited&siteName=ROURKELA,Tumkela`,
-        {
-          withCredentials: true,
-        }
-      )
+    const selectedCompany = sessionStorage.getItem('selectedCompany');
+    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+
+    if (!selectedCompany) {
+      console.error('Company not selected');
+      return;
+    }
+
+    const apiUrl = selectedSiteName && selectedSiteAddress
+      ? `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
+      : `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}`;
+
+      axios
+      .get(apiUrl, {
+        withCredentials: true,
+      })
       .then((response) => {
         setWeighments(response.data);
       })
@@ -50,31 +61,32 @@ const ManagementDailyReport = () => {
     navigate(-1);
   };
 
- const downloadExcel = () => {
+  const downloadExcel = () => {
     const fileName = "Daily_Report.xlsx";
 
-    // Prepare data for Excel export
-    const data = weighments.flatMap((material) =>
-      material.weighbridgeResponse2List.map((response) => ({
-        Material: material.materialName,
-        SupplierOrCustomer: material.supplierOrCustomer,
-        Date: response.transactionDate,
-        Vehicle: response.vehicleNo,
-        CH_No: response.tpNo,
-        CH_Date: response.challanDate,
-        CH_Qty: response.supplyConsignmentWeight,
-        Weigh_Qty: response.weighQuantity,
-        Differences: response.excessQty,
-      }))
-    );
 
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Daily Report");
+   // Prepare data for Excel export
+   const data = weighments.flatMap((material) =>
+    material.weighbridgeResponse2List.map((response) => ({
+      Material: material.materialName,
+      SupplierOrCustomer: material.supplierOrCustomer,
+      Date: response.transactionDate,
+      Vehicle: response.vehicleNo,
+      CH_No: response.tpNo,
+      CH_Date: response.challanDate,
+      CH_Qty: response.supplyConsignmentWeight,
+      Weigh_Qty: response.weighQuantity,
+      Differences: response.excessQty,
+    }))
+  );
 
-    // Save the file
-    XLSX.writeFile(wb, fileName);
-  };
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Daily Report");
+
+  // Save the file
+  XLSX.writeFile(wb, fileName);
+};
 
   return (
     <Sidebar4>
