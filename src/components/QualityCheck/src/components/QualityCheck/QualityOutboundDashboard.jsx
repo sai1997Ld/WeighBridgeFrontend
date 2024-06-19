@@ -56,48 +56,48 @@ function QualityOutboundTransaction() {
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
   const navigate = useNavigate();
   const [filteredData, setFilteredData] = useState([]);
-const [allData, setAllData] = useState([]);
-const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
+  const [allData, setAllData] = useState([]);
+  const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
 
 
-const disabledFutureDate = (current) => {
-  return current && current > moment().endOf("day");
-};
-
-useEffect(() => {
-  const fetchData = async () => {
-    const data = await fetchAllTransactions();
-    // Filter only inbound transactions
-    const inboundData = data.filter(item => item.transactionType.toLowerCase() === 'outbound');
-    setAllData(inboundData);
-    setFilteredData(inboundData);
+  const disabledFutureDate = (current) => {
+    return current && current > moment().endOf("day");
   };
- 
-  fetchData();
-}, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchAllTransactions();
+      // Filter only inbound transactions
+      const inboundData = data.filter(item => item.transactionType.toLowerCase() === 'outbound');
+      setAllData(inboundData);
+      setFilteredData(inboundData);
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (searchQuery === "") {
       setFilteredData(allData);
     }
   }, [searchQuery, allData]);
-  
+
 
   const homeMainContentRef = useRef(null);
 
   const fetchMaterialOptions = async () => {
     try {
-  
+
       const productResponse = await fetch(
         "http://localhost:8080/api/v1/qualities/products",
         {
           credentials: "include",
         }
       );
-  
+
       if (productResponse.ok) {
         const productData = await productResponse.json();
-        const combinedOptions = [ ...productData];
+        const combinedOptions = [...productData];
         setMaterialOptions(combinedOptions);
       } else {
         console.error(
@@ -135,7 +135,7 @@ useEffect(() => {
       console.error("Error fetching inbound transactions:", error);
     }
   };
-  
+
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
@@ -164,7 +164,7 @@ useEffect(() => {
       const filtered = allData.filter((item) =>
         (selectedTransactionType === "" ||
           item.transactionType.toLowerCase() ===
-            selectedTransactionType.toLowerCase()) &&
+          selectedTransactionType.toLowerCase()) &&
         (materialOptions[selectedIndex] === "" ||
           item.materialName.toLowerCase() === materialOptions[selectedIndex].toLowerCase())
       );
@@ -179,7 +179,7 @@ useEffect(() => {
       fetchOutboundTransactions();
     }
   };
-  
+
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
@@ -215,8 +215,8 @@ useEffect(() => {
       }
     }
   };
-  
-  
+
+
 
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
@@ -229,10 +229,10 @@ useEffect(() => {
         },
         credentials: "include",
       });
-  
+
       if (response.ok) {
         console.log(`Transaction with ticket number ${ticketNumber} removed successfully`);
-        
+
         // Update state to remove the transaction from the list
         setAllData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
         setFilteredData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
@@ -243,24 +243,24 @@ useEffect(() => {
       console.error("Error removing transaction:", error);
     }
   };
-  
+
   const handleRemoveTransaction = (ticketNumber, transactionType) => {
     if (transactionType === "Outbound") {
       console.log("Cannot remove Outbound transactions.");
       return;
     }
-  
+
     console.log(`Removing transaction with ticket number ${ticketNumber}`);
     removeTransaction(ticketNumber);
   };
-  
- 
+
+
   const handleSearch = async () => {
     if (searchQuery === "") {
       setFilteredData(allData);
       return;
     }
-  
+
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
@@ -350,15 +350,16 @@ useEffect(() => {
             style={{ marginTop: "1rem", marginBottom: "1rem" }}
           >
             <div style={{ flex: "1" }}>
-            <DatePicker
-      value={selectedDate}
-      onChange={(date) => setSelectedDate(date)}
-      disabledDate={disabledFutureDate}
-      style={{
-        borderRadius: "5px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      }}
-    />
+              <DatePicker
+                value={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                disabledDate={disabledFutureDate}
+                format="DD-MM-YYYY"
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+              />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -373,7 +374,7 @@ useEffect(() => {
             </div>
             <div style={{ flex: "1" }}></div>
           </div>
- 
+
           <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-3 d-flex align-items-center mb-2 mb-md-0">
               Show
@@ -391,35 +392,35 @@ useEffect(() => {
               &nbsp;entries
             </div>
             <div className="col-12 col-md-6 mb-2 mb-md-0">
-            <div style={{ display: "flex", alignItems: "center" }}>
-  <Select
-    value={searchType}
-    onChange={(value) => setSearchType(value)}
-    style={{ width: 150, marginRight: "8px" }} // Increase width
-  >
-    <Select.Option value="select">Select</Select.Option>
-    <Select.Option value="ticketNo">Ticket No</Select.Option>
-    <Select.Option value="vehicleNo">Vehicle No</Select.Option>
-    <Select.Option value="customer">Customer</Select.Option>
-    <Select.Option value="customerAddress">Customer Address</Select.Option>
-  </Select>
-  <Input.Search
-    placeholder="Search by Ticket No, Vehicle No, Customer, or Customer Address"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    onSearch={handleSearch}
-    style={{ flex: 1, width: 200 }} // Decrease width
-  />
-</div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Select
+                  value={searchType}
+                  onChange={(value) => setSearchType(value)}
+                  style={{ width: 150, marginRight: "8px" }} // Increase width
+                >
+                  <Select.Option value="select">Select</Select.Option>
+                  <Select.Option value="ticketNo">Ticket No</Select.Option>
+                  <Select.Option value="vehicleNo">Vehicle No</Select.Option>
+                  <Select.Option value="customer">Customer</Select.Option>
+                  <Select.Option value="customerAddress">Customer Address</Select.Option>
+                </Select>
+                <Input.Search
+                  placeholder="Search by Ticket No, Vehicle No, Customer, or Customer Address"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onSearch={handleSearch}
+                  style={{ flex: 1, width: 200 }} // Decrease width
+                />
+              </div>
 
-</div>
+            </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
               <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
                 <Button icon={<FilterOutlined />}>Filter</Button>
               </Dropdown>
             </div>
           </div>
- 
+
           <div
             className="table-responsive"
             style={{
@@ -527,68 +528,68 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                {Array.isArray(filteredData) &&
-  filteredData
-    .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
-    .map((item, index) => (
-                      <tr key={index}>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.ticketNo}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.vehicleNo}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.materialName}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.materialType}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.supplierOrCustomerName}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.supplierOrCustomerAddress}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.transactionType}
-                        </td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
-  <EditNoteIcon
-    style={{ color: "green", cursor: "pointer" }}
-    onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
-  />
-  {item.transactionType === "inbound" && (
-    <PlaylistRemoveIcon
-      style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
-      onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
-    />
-  )}
-</td>
+                  {Array.isArray(filteredData) &&
+                    filteredData
+                      .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+                      .map((item, index) => (
+                        <tr key={index}>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.ticketNo}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.vehicleNo}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.materialName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.materialType}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.supplierOrCustomerName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.supplierOrCustomerAddress}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.transactionType}
+                          </td>
+                          <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
+                            <EditNoteIcon
+                              style={{ color: "green", cursor: "pointer" }}
+                              onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
+                            />
+                            {item.transactionType === "inbound" && (
+                              <PlaylistRemoveIcon
+                                style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
+                                onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
+                              />
+                            )}
+                          </td>
 
-                      </tr>
-                    ))}
+                        </tr>
+                      ))}
                 </tbody>
               </StyledTable>
             </div>
@@ -625,16 +626,15 @@ useEffect(() => {
               >
                 &lt;
               </button>
- 
+
               {Array.from({ length: 3 }, (_, index) => {
                 const pageNumber = currentPage + index;
                 if (pageNumber >= pageCount) return null;
                 return (
                   <button
                     key={pageNumber}
-                    className={`btn btn-outline-primary btn-sm me-2 ${
-                      currentPage === pageNumber ? "active" : ""
-                    }`}
+                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
+                      }`}
                     style={{
                       color: currentPage === pageNumber ? "#fff" : "#0077B6",
                       backgroundColor:
@@ -651,9 +651,8 @@ useEffect(() => {
               {currentPage + 3 < pageCount && <span>...</span>}
               {currentPage + 3 < pageCount && (
                 <button
-                  className={`btn btn-outline-primary btn-sm me-2 ${
-                    currentPage === pageCount - 1 ? "active" : ""
-                  }`}
+                  className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
+                    }`}
                   style={{
                     color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
                     backgroundColor:
@@ -698,5 +697,5 @@ useEffect(() => {
       </div>
     </SideBar3>
   );
- }
- export default QualityOutboundTransaction;
+}
+export default QualityOutboundTransaction;

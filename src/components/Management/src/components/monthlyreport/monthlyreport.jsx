@@ -1,51 +1,53 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Row, Col , Button} from "antd";
+import { Typography, notification } from "antd";
+import moment from "moment";
 import Sidebar4 from "../../../../SideBar/SideBar4";
-import { Row, Col, Button } from "antd";
-import { Typography } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleXmark, faDownload } from "@fortawesome/free-solid-svg-icons";
-import * as XLSX from 'xlsx';
+import { faRectangleXmark , faDownload} from "@fortawesome/free-solid-svg-icons";
+import * as XLSX from "xlsx";
 
-const ManagementDailyReport = () => {
-  const [selectedDate, setSelectedDate] = useState("");
+const { Text } = Typography;
+
+const ManagementMonthlyReport = () => {
+  const [startDate, setStartDate] = useState(
+    moment().startOf("month").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(
+    moment().endOf("month").format("YYYY-MM-DD")
+  );
   const [weighments, setWeighments] = useState([]);
-  const { Text } = Typography;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Set the default date to today's date
-    const today = new Date().toISOString().split("T")[0];
-    setSelectedDate(today);
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate) {
-      fetchData(selectedDate);
-    }
-  }, [selectedDate]);
-
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
+  const handleMonthChange = (event) => {
+    const month = event.target.value;
+    const start = moment(month).startOf("month").format("YYYY-MM-DD");
+    const end = moment(month).endOf("month").format("YYYY-MM-DD");
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  
-  const fetchData = (startDate) => {
+  useEffect(() => {
+    fetchData(startDate, endDate);
+  }, [startDate, endDate]);
+
+  const fetchData = (start, end) => {
     const selectedCompany = sessionStorage.getItem('selectedCompany');
     const selectedSiteName = sessionStorage.getItem('selectedSiteName');
     const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
-
+  
     if (!selectedCompany) {
       console.error('Company not selected');
       return;
     }
-
+  
     const apiUrl = selectedSiteName && selectedSiteAddress
-      ? `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
-      : `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}`;
-
-      axios
+      ? `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
+      : `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}`;
+  
+    axios
       .get(apiUrl, {
         withCredentials: true,
       })
@@ -54,6 +56,10 @@ const ManagementDailyReport = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        notification.error({
+          message: "Error",
+          description: "There was an error fetching the report. Please try again later.",
+        });
       });
   };
 
@@ -62,32 +68,30 @@ const ManagementDailyReport = () => {
   };
 
   const downloadExcel = () => {
-    const fileName = "Daily_Report.xlsx";
+    const fileName = "Monthly_Report.xlsx";
 
+    // Prepare data for Excel export
+    const data = weighments.flatMap((material) =>
+      material.weighbridgeResponse2List.map((response) => ({
+        Material: material.materialName,
+        SupplierOrCustomer: material.supplierOrCustomer,
+        Date: response.transactionDate,
+        Vehicle: response.vehicleNo,
+        CH_No: response.tpNo,
+        CH_Date: response.challanDate,
+        CH_Qty: response.supplyConsignmentWeight,
+        Weigh_Qty: response.weighQuantity,
+        Differences: response.excessQty,
+      }))
+    );
 
-   // Prepare data for Excel export
-   const data = weighments.flatMap((material) =>
-    material.weighbridgeResponse2List.map((response) => ({
-      Material: material.materialName,
-      SupplierOrCustomer: material.supplierOrCustomer,
-      Date: response.transactionDate,
-      Vehicle: response.vehicleNo,
-      CH_No: response.tpNo,
-      CH_Date: response.challanDate,
-      CH_Qty: response.supplyConsignmentWeight,
-      Weigh_Qty: response.weighQuantity,
-      Differences: response.excessQty,
-    }))
-  );
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Monthly Report");
 
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Daily Report");
-
-  // Save the file
-  XLSX.writeFile(wb, fileName);
-};
-
+    // Save the file
+    XLSX.writeFile(wb, fileName);
+  };
   return (
     <Sidebar4>
       <div className="container-fluid mt-0">
@@ -96,9 +100,8 @@ const ManagementDailyReport = () => {
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-            Daily Transaction Report
+            Monthly Transaction Report
           </h2>
-
           <Row gutter={[16, 16]} justify="start" align="top">
             <Col
               xs={24}
@@ -110,24 +113,22 @@ const ManagementDailyReport = () => {
                 alignItems: "center",
               }}
             >
-              <label htmlFor="datePicker">Select Date:</label>
+              <label htmlFor="month">Select Month:</label>
               <input
-                type="date"
-                id="date"
-                name="date"
+                type="month"
+                id="month"
+                name="month"
                 className="form-control form-control-sm"
                 style={{ width: "120px" }}
-                value={selectedDate}
-                onChange={handleDateChange}
+                value={moment(startDate).format("YYYY-MM")}
+                onChange={handleMonthChange}
               />
             </Col>
             <Button style={{backgroundColor: "#0077b6",color:"white"}} icon={<FontAwesomeIcon icon={faDownload} />} onClick={downloadExcel}>
             Download
-          </Button>
+          </Button> 
           </Row>
         </div>
-
-       
 
         {weighments.map((material, index) => (
           <div key={index} className="table-responsive">
@@ -144,7 +145,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     Date
@@ -156,7 +157,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     Vehicle
@@ -168,7 +169,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     CH.No
@@ -180,7 +181,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     CH_Date
@@ -192,7 +193,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     CH_Qty
@@ -204,7 +205,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     Weigh_Qty
@@ -216,7 +217,7 @@ const ManagementDailyReport = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign: "center",
+                      textAlign:"center",
                     }}
                   >
                     Differences
@@ -226,32 +227,21 @@ const ManagementDailyReport = () => {
               <tbody>
                 {material.weighbridgeResponse2List.map((response, idx) => (
                   <tr key={idx}>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>
                       {response.transactionDate}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                      {response.vehicleNo}
-                    </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                      {response.tpNo}
-                    </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                      {response.challanDate}
-                    </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>{response.vehicleNo}</td>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>{response.tpNo}</td>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>{response.challanDate}</td>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>
                       {response.supplyConsignmentWeight}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                      {response.weighQuantity}
-                    </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                      {response.excessQty}
-                    </td>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>{response.weighQuantity}</td>
+                    <td className="ant-table-cell" style={{textAlign:"center"}}>{response.excessQty}</td>
                   </tr>
                 ))}
-                {/* Summary row */}
-                <tr>
-                  <td colSpan="4" className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}></td>
+                  <tr>
+                  <td colSpan="4" className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold"}}></td>
                   <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.ch_SumQty}</td>
                   <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.weight_SumQty}</td>
                   <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.shtExcess_SumQty}</td>
@@ -265,4 +255,4 @@ const ManagementDailyReport = () => {
   );
 };
 
-export default ManagementDailyReport;
+export default ManagementMonthlyReport;

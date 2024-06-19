@@ -39,6 +39,15 @@ function Home() {
     }
   }, []);
 
+  // Inside the event handler function
+const handleCompanySelection = (companyName, siteName) => {
+  // Update your state or perform any necessary operations
+  
+  // Store the selected company name and site name in session storage
+  sessionStorage.setItem('selectedCompany', companyName);
+  sessionStorage.setItem('selectedSite', siteName);
+};
+
   return (
     <Sidebar4>
       <Box display="flex" justifyContent="space-between" alignItems="center" p={isSmallScreen ? 2 : 3}>
