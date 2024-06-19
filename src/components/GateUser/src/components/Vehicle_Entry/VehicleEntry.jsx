@@ -38,6 +38,8 @@ const api = axios.create({
 
 const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const [currentDate, setCurrentDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(moment());
+
   const [showPopup, setShowPopup] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const [searchOption, setSearchOption] = useState('');
@@ -63,7 +65,9 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const [Completed, setCompleted] = useState(null);
   // const [isEditDisabled, setIsEditDisabled] = useState(false);
 
-
+  const disabledFutureDate = (current) => {
+    return current && current > moment().endOf("day");
+  };
 
 
   const TransactionUpdatesContainer = styled.div`
@@ -155,7 +159,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       return;
     }
 
-    let apiUrl = `${api.defaults.baseURL}/transactions`;
+    let apiUrl = `${api.defaults.baseURL}/transactions/ongoing`;
 
     // Build the URL based on the selected search option
     switch (searchOption) {
@@ -169,7 +173,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         apiUrl += `?vehicleNo=${searchValue}`;
         break;
       case 'supplier':
-        apiUrl += `?supplier=${searchValue}`;
+        apiUrl += `?supplierName=${searchValue}`;
         break;
       case 'address':
         apiUrl += `?address=${searchValue}`;
@@ -638,8 +642,12 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
           <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <div style={{ flex: "1" }}>
               <DatePicker
-                value={date}
-                onChange={handleDateChange}
+                // value={date}
+                // onChange={handleDateChange}
+                value={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                disabledDate={disabledFutureDate}
+                format="DD-MM-YYYY"
                 style={{ borderRadius: "5px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
               />
             </div>
