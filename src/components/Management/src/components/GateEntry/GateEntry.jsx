@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {  faHome } from "@fortawesome/free-solid-svg-icons";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Chart, ArcElement } from "chart.js/auto";
 import Swal from 'sweetalert2';
-import {  Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
-import {FilterOutlined } from '@ant-design/icons';
+import { Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
+import { FilterOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import {  Typography } from "antd";
+import { Typography } from "antd";
 import styled from "styled-components";
 import SideBar4 from "../../../../SideBar/SideBar4";
 import moment from "moment";
@@ -63,7 +63,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   // const [isEditDisabled, setIsEditDisabled] = useState(false);
 
-  
+
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
@@ -371,8 +371,8 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         setTotalPage(data.totalPages);
         setTotalEntries(data.totalElements)
         console.log("total Page " + data.totalPages);
-         //API for InboundPending Status
-         return axios.get(
+        //API for InboundPending Status
+        return axios.get(
           "http://localhost:8080/api/v1/gate/count/Inbound",
           {
             withCredentials: true,
@@ -621,31 +621,32 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   return (
     <SideBar4>
       <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
-  <div className="container-fluid mt-0">
-    <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
-      <div className="d-flex justify-content-between align-items-center w-100">
-        <div style={{ flex: "2" }}>
-          <DatePicker
-      value={selectedDate}
-      onChange={(date) => setSelectedDate(date)}
-      disabledDate={disabledFutureDate}
-      style={{
-        borderRadius: "5px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      }}
-    />
-        </div>
-        <div style={{ flex: "15", textAlign: "center" }}>
-          <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
-            Vehicle In Process Transaction
-          </h2>
-        </div>
-        <div style={{ flex: "1", textAlign: "right" }}>
-          <Link to="/home5">
-            <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
-          </Link>
-        </div>
-      </div>
+        <div className="container-fluid mt-0">
+          <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+            <div className="d-flex justify-content-between align-items-center w-100">
+              <div style={{ flex: "2" }}>
+                <DatePicker
+                  value={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  disabledDate={disabledFutureDate}
+                  format="DD-MM-YYYY"
+                  style={{
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  }}
+                />
+              </div>
+              <div style={{ flex: "15", textAlign: "center" }}>
+                <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
+                  Vehicle In Process Transaction
+                </h2>
+              </div>
+              <div style={{ flex: "1", textAlign: "right" }}>
+                <Link to="/home5">
+                  <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
+                </Link>
+              </div>
+            </div>
 
 
 
@@ -685,25 +686,25 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
           <div>
             <TransactionUpdatesContainer>
               <TransactionUpdateBox bgColor="#BDBDBD">
-              <PendingIcon />
+                <PendingIcon />
 
-<Text >Inbound Pending:<span style={{ fontWeight: 'bold' }}> {inboundPending} </span> </Text>
+                <Text >Inbound Pending:<span style={{ fontWeight: 'bold' }}> {inboundPending} </span> </Text>
 
-</TransactionUpdateBox>
+              </TransactionUpdateBox>
 
-<TransactionUpdateBox bgColor="#9FC0EF">
+              <TransactionUpdateBox bgColor="#9FC0EF">
 
-<PendingIcon />
+                <PendingIcon />
 
-<Text >Outbound Pending:  <span style={{ fontWeight: 'bold' }}> {outboundPending} </span> </Text>
+                <Text >Outbound Pending:  <span style={{ fontWeight: 'bold' }}> {outboundPending} </span> </Text>
 
-</TransactionUpdateBox>
+              </TransactionUpdateBox>
 
-<TransactionUpdateBox bgColor="#6FBE88">
+              <TransactionUpdateBox bgColor="#6FBE88">
 
-<DoneAllIcon />
+                <DoneAllIcon />
 
-<Text >Completed Transactions: <span style={{ fontWeight: 'bold' }}> {Completed} </span> </Text>
+                <Text >Completed Transactions: <span style={{ fontWeight: 'bold' }}> {Completed} </span> </Text>
               </TransactionUpdateBox>
 
             </TransactionUpdatesContainer>

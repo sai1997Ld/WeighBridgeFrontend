@@ -49,7 +49,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     const disabledFutureDate = (current) => {
         return current && current > moment().endOf("day");
-      };
+    };
 
 
     // Code for Date:
@@ -179,30 +179,30 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
         const selectedCompany = sessionStorage.getItem('selectedCompany');
         const selectedSiteName = sessionStorage.getItem('selectedSiteName');
         const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
-    
+
         if (!selectedCompany) {
-          console.error('Company not selected');
-          return;
+            console.error('Company not selected');
+            return;
         }
-    
+
         const apiUrl = selectedSiteName && selectedSiteAddress
-          ? `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}`
-          : `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}`;
-    
+            ? `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}`
+            : `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}`;
+
         fetch(apiUrl, {
-          credentials: "include"
+            credentials: "include"
         })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            setVehicleEntryDetails(data.transactions);
-            setTotalPage(data.totalPages);
-            setTotalEntries(data.totalElements)
-            console.log("total Page " + data.totalPages);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setVehicleEntryDetails(data.transactions);
+                setTotalPage(data.totalPages);
+                setTotalEntries(data.totalElements)
+                console.log("total Page " + data.totalPages);
             })
             .catch(error => {
                 console.error('Error fetching vehicle entry details:', error);
@@ -368,33 +368,34 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     return (
         <SideBar4>
-           <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
-  <div className="container-fluid mt-0">
-    <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
-    <div className="d-flex justify-content-between align-items-center w-100">
-      <div style={{ flex: "2" }}>
-      <DatePicker
-      value={selectedDate}
-      onChange={(date) => setSelectedDate(date)}
-      disabledDate={disabledFutureDate}
-      style={{
-        borderRadius: "5px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      }}
-    />
-      </div>
-      <div style={{ flex: "15", textAlign: "center" }}>
-        <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
-          Processed Transactions
-        </h2>
-      </div>
-      <div style={{ flex: "2", textAlign: "right" }}>
-        <Link to="/home5">
-          <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
-        </Link>
-      </div>
-      </div>
-                      
+            <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
+                <div className="container-fluid mt-0">
+                    <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+                        <div className="d-flex justify-content-between align-items-center w-100">
+                            <div style={{ flex: "2" }}>
+                                <DatePicker
+                                    value={selectedDate}
+                                    onChange={(date) => setSelectedDate(date)}
+                                    disabledDate={disabledFutureDate}
+                                    format="DD-MM-YYYY"
+                                    style={{
+                                        borderRadius: "5px",
+                                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                                    }}
+                                />
+                            </div>
+                            <div style={{ flex: "15", textAlign: "center" }}>
+                                <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
+                                    Processed Transactions
+                                </h2>
+                            </div>
+                            <div style={{ flex: "2", textAlign: "right" }}>
+                                <Link to="/home5">
+                                    <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
+                                </Link>
+                            </div>
+                        </div>
+
                         <div style={{ flex: "1" }}></div> {/* To balance the layout */}
                     </div>
                     <div className="d-flex justify-content-center mb-3">
