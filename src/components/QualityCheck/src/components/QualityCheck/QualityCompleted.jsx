@@ -39,7 +39,7 @@ function QualityCompleted() {
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
-  const [userId, setUserId] = useState(null);
+  const userId = sessionStorage.getItem("userId");
 
   const inboundLabels = [
     'Ticket No',
@@ -67,11 +67,7 @@ function QualityCompleted() {
     'TransactionType',
   ];
 
-  useEffect(() => {
-    const storedUserId = sessionStorage.getItem('userId');
-    console.log('storedUserId:', storedUserId); // Add this line
-    setUserId(storedUserId);
-  }, []);
+
 
   useEffect(() => {
     const fetchData = async () => {

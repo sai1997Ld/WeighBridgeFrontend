@@ -98,22 +98,11 @@ function QualityCheck() {
   const [outboundCompleted, setOutboundCompleted] = useState(0);
   const [showInboundConfirmation, setShowInboundConfirmation] = useState(false);
   const [transactionToRemove, setTransactionToRemove] = useState("");
-  const [userId, setUserId] = useState(null);
-
-
-  useEffect(() => {
-    // Get the userId from the session
-    const storedUserId = sessionStorage.getItem('userId');
-    setUserId(storedUserId);
-  }, []);
-
-
-
+  const userId  =  sessionStorage  .  getItem("userId");
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
-
 
   const fetchAllTransactions = async () => {
     try {
