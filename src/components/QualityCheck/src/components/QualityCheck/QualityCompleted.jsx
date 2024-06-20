@@ -20,36 +20,6 @@ const StyledTable = styled.table`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const fetchAllTransactions = async () => {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/qualities/qct-completed?`,
-      {
-        credentials: "include",
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) {
-
-        return data;
-
-      } else {
-
-        console.error("Unexpected data format:", data);
-
-        return [];
-
-      }
-    } else {
-      console.error("Failed to fetch all transactions:", response.status);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching all transactions:", error);
-    return [];
-  }
-};
 
 function QualityCompleted() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -65,11 +35,11 @@ function QualityCompleted() {
   const [filteredData, setFilteredData] = useState([]);
   const [allData, setAllData] = useState([]);
   const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
-
   const [printData, setPrintData] = useState(null);
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
+  const [userId, setUserId] = useState(null);
 
   const inboundLabels = [
     'Ticket No',
@@ -97,6 +67,11 @@ function QualityCompleted() {
     'TransactionType',
   ];
 
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem('userId');
+    console.log('storedUserId:', storedUserId); // Add this line
+    setUserId(storedUserId);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,10 +91,42 @@ function QualityCompleted() {
 
   const homeMainContentRef = useRef(null);
 
+  const fetchAllTransactions = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/qct-completed?&userId=${userId}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+  
+          return data;
+  
+        } else {
+  
+          console.error("Unexpected data format:", data);
+  
+          return [];
+  
+        }
+      } else {
+        console.error("Failed to fetch all transactions:", response.status);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching all transactions:", error);
+      return [];
+    }
+  };
+  
+
   const fetchMaterialOptions = async () => {
     try {
       const materialResponse = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials",
+        `http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -149,7 +156,7 @@ function QualityCompleted() {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/inbound-qct-completed",
+        `http://localhost:8080/api/v1/qualities/inbound-qct-completed?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -169,7 +176,7 @@ function QualityCompleted() {
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/outbound-qct-completed",
+        `http://localhost:8080/api/v1/qualities/outbound-qct-completed?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -256,7 +263,7 @@ function QualityCompleted() {
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?userId=${userId}`,
           {
             credentials: "include",
           }
@@ -280,7 +287,7 @@ function QualityCompleted() {
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByVehicleNo-qctCompleted/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo-qctCompleted/${searchQuery}?userId=${userId}`,
           {
             credentials: "include",
           }
@@ -297,7 +304,7 @@ function QualityCompleted() {
     } else if (searchType === "supplier") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer-qctCompleted?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer-qctCompleted?supplierOrCustomerName=${searchQuery}?userId=${userId}`,
           {
             credentials: "include",
           }
@@ -314,7 +321,7 @@ function QualityCompleted() {
     } else if (searchType === "supplierAddress") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer-qctCompleted?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer-qctCompleted?supplierOrCustomerAddress=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -333,7 +340,7 @@ function QualityCompleted() {
   const handleQualityReportDownload = async (ticketNo) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`,);
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`,);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -417,7 +424,7 @@ function QualityCompleted() {
   const handlePrint = async (ticketNo) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`,
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`,
         {
           credentials: "include",
         }
