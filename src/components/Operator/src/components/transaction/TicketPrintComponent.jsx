@@ -47,7 +47,7 @@ const TicketPrintComponent = React.forwardRef((props, ref) => {
           </tr>
           <tr>
             <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Gross Weight:</strong></td>
-            <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.grossWeight} ton</td>
+            <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.grossWeight} kg</td>
             <td style={{  fontSize: "18px" }}><strong>Date:</strong></td>
             <td style={{  fontSize: "18px" }}>{ticketData.grossWeightDate}</td>
             <td style={{  fontSize: "18px" }}><strong>Time:</strong></td>
@@ -55,7 +55,7 @@ const TicketPrintComponent = React.forwardRef((props, ref) => {
           </tr>
           <tr>
             <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Tare Weight:</strong></td>
-            <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.tareWeight} ton</td>
+            <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.tareWeight} kg</td>
             <td style={{  fontSize: "18px" }}><strong>Date:</strong></td>
             <td style={{ fontSize: "18px" }}>{ticketData.tareWeightDate}</td>
             <td style={{ fontSize: "18px" }}><strong>Time:</strong></td>
@@ -63,7 +63,7 @@ const TicketPrintComponent = React.forwardRef((props, ref) => {
           </tr>
           <tr>
             <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Net Weight:</strong></td>
-            <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.netWeight} ton</td>
+            <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.netWeight} kg</td>
           </tr>
         </tbody>
       </table>

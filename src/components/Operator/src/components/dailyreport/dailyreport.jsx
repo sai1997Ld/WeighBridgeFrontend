@@ -20,11 +20,21 @@ const DailyReport = () => {
     setSelectedDate(today);
   }, []);
 
+  const [userId,setUserId] = useState('');
+
+  useEffect (()=> {
+    const userId = sessionStorage.getItem('userId');
+    setUserId(userId);
+
+  },[]);
+
   useEffect(() => {
+    if(userId){
     if (selectedDate) {
       fetchData(selectedDate);
     }
-  }, [selectedDate]);
+  }
+  }, [userId,selectedDate]);
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
@@ -33,7 +43,7 @@ const DailyReport = () => {
   const fetchData = (startDate) => {
     axios
       .get(
-        `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}`,
+        `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&userId=${userId}`,
         {
           withCredentials: true,
         }
