@@ -4,20 +4,17 @@ import {
   faPencilAlt,
   faUserCheck,
   faUserXmark,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import "./ManageUser.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Table, Tag, Button, Input, Pagination } from "antd";
 import Swal from "sweetalert2";
 import SideBar from "../../SideBar/SideBar";
 import "antd/dist/reset.css";
-import { useLocation } from 'react-router-dom';
-import {faHome } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
 
 const { Column } = Table;
 const { Search } = Input;
-
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
@@ -27,7 +24,6 @@ function ManageUser() {
   const [totalElements, setTotalElements] = useState(0);
   const [userIdFilter, setUserIdFilter] = useState("");
   const navigate = useNavigate();
-  
   const location = useLocation();
   const status = location.state;
 
@@ -60,7 +56,11 @@ function ManageUser() {
             Swal.fire("Failed", "Failed to inactivate user", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while deleting the user.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while deleting the user.",
+            "error"
+          );
           console.error("Error deleting user:", error);
         }
       }
@@ -92,7 +92,11 @@ function ManageUser() {
             Swal.fire("Failed", "Failed to activate user", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while activating the user.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while activating the user.",
+            "error"
+          );
           console.error("Error activating user:", error);
         }
       }
@@ -103,7 +107,7 @@ function ManageUser() {
     try {
       let url = `http://localhost:8080/api/v1/users?page=${currentPage - 1}&size=${pageSize}`;
       if (status) {
-        url = `http://localhost:8080/api/v1/users/userStatus?page=${currentPage - 1}&size=${pageSize}&userStatus=${status}`;
+        url = `http://localhost:8080/api/v1/users/userStatus?userStatus=${status}`;
       }
 
       const response = await fetch(url);
@@ -111,9 +115,15 @@ function ManageUser() {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-      setTotalElements(data.totalElements);
+      if (status) {
+        setUsers(data);
+        setTotalPages(1);
+        setTotalElements(data.length);
+      } else {
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -141,7 +151,7 @@ function ManageUser() {
 
   useEffect(() => {
     fetchUserData();
-  }, [currentPage, pageSize]); 
+  }, [currentPage, pageSize]);
 
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
@@ -152,12 +162,16 @@ function ManageUser() {
     <SideBar>
       <div className="ViewUser">
         <div className="view-user-content">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">View User</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">View User</h2>
+            <Link to={"/home1"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-3"
+              />
+            </Link>
+          </div>
           <div className="maintain-user-container container-fluid">
             <div className="filters d-flex justify-content-between gap-2">
               <Search
@@ -167,15 +181,6 @@ function ManageUser() {
                 style={{ width: 200 }}
                 onSearch={fetchUserById}
               />
-              {/* <Select
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                style={{ width: 80}  } // Added margin to position dropdown on the right
-              >
-                <Option value={5}>5</Option>
-                <Option value={10}>10</Option>
-                <Option value={20}>20</Option>
-              </Select> */}
             </div>
             <div className="table-responsive">
               <Table
@@ -246,10 +251,14 @@ function ManageUser() {
                   title="Status"
                   dataIndex="status"
                   key="status"
-                  filters={[
-                    { text: "Active", value: "ACTIVE" },
-                    { text: "Inactive", value: "INACTIVE" },
-                  ]}
+                  filters={
+                    status
+                      ? null
+                      : [
+                          { text: "Active", value: "ACTIVE" },
+                          { text: "Inactive", value: "INACTIVE" },
+                        ]
+                  }
                   onFilter={(value, record) => record.status === value}
                   render={(text) => (
                     <Tag color={text === "ACTIVE" ? "green" : "red"}>
@@ -296,17 +305,21 @@ function ManageUser() {
                 />
               </Table>
             </div>
-            <div className="pagination-container d-flex justify-content-center mt-3 flex-wrap">
-              <Pagination
-                current={currentPage}
-                pageSize={pageSize}
-                total={totalElements}
-                showSizeChanger
-                showQuickJumper
-                onChange={handlePageChange}
-                showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
-              />
-            </div>
+            {!status && (
+              <div className="pagination-container d-flex justify-content-center mt-3 flex-wrap">
+                <Pagination
+                  current={currentPage}
+                  pageSize={pageSize}
+                  total={totalElements}
+                  showSizeChanger
+                  showQuickJumper
+                  onChange={handlePageChange}
+                  showTotal={(total, range) =>
+                    `Showing ${range[0]}-${range[1]} of ${total}`
+                  }
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -63,7 +63,7 @@ function Vehicle() {
       vehicleLoadCapacity,
     };
 
-    fetch(`http://localhost:8080/api/v1/vehicles/${transporter}`, {
+    fetch(`http://localhost:8080/api/v1/vehicles/${transporter}?userId=${sessionStorage.getItem("userId")}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

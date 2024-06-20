@@ -14,6 +14,8 @@ function SiteManagement() {
   const [companies, setCompanies] = useState([]);
   const [error, setError] = useState("");
 
+
+  const userId = sessionStorage.getItem("userId");
   const handleClear = () => {
     setCompanyName("");
     setSiteName("");
@@ -50,7 +52,7 @@ function SiteManagement() {
       siteAddress,
     };
 
-    fetch("http://localhost:8080/api/v1/sites", {
+    fetch(`http://localhost:8080/api/v1/sites?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
