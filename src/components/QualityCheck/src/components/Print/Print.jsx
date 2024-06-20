@@ -5,13 +5,9 @@ import SideBar3 from "../../../../SideBar/SideBar3";
 const QPrint = () => {
   const [ticketNo, setTicketNo] = useState('');
 
-  const [userId, setUserId] = useState(null);
+  const userId = sessionStorage.getItem("userId");
 
-  useEffect(() => {
-    const storedUserId = sessionStorage.getItem('userId');
-    console.log('storedUserId:', storedUserId); // Add this line
-    setUserId(storedUserId);
-  }, []);
+
   
   const handleSearch = async () => {
     try {

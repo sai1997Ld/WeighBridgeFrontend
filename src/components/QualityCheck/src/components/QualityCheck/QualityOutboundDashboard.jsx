@@ -34,13 +34,8 @@ function QualityOutboundTransaction() {
   const [filteredData, setFilteredData] = useState([]);
   const [allData, setAllData] = useState([]);
   const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
-  const [userId, setUserId] = useState(null);
+  const userId = sessionStorage.getItem("userId");
 
-  useEffect(() => {
-    const storedUserId = sessionStorage.getItem('userId');
-    console.log('storedUserId:', storedUserId); // Add this line
-    setUserId(storedUserId);
-  }, []);
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
