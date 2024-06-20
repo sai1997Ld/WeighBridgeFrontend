@@ -42,7 +42,7 @@ function VehicleOutboundDetails() {
     const fetchCustomerList = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/Customer/get/list",
+          `http://localhost:8080/api/v1/Customer/get/list`,
           {
             method: "GET",
             credentials: "include"
@@ -97,7 +97,7 @@ function VehicleOutboundDetails() {
     const fetchProductList = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/Products/names",
+          `http://localhost:8080/api/v1/Products/names`,
           {
             method: "GET",
             credentials: "include"
@@ -144,7 +144,7 @@ function VehicleOutboundDetails() {
     //     console.error("Error fetching Product Type:", error);
     //   }
     // };
-    fetch(`http://localhost:8080/api/v1/Products/${e.target.value}/types`)
+    fetch(`http://localhost:8080/api/v1/Products/${e.target.value}/types `)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -187,7 +187,7 @@ function VehicleOutboundDetails() {
 
   const handleVehicleNoBlur = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`);
+      const response = await fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo} `);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -273,6 +273,11 @@ function VehicleOutboundDetails() {
     }
   };
 
+
+  // To add session userid in frontend
+
+  const userId = sessionStorage.getItem("userId");
+
   const handleSave = () => {
 
     const gateData = {
@@ -301,7 +306,7 @@ function VehicleOutboundDetails() {
     console.log("payload", payload);
     // Fetch API
 
-    fetch("http://localhost:8080/api/v1/gate", {
+    fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -343,9 +348,9 @@ function VehicleOutboundDetails() {
             // transactionType: "Inbound"
           });
           navigate("/VehicleEntry");
-        }, 
-        // 3000
-      );
+        },
+          // 3000
+        );
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -397,7 +402,7 @@ function VehicleOutboundDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/v1/sales/getBySalePassNo?salePassNo=${sale}`, {
+      .get(`http://localhost:8080/api/v1/sales/getBySalePassNo?salePassNo=${sale}&userId=${userId} `, {
         withCredentials: true,
       })
       .then((response) => {
