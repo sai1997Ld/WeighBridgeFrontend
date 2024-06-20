@@ -4,14 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
-import { InputNumber, DatePicker, } from "antd";
+import { InputNumber,Select, DatePicker, } from "antd";
 import moment from "moment";
 import { Button, Dropdown, Menu } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import Sidebar4 from "../../../../SideBar/SideBar4";
 
-
+const handleSearchOptionChange = (value) => {
+  setSearchOption(value);
+  setSearchValue(''); // Reset the search value when the option changes
+};
 
 // Styled component for the table
 const StyledTable = styled.table`
@@ -36,13 +39,20 @@ function ManagementQuality() {
   const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiData, setApiData] = useState([]);
+  const [searchOption, setSearchOption] = useState('');
 
+  const selectedCompany = sessionStorage.getItem('selectedCompany');
+  const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+  
+[
 
-
-
-
+]
   const showModal = () => {
     setIsModalOpen(true);
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
   };
 
   const handleOk = () => {
@@ -98,12 +108,9 @@ function ManagementQuality() {
 
   const fetchInboundTransactions = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-InboundTransaction",
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/fetch-InboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         return data;
@@ -116,15 +123,13 @@ function ManagementQuality() {
       return [];
     }
   };
+  
 
   const fetchOutboundTransactions = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction",
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         return data;
@@ -252,17 +257,11 @@ function ManagementQuality() {
 
   const fetchGoodQualities = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/management/goodQualities', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/v1/management/goodQualities?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fromDate: '2024-05-22',
-          toDate: '2024-06-17',
-          companyName: 'Vikram Private Limited',
-          siteName: 'ROURKELA,Tumkela',
-        }),
         credentials: 'include',
       });
       if (response.ok) {
@@ -280,17 +279,11 @@ function ManagementQuality() {
 
   const fetchBadQualities = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/management/badQualities', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/v1/management/badQualities?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fromDate: '2024-05-22',
-          toDate: '2024-06-17',
-          companyName: 'Vikram Private Limited',
-          siteName: 'ROURKELA,Tumkela',
-        }),
         credentials: 'include',
       });
       if (response.ok) {
@@ -308,20 +301,35 @@ function ManagementQuality() {
 
   const fetchApiData = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/management/completedQualities/GoodOrBad', {
+      const selectedCompany = sessionStorage.getItem('selectedCompany');
+      const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+      const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+  
+      if (!selectedCompany || !selectedSiteName || !selectedSiteAddress) {
+        console.error('Company, site name, or site address not selected');
+        return;
+      }
+  
+      // Get the selected date and format it as "YYYY-MM-DD"
+      const formattedDate = moment(selectedDate).format('DD-MM-YYYY');
+  
+      const apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
+  
+      const requestPayload = {
+        fromDate: formattedDate,
+        companyName: selectedCompany,
+        siteName: `${selectedSiteName},${selectedSiteAddress}`,
+      };
+  
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fromDate: '2024-05-22',
-          toDate: '2024-06-06',
-          companyName: 'Vikram Private Limited',
-          siteName: 'ROURKELA,Tumkela',
-        }),
+        body: JSON.stringify(requestPayload),
         credentials: 'include',
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         setApiData(data);
@@ -335,7 +343,7 @@ function ManagementQuality() {
 
   useEffect(() => {
     fetchApiData();
-  }, []);
+  }, [selectedDate]);
 
   useEffect(() => {
     if (filteredData.length !== allData.length) {
@@ -355,15 +363,15 @@ function ManagementQuality() {
           >
             <div style={{ flex: "1" }}>
               <DatePicker
-                value={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                disabledDate={disabledFutureDate}
-                format="DD-MM-YYYY"
-                style={{
-                  borderRadius: "5px",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                }}
-              />
+  value={selectedDate}
+  onChange={handleDateChange}
+  disabledDate={disabledFutureDate}
+  format="DD-MM-YYYY"
+  style={{
+    borderRadius: "5px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  }}
+/>
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -385,7 +393,7 @@ function ManagementQuality() {
 
 
           <div className="row justify-content-center mb-3">
-            <div className="col-12 col-md-3 d-flex align-items-center mb-2 mb-md-0">
+            <div className="col-12 col-md-5 d-flex align-items-center mb-2 mb-md-0">
               Show
               <>
                 <InputNumber
@@ -403,8 +411,28 @@ function ManagementQuality() {
               </>
 
             </div>
-            <div className="col-12 col-md-6 mb-2 mb-md-0">
+            <div className="col-12 col-md-4 mb-2 mb-md-0">
+            <div className="d-flex align-items-center" style={{ marginLeft: "auto", marginRight: "auto" }}>
+              <Select
+                placeholder="Select a search option"
+                style={{ width: "200px" }}
+                onChange={handleSearchOptionChange}
+              // suffixIcon={<SearchOutlined />}
+              >
 
+                <Option value="ticketNo">Search by Ticket No</Option>
+                <Option value="vehicleNo">Search by Vehicle No</Option>
+              </Select>
+              {searchOption && (
+                <Input
+                  placeholder={`Enter ${searchOption}`}
+                  style={{ width: "200px", }}
+                  value={searchValue}
+                  onChange={handleInputChange}
+                  onPressEnter={handleSearch} // Optionally allow search on Enter key press
+                />
+              )}
+            </div>
             </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
               <Dropdown overlay={menu} onSelect={handleMaterialFilter}>

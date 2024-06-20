@@ -44,6 +44,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     const [startPageNumber, setStartPageNumber] = useState(1);
     const itemsPerPage = 5;
     const [totalEntries, setTotalEntries] = useState(0);
+    const [materialOptions, setMaterialOptions] = useState([]);
     const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
 
 
@@ -135,7 +136,53 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
         }
     };
 
+// Function to fetch material options from the API
+const fetchMaterialOptions = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/gate/fetch-ProductsOrMaterials", {
+        credentials: "include" // Include credentials option here
+      });
+      const data = await response.json();
+      setMaterialOptions(data);
+    } catch (error) {
+      console.error("Error fetching material options:", error);
+    }
+  };
 
+  // Fetch material options when the component mounts
+  useEffect(() => {
+    fetchMaterialOptions();
+  }, []);
+
+
+
+  // Function to handle material filter selection
+  const handleMaterialFilter = (e) => {
+    console.log('Selected filter:', e.key);
+    const [filterType, filterValue] = e.key.split('-');
+    if (filterType === 'material') {
+      setSelectedMaterial(filterValue);
+      // Apply filter based on material only
+      applyFilter(vehicleEntryDetails, filterValue, selectedTransactionType);
+    } else if (filterType === 'transaction') {
+      setSelectedTransactionType(filterValue);
+    }
+  };
+
+  // Menu for material and transaction type filters
+  const menu = (
+    <Menu onClick={handleMaterialFilter}>
+      <Menu.SubMenu key="1" title="Product/Material">
+        {materialOptions.map((option, index) => (
+          <Menu.Item key={`material-${option}`}>{option}</Menu.Item>
+        ))}
+      </Menu.SubMenu>
+      <Menu.SubMenu key="2" title="Transaction Type">
+        <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
+        <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
+      </Menu.SubMenu>
+    </Menu>
+  );
 
 
     // API  For Completed Dashboard:
@@ -144,7 +191,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
+        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
             credentials: "include"
         })
             .then(response => {
@@ -171,9 +218,9 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         if (currentPage !== null) {
-            fetchData(currentPage);
+          fetchData(currentPage);
         }
-    }, [currentPage]);
+      }, [currentPage, selectedDate]);
 
     const fetchData = (pageNumber) => {
         const selectedCompany = sessionStorage.getItem('selectedCompany');
@@ -185,9 +232,13 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
             return;
         }
 
-        const apiUrl = selectedSiteName && selectedSiteAddress
-            ? `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}`
-            : `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}`;
+          // Get the selected date and format it as "YYYY-MM-DD"
+         const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
+
+         // Construct the API URL with the selected date
+  const apiUrl = selectedSiteName && selectedSiteAddress
+  ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}&startDate=${formattedDate}`
+  : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
 
         fetch(apiUrl, {
             credentials: "include"
@@ -409,8 +460,6 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
                                 <Option value="ticketNo">Search by Ticket No</Option>
                                 <Option value="vehicleNo">Search by Vehicle No</Option>
-                                <Option value="supplier">Search by Supplier</Option>
-                                <Option value="address">Search by Supplier's Address</Option>
                             </Select>
                             {searchOption && (
                                 <Input
@@ -422,6 +471,11 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
                                 />
                             )}
                         </div>
+                        <div className=" d-flex justify-content-end">
+              <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
+                <Button icon={<FilterOutlined />}>Filter</Button>
+              </Dropdown>
+            </div>
                     </div>
 
                     <div className=" table-responsive" style={{ overflowX: "auto", maxWidth: "100%", borderRadius: "10px" }}>
