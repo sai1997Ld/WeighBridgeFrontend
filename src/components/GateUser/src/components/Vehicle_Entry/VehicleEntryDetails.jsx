@@ -94,6 +94,10 @@ function VehicleEntryDetails() {
   }, []);
 
 
+  // To add session userid in frontend
+
+  const userId = sessionStorage.getItem("userId");
+
   // Get API Vehicle No details if we select from dropdown.
 
   const handleVehicleNoKeyPress = async (selectedVehicleNo) => {
@@ -438,7 +442,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://localhost:8080/api/v1/gate", {
+    fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

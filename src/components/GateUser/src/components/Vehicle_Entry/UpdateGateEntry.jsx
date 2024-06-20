@@ -219,6 +219,12 @@ function UpdateVehicleEntryDetails() {
   //     });
   // };
 
+
+  // To add session userid in frontend
+
+  const userId = sessionStorage.getItem("userId");
+
+
   const handleVehicleNoKeyPress = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent form submission
@@ -362,7 +368,7 @@ function UpdateVehicleEntryDetails() {
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://localhost:8080/api/v1/gate/update", {
+    fetch("http://localhost:8080/api/v1/gate/update?userId=${userId}", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

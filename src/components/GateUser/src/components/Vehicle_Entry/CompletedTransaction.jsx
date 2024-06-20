@@ -58,6 +58,9 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     const componentRef = useRef();
     const [ticketData, setTicketData] = useState(null);
 
+    // To add session userid in frontend
+
+    const userId = sessionStorage.getItem("userId");
 
     // Code for Date:
 
@@ -103,24 +106,24 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
             return;
         }
 
-        let apiUrl = `${api.defaults.baseURL}/transactions/completed`;
+        let apiUrl = `${api.defaults.baseURL}/transactions/completed?userId=${userId}`;
 
         // Build the URL based on the selected search option
         switch (searchOption) {
             case 'ticketNo':
-                apiUrl += `?ticketNo=${searchValue}`;
+                apiUrl += `&ticketNo=${searchValue}`;
                 break;
             case 'date':
-                apiUrl += `?date=${searchValue}`;
+                apiUrl += `&date=${searchValue}`;
                 break;
             case 'vehicleNo':
-                apiUrl += `?vehicleNo=${searchValue}`;
+                apiUrl += `&vehicleNo=${searchValue}`;
                 break;
             case 'supplier':
-                apiUrl += `?supplierName=${searchValue}`;
+                apiUrl += `&supplierName=${searchValue}`;
                 break;
             case 'address':
-                apiUrl += `?address=${searchValue}`;
+                apiUrl += `&address=${searchValue}`;
                 break;
             default:
                 break;
@@ -146,7 +149,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://localhost:8080/api/v1/gate/completedDashboard", {
+        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?userId=${userId}`, {
             credentials: "include"
         })
             .then(response => {
@@ -178,7 +181,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     }, [currentPage]);
 
     const fetchData = (pageNumber) => {
-        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?page=${pageNumber}`, {
+        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?page=${pageNumber}&userId=${userId}`, {
             credentials: "include"
         })
             .then(response => {
@@ -341,6 +344,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
             alert("Failed to download the quality report. Please try again later.");
         }
     };
+
     // API Code for Print:
 
     const handlePrint = async (ticketNo) => {
