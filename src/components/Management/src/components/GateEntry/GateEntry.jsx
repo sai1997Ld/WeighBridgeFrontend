@@ -307,7 +307,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
+    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
       credentials: "include"
     })
       .then(response => {
@@ -341,7 +341,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     if (currentPage !== null) {
       fetchData(currentPage);
     }
-  }, [currentPage]);
+  }, [currentPage, selectedDate]);
 
   const fetchData = (pageNumber) => {
     const selectedCompany = sessionStorage.getItem('selectedCompany');
@@ -353,9 +353,13 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
       return;
     }
 
-    const apiUrl = selectedSiteName && selectedSiteAddress
-      ? `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}`
-      : `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&page=${pageNumber}`;
+
+  // Get the selected date and format it as "DD-MM-YYYY"
+  const formattedDate = moment(selectedDate).format('DD-MM-YYYY');
+
+  const apiUrl = selectedSiteName && selectedSiteAddress
+    ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}&startDate=${formattedDate}`
+    : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
 
     fetch(apiUrl, {
       credentials: "include"
@@ -371,35 +375,14 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         setTotalPage(data.totalPages);
         setTotalEntries(data.totalElements)
         console.log("total Page " + data.totalPages);
-        //API for InboundPending Status
-        return axios.get(
-          "http://localhost:8080/api/v1/gate/count/Inbound",
-          {
-            withCredentials: true,
-          }
-        );
       })
       .then((secondResponse) => {
         setInboundPending(secondResponse.data); // Set the inbound pending data
         console.log("Data from the second API:", secondResponse.data);
-        //API for OutboundPending Status
-        return axios.get(
-          "http://localhost:8080/api/v1/gate/count/Outbound",
-          {
-            withCredentials: true,
-          }
-        );
       })
       .then((thirdResponse) => {
         setOutboundPending(thirdResponse.data);
         console.log("Data from the third API:", thirdResponse.data);
-        //API for Completed Status
-        return axios.get(
-          "http://localhost:8080/api/v1/gate/count/Complete",
-          {
-            withCredentials: true,
-          }
-        );
       })
       .then((fourthResponse) => {
         setCompleted(fourthResponse.data);
@@ -412,11 +395,6 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
 
   const pageCount = totalPage;
-  const handlePageChange = ({ selected }) => {
-    const newStartPage = Math.max(1, selected * 3 - 2);
-    setCurrentPage(selected);
-    setStartPageNumber(newStartPage);
-  };
 
   const chartRef = useRef(null);
   const chartRef2 = useRef(null);
@@ -445,178 +423,11 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     };
   }, []);
 
-  const openPopup = () => {
-    setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
 
 
+  
 
-  const handleConfirm = () => {
-    const details = {
-      ticketType: selectedOption,
-      inTimeDate: selectedDate,
-      outTimeDate: selectedDate // Assuming both in and out time/date are same for now
-    };
-    onConfirmTicket(details);
-
-    if (selectedOption === 'inbound') {
-      navigate('/VehicleEntryDetails');
-    }
-
-    setSelectedOption('');
-    setSelectedDate('');
-    closePopup();
-  };
-
-  // API for Vehicle Out
-
-  const handleVehicleExit = async (ticketNo) => {
-    console.log(`handleVehicleExit called with ticketNo: ${ticketNo}`); // Log the ticket number to ensure the function is called
-    try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/out/${ticketNo}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        // Add body if needed
-        // body: JSON.stringify({ someKey: someValue }),
-        credentials: 'include'
-      });
-
-      let data;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        data = await response.text();
-      }
-      console.log("API response:", data);
-
-      if (response.ok) {
-        // Display the API response using SweetAlert
-        Swal.fire({
-          icon: 'success',
-          title: 'Vehicle Exit Status',
-          text: data.message || JSON.stringify(data), // Assuming the response body is the message you want to display
-          showConfirmButton: true
-        }).then(() => {
-          // Refresh the page after the alert is closed
-          window.location.reload();
-        });
-      } else {
-        // Display the error message from the API response using SweetAlert
-        Swal.fire({
-          icon: 'error',
-          title: 'Vehicle Exit Status',
-          text: data.message || 'An error occurred', // Assuming the response body contains the message you want to display
-          showConfirmButton: true
-        });
-      }
-    } catch (error) {
-      console.error("Fetch error:", error); // Log the error for debugging
-
-      // Display a generic error message if the API response is not available
-      Swal.fire({
-        icon: 'error',
-        title: 'Error checking vehicle status',
-        text: 'Please try again later',
-        showConfirmButton: true
-      });
-    }
-  };
-
-  // Code for Quality Report:
-
-  const handleQualityReportDownload = async (ticketNo) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      console.log(data);
-      const doc = new jsPDF();
-
-      const text = data.companyName;
-      const textWidth = doc.getTextWidth(text);
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const x = (pageWidth - textWidth) / 2;
-      doc.setFontSize(18);
-      doc.text(text, x, 22);
-
-      doc.setFontSize(12);
-      doc.setTextColor(100);
-      const subtitle1 = data.companyAddress;
-      const subtitle2 = `Generated on: ${new Date().toLocaleDateString()}`;
-      const subtitleWidth1 = doc.getTextWidth(subtitle1);
-      const subtitleWidth2 = doc.getTextWidth(subtitle2);
-      const subtitleX1 = (pageWidth - subtitleWidth1) / 2;
-      const subtitleX2 = (pageWidth - subtitleWidth2) / 2;
-      doc.text(subtitle1, subtitleX1, 32);
-      doc.text(subtitle2, subtitleX2, 38);
-
-
-
-      // Add the additional details before the table
-      const details = [
-        `Ticket No: ${data.ticketNo}`,
-        `Date: ${data.date}`,
-        `Vehicle No: ${data.vehicleNo}`,
-        `Material/Product: ${data.materialOrProduct}`,
-        `Material/Product Type: ${data.materialTypeOrProductType}`,
-        `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
-        `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-        `Transaction Type: ${data.transactionType}`
-      ];
-
-      doc.setFontSize(14);
-      let yPosition = 50; // Initial Y position for the details
-      details.forEach(detail => {
-        doc.text(detail, 20, yPosition);
-        yPosition += 10; // Increment Y position for each detail line
-      });
-
-      // Move the table start position down to avoid overlapping with details
-      yPosition += 10;
-
-      const filteredEntries = Object.entries(data.qualityParameters).filter(
-        ([key, value]) => value !== null && value !== undefined && value !== ""
-      );
-
-      const tableBody = filteredEntries.map(([key, value]) => [key, value]);
-      doc.autoTable({
-        startY: yPosition,
-        head: [["Field", "Value"]],
-        body: tableBody,
-      });
-
-      doc.save("quality_report.pdf");
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      alert("Failed to download the quality report. Please try again later.");
-    }
-  };
-  // Code for Disabled Quality Report
-  useEffect(() => {
-    const fetchReportStatuses = async () => {
-      const statuses = {};
-      for (const entry of vehicleEntryDetails) {
-        const status = await checkQualityReportStatus(entry.ticketNo);
-        statuses[entry.ticketNo] = status;
-      }
-      setReportStatuses(statuses);
-    };
-
-    fetchReportStatuses();
-  }, [vehicleEntryDetails]);
+ 
 
   return (
     <SideBar4>
@@ -664,8 +475,6 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
                 <Option value="ticketNo">Search by Ticket No</Option>
                 <Option value="vehicleNo">Search by Vehicle No</Option>
-                <Option value="supplier">Search by Supplier</Option>
-                <Option value="address">Search by Supplier's Address</Option>
               </Select>
               {searchOption && (
                 <Input
@@ -682,32 +491,6 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
                 <Button icon={<FilterOutlined />}>Filter</Button>
               </Dropdown>
             </div>
-          </div>
-          <div>
-            <TransactionUpdatesContainer>
-              <TransactionUpdateBox bgColor="#BDBDBD">
-                <PendingIcon />
-
-                <Text >Inbound Pending:<span style={{ fontWeight: 'bold' }}> {inboundPending} </span> </Text>
-
-              </TransactionUpdateBox>
-
-              <TransactionUpdateBox bgColor="#9FC0EF">
-
-                <PendingIcon />
-
-                <Text >Outbound Pending:  <span style={{ fontWeight: 'bold' }}> {outboundPending} </span> </Text>
-
-              </TransactionUpdateBox>
-
-              <TransactionUpdateBox bgColor="#6FBE88">
-
-                <DoneAllIcon />
-
-                <Text >Completed Transactions: <span style={{ fontWeight: 'bold' }}> {Completed} </span> </Text>
-              </TransactionUpdateBox>
-
-            </TransactionUpdatesContainer>
           </div>
 
 
