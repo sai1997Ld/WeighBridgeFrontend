@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import login from '../../assets/login.jpg';
 
 const Forgot = () => {
   const [email, setEmail] = useState("");
@@ -102,7 +103,7 @@ const Forgot = () => {
             Weighbridge Management System
           </h1>
           <img
-            src="https://www.seewise.ai/assets/img/landing/weighbridge.jpg"
+            src={login}
             alt="Truck"
             className="login-truck-image"
           />

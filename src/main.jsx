@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
 
+
 const HomePage1 = lazy(() => import("./components/HomePages/HomePage1.jsx"));
 import HomePage2 from "./components/HomePages/HomePage2.jsx";
 import HomePage3 from "./components/HomePages/HomePage3.jsx";
@@ -16,7 +17,7 @@ import HomePage5 from "./components/HomePages/HomePage5.jsx";
 import HomePage6 from "./components/HomePages/HomePage6.jsx";
 
 import LoginUser from "./components/Login/LoginUser.jsx";
-import ResetPassword from "./components/Admin/ResetPassword/ResetPassword.jsx";
+import ResetPassword from "./components/ResetPassword/ResetPassword.jsx";
 import Forgot from "./components/Forgot/Forgot.jsx";
 import CreateUser from "./components/Admin/CreateUser/CreateUser.jsx";
 import ManageUser from "./components/Admin/ManageUser/ManageUser.jsx";

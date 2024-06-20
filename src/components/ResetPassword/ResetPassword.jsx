@@ -4,6 +4,8 @@ import "./ResetPassword.css";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import login from '../../assets/login.jpg';
+
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -97,7 +99,7 @@ const ResetPassword = () => {
             WeighBridge Management System
           </h1>
           <img
-            src="https://www.seewise.ai/assets/img/landing/weighbridge.jpg"
+            src={login}
             alt="Truck"
             className="login-truck-image"
           />
