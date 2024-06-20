@@ -20,31 +20,7 @@ const StyledTable = styled.table`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const fetchAllTransactions = async () => {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
-      {
-        credentials: "include",
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        return data;
-      } else {
-        console.error("Unexpected data format:", data);
-        return [];
-      }
-    } else {
-      console.error("Failed to fetch all transactions:", response.status);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching all transactions:", error);
-    return [];
-  }
-};
+
 
 function QualityOutboundTransaction() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -58,7 +34,13 @@ function QualityOutboundTransaction() {
   const [filteredData, setFilteredData] = useState([]);
   const [allData, setAllData] = useState([]);
   const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
+  const [userId, setUserId] = useState(null);
 
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem('userId');
+    console.log('storedUserId:', storedUserId); // Add this line
+    setUserId(storedUserId);
+  }, []);
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
@@ -85,11 +67,37 @@ function QualityOutboundTransaction() {
 
   const homeMainContentRef = useRef(null);
 
+  const fetchAllTransactions = async () => {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/v1/qualities/getAllTransaction?userId=${userId}`,
+      {
+        credentials: "include",
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        return data;
+      } else {
+        console.error("Unexpected data format:", data);
+        return [];
+      }
+    } else {
+      console.error("Failed to fetch all transactions:", response.status);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching all transactions:", error);
+    return [];
+  }
+};
+
   const fetchMaterialOptions = async () => {
     try {
 
       const productResponse = await fetch(
-        "http://localhost:8080/api/v1/qualities/products",
+        `http://localhost:8080/api/v1/qualities/products?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -119,7 +127,7 @@ function QualityOutboundTransaction() {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-InboundTransaction",
+        `http://localhost:8080/api/v1/qualities/fetch-InboundTransaction?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -139,7 +147,7 @@ function QualityOutboundTransaction() {
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction",
+        `http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -222,7 +230,7 @@ function QualityOutboundTransaction() {
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}?userId=${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -264,7 +272,7 @@ function QualityOutboundTransaction() {
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -288,7 +296,7 @@ function QualityOutboundTransaction() {
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}?userId=${userId}`,
           {
             credentials: "include",
           }
@@ -305,7 +313,7 @@ function QualityOutboundTransaction() {
     } else if (searchType === "customer") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -322,7 +330,7 @@ function QualityOutboundTransaction() {
     } else if (searchType === "customerAddress") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }

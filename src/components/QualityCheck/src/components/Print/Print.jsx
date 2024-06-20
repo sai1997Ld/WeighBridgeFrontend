@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, Input, Form } from 'antd';
 import SideBar3 from "../../../../SideBar/SideBar3";
 
 const QPrint = () => {
   const [ticketNo, setTicketNo] = useState('');
+
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem('userId');
+    console.log('storedUserId:', storedUserId); // Add this line
+    setUserId(storedUserId);
+  }, []);
   
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`,
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`,
         {
           credentials: "include",
         }
