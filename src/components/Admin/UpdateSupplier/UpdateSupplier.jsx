@@ -48,7 +48,7 @@ function UpdateSupplier() {
     fetchCountries();
     fetchStates(selectedCountry.value);
     fetchCities(selectedCountry.value, selectedState.value);
-  }, []);
+  }, [selectedCountry.value, selectedState.value]);
 
   const fetchCountries = () => {
     const countryData = Country.getAllCountries().map((country) => ({

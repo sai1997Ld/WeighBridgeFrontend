@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./ManageUser.css";
 import { useNavigate } from "react-router-dom";
-import { Table, Tag, Button, Input, Select } from "antd";
+import { Table, Tag, Button, Input, Pagination } from "antd";
 import Swal from "sweetalert2";
 import SideBar from "../../SideBar/SideBar";
 import "antd/dist/reset.css";
@@ -15,17 +15,17 @@ import { useLocation } from 'react-router-dom';
 import {faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-
 const { Column } = Table;
 const { Search } = Input;
-const { Option } = Select;
+
 
 function ManageUser() {
   const [users, setUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [hasMorePages, setHasMorePages] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
   const [userIdFilter, setUserIdFilter] = useState("");
-  const [pageSize, setPageSize] = useState(10); // New state for page size
   const navigate = useNavigate();
   
   const location = useLocation();
@@ -101,9 +101,9 @@ function ManageUser() {
 
   const fetchUserData = async () => {
     try {
-      let url = `http://localhost:8080/api/v1/users?page=${currentPage}&size=${pageSize}`;
+      let url = `http://localhost:8080/api/v1/users?page=${currentPage - 1}&size=${pageSize}`;
       if (status) {
-        url = `http://localhost:8080/api/v1/users/userStatus?page=${currentPage}&size=${pageSize}&userStatus=${status}`;
+        url = `http://localhost:8080/api/v1/users/userStatus?page=${currentPage - 1}&size=${pageSize}&userStatus=${status}`;
       }
 
       const response = await fetch(url);
@@ -111,12 +111,9 @@ function ManageUser() {
         throw new Error("Failed to fetch data");
       }
       const data = await response.json();
-      if (data.length === 0) {
-        setHasMorePages(false);
-      } else {
-        setHasMorePages(true);
-      }
-      setUsers(data);
+      setUsers(data.users);
+      setTotalPages(data.totalPages);
+      setTotalElements(data.totalElements);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -144,15 +141,11 @@ function ManageUser() {
 
   useEffect(() => {
     fetchUserData();
-  }, [currentPage, pageSize]); // Fetch data when currentPage or pageSize changes
+  }, [currentPage, pageSize]); 
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
-  };
-
-  const handlePageSizeChange = (value) => {
-    setPageSize(value);
-    setCurrentPage(0); // Reset to first page whenever page size changes
+    setPageSize(pageSize);
   };
 
   return (
@@ -174,7 +167,7 @@ function ManageUser() {
                 style={{ width: 200 }}
                 onSearch={fetchUserById}
               />
-              <Select
+              {/* <Select
                 value={pageSize}
                 onChange={handlePageSizeChange}
                 style={{ width: 80}  } // Added margin to position dropdown on the right
@@ -182,7 +175,7 @@ function ManageUser() {
                 <Option value={5}>5</Option>
                 <Option value={10}>10</Option>
                 <Option value={20}>20</Option>
-              </Select>
+              </Select> */}
             </div>
             <div className="table-responsive">
               <Table
@@ -303,20 +296,16 @@ function ManageUser() {
                 />
               </Table>
             </div>
-            <div className="d-flex justify-content-center gap-3 m-3">
-              <Button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 0}
-              >
-                &lt;
-              </Button>
-              <span>{currentPage}</span>
-              <Button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={!hasMorePages}
-              >
-                &gt;
-              </Button>
+            <div className="pagination-container d-flex justify-content-center mt-3 flex-wrap">
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={totalElements}
+                showSizeChanger
+                showQuickJumper
+                onChange={handlePageChange}
+                showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
+              />
             </div>
           </div>
         </div>

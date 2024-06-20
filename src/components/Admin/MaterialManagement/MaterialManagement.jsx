@@ -32,6 +32,8 @@ function MaterialManagement() {
     fetchSupplierNames("");
   }, []);
 
+  const userId = sessionStorage.getItem("userId");
+
   const fetchMaterialNames = () => {
     fetch("http://localhost:8080/api/v1/materials/names")
       .then((response) => {
@@ -132,7 +134,7 @@ function MaterialManagement() {
       materialTypeName: finalMaterialTypeName,
     };
 
-    fetch("http://localhost:8080/api/v1/materials/withType", {
+    fetch(`http://localhost:8080/api/v1/materials/withType?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

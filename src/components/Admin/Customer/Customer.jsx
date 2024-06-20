@@ -29,6 +29,9 @@ function Customer() {
     fetchCountries();
   }, []);
 
+
+  const userId = sessionStorage.getItem("userId");
+
   const fetchCountries = () => {
     const countryData = Country.getAllCountries().map((country) => ({
       label: country.name,
@@ -127,7 +130,7 @@ function Customer() {
       zip,
     };
 
-    fetch("http://localhost:8080/api/v1/customers", {
+    fetch(`http://localhost:8080/api/v1/customers?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
