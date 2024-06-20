@@ -34,6 +34,7 @@ const api = axios.create({
 
 const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     const [currentDate, setCurrentDate] = useState();
+    const [selectedDate, setSelectedDate] = useState(moment());
     const [showPopup, setShowPopup] = useState(false);
     const [selectedOption, setSelectedOption] = useState('');
     const [searchOption, setSearchOption] = useState('');
@@ -50,11 +51,16 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     const [totalEntries, setTotalEntries] = useState(0);
     const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
 
-
+    const disabledFutureDate = (current) => {
+        return current && current > moment().endOf("day");
+    };
 
     const componentRef = useRef();
     const [ticketData, setTicketData] = useState(null);
 
+    // To add session userid in frontend
+
+    const userId = sessionStorage.getItem("userId");
 
     // Code for Date:
 
@@ -100,24 +106,24 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
             return;
         }
 
-        let apiUrl = `${api.defaults.baseURL}/transactions/completed`;
+        let apiUrl = `${api.defaults.baseURL}/transactions/completed?userId=${userId}`;
 
         // Build the URL based on the selected search option
         switch (searchOption) {
             case 'ticketNo':
-                apiUrl += `?ticketNo=${searchValue}`;
+                apiUrl += `&ticketNo=${searchValue}`;
                 break;
             case 'date':
-                apiUrl += `?date=${searchValue}`;
+                apiUrl += `&date=${searchValue}`;
                 break;
             case 'vehicleNo':
-                apiUrl += `?vehicleNo=${searchValue}`;
+                apiUrl += `&vehicleNo=${searchValue}`;
                 break;
             case 'supplier':
-                apiUrl += `?supplier=${searchValue}`;
+                apiUrl += `&supplierName=${searchValue}`;
                 break;
             case 'address':
-                apiUrl += `?address=${searchValue}`;
+                apiUrl += `&address=${searchValue}`;
                 break;
             default:
                 break;
@@ -139,16 +145,11 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
         }
     };
 
-
-
-
     // API  For Completed Dashboard:
-
-
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://localhost:8080/api/v1/gate/completedDashboard", {
+        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?userId=${userId}`, {
             credentials: "include"
         })
             .then(response => {
@@ -180,7 +181,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
     }, [currentPage]);
 
     const fetchData = (pageNumber) => {
-        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?page=${pageNumber}`, {
+        fetch(`http://localhost:8080/api/v1/gate/completedDashboard?page=${pageNumber}&userId=${userId}`, {
             credentials: "include"
         })
             .then(response => {
@@ -343,6 +344,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
             alert("Failed to download the quality report. Please try again later.");
         }
     };
+
     // API Code for Print:
 
     const handlePrint = async (ticketNo) => {
@@ -409,8 +411,12 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
                     <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
                         <div style={{ flex: "1" }}>
                             <DatePicker
-                                value={date}
-                                onChange={handleDateChange}
+                                // value={date}
+                                // onChange={handleDateChange}
+                                value={selectedDate}
+                                onChange={(date) => setSelectedDate(date)}
+                                disabledDate={disabledFutureDate}
+                                format="DD-MM-YYYY"
                                 style={{ borderRadius: "5px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
                             />
                         </div>

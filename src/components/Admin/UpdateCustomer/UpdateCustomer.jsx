@@ -137,7 +137,7 @@ function UpdateCustomer() {
       zip,
     };
 
-    fetch(`http://localhost:8080/api/v1/customers/update/${customerId}`, {
+    fetch(`http://localhost:8080/api/v1/customers/update/${customerId}?userId=${sessionStorage.getItem('userId')}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -4,14 +4,14 @@ import axios from "axios";
 import { Row, Col , Button} from "antd";
 import { Typography } from "antd";
 import moment from "moment";
-import SideBar5 from "../../../../SideBar/SideBar5";
+import Sidebar4 from "../../../../SideBar/SideBar4";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark , faDownload} from "@fortawesome/free-solid-svg-icons";
 import * as XLSX from "xlsx";
 
 const { Text } = Typography;
 
-const WeeklyReport = () => {
+const ManagementWeeklyReport = () => {
   // Initialize with the current week's start and end date
   const [startDate, setStartDate] = useState(
     moment().startOf("isoWeek").format("YYYY-MM-DD")
@@ -29,35 +29,35 @@ const WeeklyReport = () => {
     setEndDate(end);
   };
 
-  const [userId,setUserId] = useState('');
-  useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
-    setUserId(userId);
-  }, []);
-
-
   useEffect(() => {
     fetchData(startDate, endDate);
   }, [startDate, endDate]);
 
   const fetchData = (start, end) => {
-    if (start && end) {
-      axios
-        .get(
-          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&userId=${userId}`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          setWeighments(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    const selectedCompany = sessionStorage.getItem('selectedCompany');
+    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+  
+    if (!selectedCompany) {
+      console.error('Company not selected');
+      return;
     }
+  
+    const apiUrl = selectedSiteName && selectedSiteAddress
+      ? `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
+      : `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}`;
+  
+    axios
+      .get(apiUrl, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setWeighments(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   };
-
   const goBack = () => {
     navigate(-1);
   };
@@ -88,7 +88,7 @@ const WeeklyReport = () => {
     XLSX.writeFile(wb, fileName);
   };
   return (
-    <SideBar5>
+    <Sidebar4>
       <div className="container-fluid mt-0">
         <div className="mb-3 text-center">
           <button className="close-button" onClick={goBack}>
@@ -267,8 +267,8 @@ const WeeklyReport = () => {
           </div>
         ))}
       </div>
-    </SideBar5>
+    </Sidebar4>
   );
 };
 
-export default WeeklyReport;
+export default ManagementWeeklyReport;

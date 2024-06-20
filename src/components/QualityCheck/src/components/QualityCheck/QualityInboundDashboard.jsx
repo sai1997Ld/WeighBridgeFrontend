@@ -20,31 +20,6 @@ const StyledTable = styled.table`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const fetchAllTransactions = async () => {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
-      {
-        credentials: "include",
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        return data;
-      } else {
-        console.error("Unexpected data format:", data);
-        return [];
-      }
-    } else {
-      console.error("Failed to fetch all transactions:", response.status);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching all transactions:", error);
-    return [];
-  }
-};
 
 function QualityInboundDashboard() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -56,25 +31,27 @@ function QualityInboundDashboard() {
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
   const navigate = useNavigate();
   const [filteredData, setFilteredData] = useState([]);
-const [allData, setAllData] = useState([]);
-const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
+  const [allData, setAllData] = useState([]);
+  const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
+  const userId = sessionStorage.getItem("userId");
 
-
-const disabledFutureDate = (current) => {
-  return current && current > moment().endOf("day");
-};
-
-useEffect(() => {
-  const fetchData = async () => {
-    const data = await fetchAllTransactions();
-    // Filter only inbound transactions
-    const inboundData = data.filter(item => item.transactionType.toLowerCase() === 'inbound');
-    setAllData(inboundData);
-    setFilteredData(inboundData);
+  const disabledFutureDate = (current) => {
+    return current && current > moment().endOf("day");
   };
 
-  fetchData();
-}, []);
+ 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchAllTransactions();
+      // Filter only inbound transactions
+      const inboundData = data.filter(item => item.transactionType.toLowerCase() === 'inbound');
+      setAllData(inboundData);
+      setFilteredData(inboundData);
+    };
+
+    fetchData();
+  }, []);
 
 
   useEffect(() => {
@@ -82,22 +59,48 @@ useEffect(() => {
       setFilteredData(allData);
     }
   }, [searchQuery, allData]);
-  
+
 
   const homeMainContentRef = useRef(null);
 
-  const fetchMaterialOptions = async () => {
+  const fetchAllTransactions = async () => {
     try {
-      const materialResponse = await fetch(
-        "http://localhost:8080/api/v1/qualities/materials",
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/getAllTransaction?userId=${userId}`,
         {
           credentials: "include",
         }
       );
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          return data;
+        } else {
+          console.error("Unexpected data format:", data);
+          return [];
+        }
+      } else {
+        console.error("Failed to fetch all transactions:", response.status);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching all transactions:", error);
+      return [];
+    }
+  };
   
-     
-  
-      if (materialResponse.ok ) {
+  const fetchMaterialOptions = async () => {
+    try {
+      const materialResponse = await fetch(
+        `http://localhost:8080/api/v1/qualities/materials?userId=${userId}`,
+        {
+          credentials: "include",
+        }
+      );
+
+
+
+      if (materialResponse.ok) {
         const materialData = await materialResponse.json();
         const combinedOptions = [...materialData];
         setMaterialOptions(combinedOptions);
@@ -118,7 +121,7 @@ useEffect(() => {
     fetchMaterialOptions();
   }, []);
 
-  
+
 
   const handleMaterialFilter = ({ key }) => {
     if (key.startsWith("material-")) {
@@ -128,14 +131,14 @@ useEffect(() => {
       const filtered = allData.filter((item) =>
         (selectedTransactionType === "" ||
           item.transactionType.toLowerCase() ===
-            selectedTransactionType.toLowerCase()) &&
+          selectedTransactionType.toLowerCase()) &&
         (materialOptions[selectedIndex] === "" ||
           item.materialName.toLowerCase() === materialOptions[selectedIndex].toLowerCase())
       );
       setFilteredData(filtered);
-    } 
+    }
   };
-  
+
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
@@ -171,24 +174,24 @@ useEffect(() => {
       }
     }
   };
-  
-  
+
+
 
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}?userId=${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
       });
-  
+
       if (response.ok) {
         console.log(`Transaction with ticket number ${ticketNumber} removed successfully`);
-        
+
         // Update state to remove the transaction from the list
         setAllData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
         setFilteredData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
@@ -199,28 +202,28 @@ useEffect(() => {
       console.error("Error removing transaction:", error);
     }
   };
-  
+
   const handleRemoveTransaction = (ticketNumber, transactionType) => {
     if (transactionType === "Outbound") {
       console.log("Cannot remove Outbound transactions.");
       return;
     }
-  
+
     console.log(`Removing transaction with ticket number ${ticketNumber}`);
     removeTransaction(ticketNumber);
   };
-  
- 
+
+
   const handleSearch = async () => {
     if (searchQuery === "") {
       setFilteredData(allData);
       return;
     }
-  
+
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -244,7 +247,7 @@ useEffect(() => {
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}?userId=${userId}`,
           {
             credentials: "include",
           }
@@ -261,7 +264,7 @@ useEffect(() => {
     } else if (searchType === "supplier") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -278,7 +281,7 @@ useEffect(() => {
     } else if (searchType === "supplierAddress") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -294,8 +297,8 @@ useEffect(() => {
       }
     }
   };
-  
- 
+
+
   return (
     <SideBar3>
       <div
@@ -307,15 +310,16 @@ useEffect(() => {
             style={{ marginTop: "1rem", marginBottom: "1rem" }}
           >
             <div style={{ flex: "1" }}>
-            <DatePicker
-      value={selectedDate}
-      onChange={(date) => setSelectedDate(date)}
-      disabledDate={disabledFutureDate}
-      style={{
-        borderRadius: "5px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      }}
-    />
+              <DatePicker
+                value={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                disabledDate={disabledFutureDate}
+                format="DD-MM-YYYY"
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+              />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -330,7 +334,7 @@ useEffect(() => {
             </div>
             <div style={{ flex: "1" }}></div>
           </div>
- 
+
           <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-3 d-flex align-items-center mb-2 mb-md-0">
               Show
@@ -348,35 +352,35 @@ useEffect(() => {
               &nbsp;entries
             </div>
             <div className="col-12 col-md-6 mb-2 mb-md-0">
-            <div style={{ display: "flex", alignItems: "center" }}>
-  <Select
-    value={searchType}
-    onChange={(value) => setSearchType(value)}
-    style={{ width: 150, marginRight: "8px" }} // Increase width
-  >
-    <Select.Option value="select">Select</Select.Option>
-    <Select.Option value="ticketNo">Ticket No</Select.Option>
-    <Select.Option value="vehicleNo">Vehicle No</Select.Option>
-    <Select.Option value="supplier">Supplier</Select.Option>
-    <Select.Option value="supplierAddress">Supplier Address</Select.Option>
-  </Select>
-  <Input.Search
-    placeholder="Search by Ticket No, Vehicle No, Supplier, or Supplier Address"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    onSearch={handleSearch}
-    style={{ flex: 1, width: 200 }} // Decrease width
-  />
-</div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Select
+                  value={searchType}
+                  onChange={(value) => setSearchType(value)}
+                  style={{ width: 150, marginRight: "8px" }} // Increase width
+                >
+                  <Select.Option value="select">Select</Select.Option>
+                  <Select.Option value="ticketNo">Ticket No</Select.Option>
+                  <Select.Option value="vehicleNo">Vehicle No</Select.Option>
+                  <Select.Option value="supplier">Supplier</Select.Option>
+                  <Select.Option value="supplierAddress">Supplier Address</Select.Option>
+                </Select>
+                <Input.Search
+                  placeholder="Search by Ticket No, Vehicle No, Supplier, or Supplier Address"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onSearch={handleSearch}
+                  style={{ flex: 1, width: 200 }} // Decrease width
+                />
+              </div>
 
-</div>
+            </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
               <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
                 <Button icon={<FilterOutlined />}>Filter</Button>
               </Dropdown>
             </div>
           </div>
- 
+
           <div
             className="table-responsive"
             style={{
@@ -435,7 +439,7 @@ useEffect(() => {
                         borderRight: "1px solid white",
                       }}
                     >
-                     MaterialType
+                      MaterialType
                     </th>
                     <th
                       className="ant-table-cell"
@@ -484,68 +488,68 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                {Array.isArray(filteredData) &&
-  filteredData
-    .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
-    .map((item, index) => (
-                      <tr key={index}>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.ticketNo}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.vehicleNo}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.materialName}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.materialType}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.supplierOrCustomerName}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.supplierOrCustomerAddress}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.transactionType}
-                        </td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
-                        <EditNoteIcon
-  style={{ color: "green", cursor: "pointer" }}
-  onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
-/>
+                  {Array.isArray(filteredData) &&
+                    filteredData
+                      .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+                      .map((item, index) => (
+                        <tr key={index}>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.ticketNo}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.vehicleNo}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.materialName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.materialType}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.supplierOrCustomerName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.supplierOrCustomerAddress}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.transactionType}
+                          </td>
+                          <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
+                            <EditNoteIcon
+                              style={{ color: "green", cursor: "pointer" }}
+                              onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
+                            />
 
-  {transactionType === "inbound" && (
-    <PlaylistRemoveIcon
-      style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
-      onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
-    />
-  )}
-</td>
-                      </tr>
-                    ))}
+                            {transactionType === "inbound" && (
+                              <PlaylistRemoveIcon
+                                style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
+                                onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
+                              />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </StyledTable>
             </div>
@@ -582,16 +586,15 @@ useEffect(() => {
               >
                 &lt;
               </button>
- 
+
               {Array.from({ length: 3 }, (_, index) => {
                 const pageNumber = currentPage + index;
                 if (pageNumber >= pageCount) return null;
                 return (
                   <button
                     key={pageNumber}
-                    className={`btn btn-outline-primary btn-sm me-2 ${
-                      currentPage === pageNumber ? "active" : ""
-                    }`}
+                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
+                      }`}
                     style={{
                       color: currentPage === pageNumber ? "#fff" : "#0077B6",
                       backgroundColor:
@@ -608,9 +611,8 @@ useEffect(() => {
               {currentPage + 3 < pageCount && <span>...</span>}
               {currentPage + 3 < pageCount && (
                 <button
-                  className={`btn btn-outline-primary btn-sm me-2 ${
-                    currentPage === pageCount - 1 ? "active" : ""
-                  }`}
+                  className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
+                    }`}
                   style={{
                     color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
                     backgroundColor:
@@ -655,5 +657,5 @@ useEffect(() => {
       </div>
     </SideBar3>
   );
- }
- export default QualityInboundDashboard;
+}
+export default QualityInboundDashboard;

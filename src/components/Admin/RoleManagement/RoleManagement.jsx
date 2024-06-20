@@ -14,6 +14,8 @@ function RoleManagement() {
     setRoleName("");
   };
 
+  const userId = sessionStorage.getItem("userId");
+
   const handleSave = () => {
     if (roleName.trim() === "") {
       Swal.fire({
@@ -31,7 +33,7 @@ function RoleManagement() {
       roleName,
     };
 
-    fetch("http://localhost:8080/api/v1/roles", {
+    fetch(`http://localhost:8080/api/v1/roles?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,13 +41,12 @@ function RoleManagement() {
       body: JSON.stringify(roleData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {

@@ -144,7 +144,7 @@ function UpdateUser() {
       lastName,
     };
 
-    fetch(`http://localhost:8080/api/v1/users/updateUser/${user.userId}`, {
+    fetch(`http://localhost:8080/api/v1/users/updateUser/${userId}?user=${sessionStorage.getItem('userId')}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

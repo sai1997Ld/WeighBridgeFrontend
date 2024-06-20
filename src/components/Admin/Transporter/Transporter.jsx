@@ -14,7 +14,7 @@ function Transporter() {
   const [transporterAddress, setTransporterAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   const handleClear = () => {
     setTransporterName("");
@@ -24,6 +24,8 @@ function Transporter() {
     setEmailError("");
     setPhoneError("");
   };
+
+  const userId = sessionStorage.getItem("userId");
 
   const handleSave = () => {
     let emailIsValid = true;
@@ -73,7 +75,7 @@ function Transporter() {
       transporterAddress,
     };
 
-    fetch("http://localhost:8080/api/v1/transporter", {
+    fetch(`http://localhost:8080/api/v1/transporter?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,13 +83,12 @@ function Transporter() {
       body: JSON.stringify(transporterData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
@@ -103,8 +104,8 @@ function Transporter() {
         handleClear();
       })
       .catch((error) => {
-        console.error("Error:", error);
-        setError(error.message);
+        // console.error("Error:", error);
+        // setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,

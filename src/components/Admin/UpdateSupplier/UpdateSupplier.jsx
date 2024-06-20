@@ -48,7 +48,7 @@ function UpdateSupplier() {
     fetchCountries();
     fetchStates(selectedCountry.value);
     fetchCities(selectedCountry.value, selectedState.value);
-  }, []);
+  }, [selectedCountry.value, selectedState.value]);
 
   const fetchCountries = () => {
     const countryData = Country.getAllCountries().map((country) => ({
@@ -149,7 +149,7 @@ function UpdateSupplier() {
       zip,
     };
 
-    fetch(`http://localhost:8080/api/v1/supplier/update/${supplierId}`, {
+    fetch(`http://localhost:8080/api/v1/supplier/update/${supplierId}?userId=${sessionStorage.getItem('userId')}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

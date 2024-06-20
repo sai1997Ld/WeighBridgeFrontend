@@ -76,8 +76,10 @@ function NewVehicleRegistration() {
             body: JSON.stringify(vehicleData),
             credentials: "include",
         })
-            .then((response) => {
+            .then(async (response) => {
                 if (response.ok) {
+                    const d = JSON.parse(await sessionStorage.getItem('vehicleData'));
+                    await sessionStorage.setItem('vehicleData', JSON.stringify({ ...d, vehicleNo: vehicleNo }));
                     return response.text();
                 } else {
                     return response.json().then((error) => {

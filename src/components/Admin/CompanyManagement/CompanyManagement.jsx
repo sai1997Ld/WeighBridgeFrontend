@@ -15,6 +15,9 @@ function CompanyManagement() {
   const [phoneError, setPhoneError] = useState("");
   const [error, setError] = useState("");
 
+
+  const userId = sessionStorage.getItem("userId");
+
   const handleClear = () => {
     setCompanyName("");
     setCompanyEmail("");
@@ -71,7 +74,7 @@ function CompanyManagement() {
       companyAddress,
     };
 
-    fetch("http://localhost:8080/api/v1/company", {
+    fetch(`http://localhost:8080/api/v1/company?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,13 +82,12 @@ function CompanyManagement() {
       body: JSON.stringify(companyData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {

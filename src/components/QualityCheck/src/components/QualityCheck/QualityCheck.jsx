@@ -11,9 +11,11 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
 import { Modal, Typography } from "antd";
 import { Stack } from "@mui/material";
+
 import PendingIcon from "@mui/icons-material/Pending";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+
 
 const TransactionUpdatesContainer = styled.div`
   display: flex;
@@ -70,31 +72,7 @@ const StyledTable = styled.table`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const fetchAllTransactions = async () => {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/v1/qualities/getAllTransaction`,
-      {
-        credentials: "include",
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        return data;
-      } else {
-        console.error("Unexpected data format:", data);
-        return [];
-      }
-    } else {
-      console.error("Failed to fetch all transactions:", response.status);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching all transactions:", error);
-    return [];
-  }
-};
+
 
 function QualityCheck() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -117,13 +95,47 @@ function QualityCheck() {
   const [outboundCompleted, setOutboundCompleted] = useState(0);
   const [showInboundConfirmation, setShowInboundConfirmation] = useState(false);
 
+  const [transactionToRemove, setTransactionToRemove] = useState("");
+  const userId  =  sessionStorage  .  getItem("userId");
+
+
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
 
+
+  const fetchAllTransactions = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/getAllTransaction?userId=${userId}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          return data;
+        } else {
+          console.error("Unexpected data format:", data);
+          return [];
+        }
+      } else {
+        console.error("Failed to fetch all transactions:", response.status);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching all transactions:", error);
+      return [];
+    }
+  };
+
+
+
   const fetchPendingCounts = async () => {
     try {
       const totalPendingResponse = await fetch(
+
         "http://localhost:8080/api/v1/qualities/total/pending",
         { credentials: "include" }
       );
@@ -133,6 +145,17 @@ function QualityCheck() {
       );
       const outboundPendingResponse = await fetch(
         "http://localhost:8080/api/v1/qualities/outbound/pending",
+
+        `http://localhost:8080/api/v1/qualities/total/pending?userId=${userId}`,
+        { credentials: "include" }      
+      );
+      const inboundPendingResponse = await fetch(
+        `http://localhost:8080/api/v1/qualities/inbound/pending?userId=${userId}`,
+        { credentials: "include" }
+      );
+      const outboundPendingResponse = await fetch(
+        `http://localhost:8080/api/v1/qualities/outbound/pending?userId=${userId}`,
+
         { credentials: "include" }
       );
 
@@ -154,6 +177,7 @@ function QualityCheck() {
           totalPendingResponse.status,
           inboundPendingResponse.status,
           outboundPendingResponse.status
+
         );
       }
     } catch (error) {
@@ -205,10 +229,74 @@ function QualityCheck() {
     fetchPendingCounts();
     fetchCompletedCounts();
   }, []);
+=======
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching pending counts:", error);
+    }
+  };
+
+  const fetchCompletedCounts = async () => {
+    try {
+      const totalCompletedResponse = await fetch(
+        `http://localhost:8080/api/v1/qualities/total-qct-completed-size?userId=${userId}`,
+        { credentials: "include" }
+      );
+      const inboundCompletedResponse = await fetch(
+        `http://localhost:8080/api/v1/qualities/inbound-qct-completed-size?userId=${userId}`,
+        { credentials: "include" }
+      );
+      const outboundCompletedResponse = await fetch(
+        `http://localhost:8080/api/v1/qualities/outbound-qct-completed-size?userId=${userId}`,
+        { credentials: "include" }
+      );
+
+      if (
+        totalCompletedResponse.ok &&
+        inboundCompletedResponse.ok &&
+        outboundCompletedResponse.ok
+      ) {
+        const totalCompletedCount = await totalCompletedResponse.json();
+        const inboundCompletedCount = await inboundCompletedResponse.json();
+        const outboundCompletedCount = await outboundCompletedResponse.json();
+
+        setTotalCompleted(totalCompletedCount);
+        setInboundCompleted(inboundCompletedCount);
+        setOutboundCompleted(outboundCompletedCount);
+      } else {
+        console.error(
+          "Failed to fetch completed counts:",
+          totalCompletedResponse.status,
+          inboundCompletedResponse.status,
+          outboundCompletedResponse.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching completed counts:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchPendingCounts();
+    fetchCompletedCounts();
+  }, []);
+
+
 
   const showModal = () => {
     setIsModalOpen(true);
   };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -234,12 +322,13 @@ function QualityCheck() {
     }
   }, [searchQuery, allData]);
 
+
   const homeMainContentRef = useRef(null);
 
   const fetchMaterialOptions = async () => {
     try {
       const materialResponse = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials",
+        `http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -269,7 +358,7 @@ function QualityCheck() {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-InboundTransaction",
+        `http://localhost:8080/api/v1/qualities/fetch-InboundTransaction?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -289,7 +378,7 @@ function QualityCheck() {
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction",
+        `http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction?userId=${userId}`,
         {
           credentials: "include",
         }
@@ -314,6 +403,7 @@ function QualityCheck() {
       const selectedIndex = parseInt(key.split("-")[1], 10);
       setSelectedMaterial(materialOptions[selectedIndex]);
       setCurrentPage(0);
+
       const filtered = allData.filter(
         (item) =>
           (selectedTransactionType === "" ||
@@ -322,6 +412,14 @@ function QualityCheck() {
           (materialOptions[selectedIndex] === "" ||
             item.materialName.toLowerCase() ===
               materialOptions[selectedIndex].toLowerCase())
+
+      const filtered = allData.filter((item) =>
+        (selectedTransactionType === "" ||
+          item.transactionType.toLowerCase() ===
+          selectedTransactionType.toLowerCase()) &&
+        (materialOptions[selectedIndex] === "" ||
+          item.materialName.toLowerCase() === materialOptions[selectedIndex].toLowerCase())
+
       );
       setFilteredData(filtered);
     } else if (key === "transaction-inbound") {
@@ -376,6 +474,7 @@ function QualityCheck() {
 
   const removeTransaction = async (ticketNumber) => {
     try {
+
       const response = await fetch(
         `http://localhost:8080/api/v1/qualities/${ticketNumber}`,
         {
@@ -391,6 +490,18 @@ function QualityCheck() {
         console.log(
           `Transaction with ticket number ${ticketNumber} removed successfully`
         );
+
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}?userId=${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        console.log(`Transaction with ticket number ${ticketNumber} removed successfully`);
+
 
         // Update state to remove the transaction from the list
         setAllData((prevData) =>
@@ -414,6 +525,7 @@ function QualityCheck() {
     }
 
     if (transactionType === "Inbound") {
+      setTransactionToRemove(ticketNumber); // Store the ticketNumber
       setShowInboundConfirmation(true);
       return;
     }
@@ -424,6 +536,22 @@ function QualityCheck() {
     // Re-fetch the counts
     fetchPendingCounts();
     fetchCompletedCounts();
+
+  
+    // Find the correct ticketNumber from the filteredData array
+    const itemToRemove = filteredData.find((item) => item.ticketNo === ticketNumber);
+  
+    if (itemToRemove) {
+      console.log(`Removing transaction with ticket number ${itemToRemove.ticketNo}`);
+      await removeTransaction(itemToRemove.ticketNo);
+  
+      // Re-fetch the counts
+      fetchPendingCounts();
+      fetchCompletedCounts();
+    } else {
+      console.log(`Transaction with ticket number ${ticketNumber} not found.`);
+    }
+
   };
 
   const InboundConfirmationModal = ({ isOpen, onConfirm, onCancel }) => {
@@ -448,7 +576,7 @@ function QualityCheck() {
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false`,
+          `http://localhost:8080/api/v1/qualities/searchByTicketNo/${searchQuery}?checkQualityCompleted=false&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -472,7 +600,7 @@ function QualityCheck() {
     } else if (searchType === "vehicleNo") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchByVehicleNo/${searchQuery}?userId=${userId}`,
           {
             credentials: "include",
           }
@@ -489,7 +617,7 @@ function QualityCheck() {
     } else if (searchType === "supplier") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerName=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -506,7 +634,7 @@ function QualityCheck() {
     } else if (searchType === "supplierAddress") {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}`,
+          `http://localhost:8080/api/v1/qualities/searchBySupplierOrCustomer?supplierOrCustomerAddress=${searchQuery}&userId=${userId}`,
           {
             credentials: "include",
           }
@@ -525,6 +653,7 @@ function QualityCheck() {
       }
     }
   };
+
 
   return (
     <SideBar3>
@@ -545,6 +674,9 @@ function QualityCheck() {
                 value={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 disabledDate={disabledFutureDate}
+
+                format="DD-MM-YYYY" 
+
                 style={{
                   borderRadius: "5px",
                   boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -582,6 +714,7 @@ function QualityCheck() {
                 />
                 &nbsp;entries
               </>
+
             </div>
             <div className="col-12 col-md-6 mb-2 mb-md-0">
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -594,9 +727,13 @@ function QualityCheck() {
                   <Select.Option value="ticketNo">Ticket No</Select.Option>
                   <Select.Option value="vehicleNo">Vehicle No</Select.Option>
                   <Select.Option value="supplier">Supplier</Select.Option>
+
                   <Select.Option value="supplierAddress">
                     Supplier Address
                   </Select.Option>
+
+                  <Select.Option value="supplierAddress">Supplier Address</Select.Option>
+
                 </Select>
                 <Input.Search
                   placeholder="Search by Ticket No, Vehicle No, Supplier, or Address"
@@ -606,6 +743,7 @@ function QualityCheck() {
                   style={{ flex: 1, width: 200 }} // Decrease width
                 />
               </div>
+
             </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
               <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
@@ -613,6 +751,60 @@ function QualityCheck() {
               </Dropdown>
             </div>
           </div>
+
+
+          <TransactionUpdatesContainer>
+            <TransactionUpdateBox bgColor="#CACDD1">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Inbound Pending: {inboundPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#9FC0EF">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <CheckCircleIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Inbound Completed: {inboundCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#CACDD1">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Outbound Pending: {outboundPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#9FC0EF">
+              <Stack direction="row" alignItems="center" spacing={0}>
+                <CheckCircleIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Outbound Completed: {outboundCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#91CEC6">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Total Pending: {totalPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#6FBE88">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <DoneAllIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Total Completed: {totalCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+          </TransactionUpdatesContainer>
+
+
 
           <TransactionUpdatesContainer>
             <TransactionUpdateBox bgColor="#CACDD1">
@@ -774,10 +966,14 @@ function QualityCheck() {
                 <tbody>
                   {Array.isArray(filteredData) &&
                     filteredData
+
                       .slice(
                         currentPage * itemsPerPage,
                         (currentPage + 1) * itemsPerPage
                       )
+
+                      .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+
                       .map((item, index) => (
                         <tr key={index}>
                           <td
@@ -822,6 +1018,7 @@ function QualityCheck() {
                           >
                             {item.transactionType}
                           </td>
+
                           <td
                             className="ant-table-cell"
                             style={{ whiteSpace: "nowrap" }}
@@ -834,10 +1031,17 @@ function QualityCheck() {
                                   item.transactionType
                                 )
                               }
+
+                          <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
+                            <EditNoteIcon
+                              style={{ color: "green", cursor: "pointer" }}
+                              onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
+
                             />
 
                             {transactionType === "inbound" && (
                               <PlaylistRemoveIcon
+
                                 style={{
                                   color: "red",
                                   cursor: "pointer",
@@ -849,6 +1053,10 @@ function QualityCheck() {
                                     item.transactionType
                                   )
                                 }
+
+                                style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
+                                onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
+
                               />
                             )}
                           </td>
@@ -862,8 +1070,13 @@ function QualityCheck() {
           <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
             <span>
               Showing {currentPage * itemsPerPage + 1} to{" "}
+
               {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)}{" "}
               of {filteredData.length} entries
+
+              {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of{" "}
+              {filteredData.length} {" "}entries
+
             </span>
             <div className="ml-auto">
               <button
@@ -897,9 +1110,8 @@ function QualityCheck() {
                 return (
                   <button
                     key={pageNumber}
-                    className={`btn btn-outline-primary btn-sm me-2 ${
-                      currentPage === pageNumber ? "active" : ""
-                    }`}
+                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
+                      }`}
                     style={{
                       color: currentPage === pageNumber ? "#fff" : "#0077B6",
                       backgroundColor:
@@ -916,9 +1128,8 @@ function QualityCheck() {
               {currentPage + 3 < pageCount && <span>...</span>}
               {currentPage + 3 < pageCount && (
                 <button
-                  className={`btn btn-outline-primary btn-sm me-2 ${
-                    currentPage === pageCount - 1 ? "active" : ""
-                  }`}
+                  className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
+                    }`}
                   style={{
                     color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
                     backgroundColor:
@@ -970,6 +1181,7 @@ function QualityCheck() {
         <p>Quality parameter for Outbound must be filled.</p>
       </Modal>
       <InboundConfirmationModal
+
         isOpen={showInboundConfirmation}
         onConfirm={async () => {
           const ticketNumber = filteredData.find(
@@ -988,3 +1200,25 @@ function QualityCheck() {
   );
 }
 export default QualityCheck;
+
+  isOpen={showInboundConfirmation}
+  onConfirm={async () => {
+    const itemToRemove = filteredData.find((item) => item.ticketNo === transactionToRemove);
+    if (itemToRemove) {
+      await removeTransaction(itemToRemove.ticketNo);
+      fetchPendingCounts();
+      fetchCompletedCounts();
+    }
+    setShowInboundConfirmation(false);
+    setTransactionToRemove(""); // Reset the transactionToRemove state
+  }}
+  onCancel={() => {
+    setShowInboundConfirmation(false);
+    setTransactionToRemove(""); // Reset the transactionToRemove state
+  }}
+/>
+    </SideBar3>
+  );
+}
+export default QualityCheck;
+

@@ -83,6 +83,11 @@ import ManagementTransaction from "./components/Management/src/components/Transa
 import ManagementLocation from "./components/Management/src/components/Location/Location.jsx";
 import ManagementDailyReport from "./components/Management/src/components/dailyreport/dailyreport.jsx";
 
+import ManagementWeeklyReport from "./components/Management/src/components/weeklyreport/weeklyreport.jsx";
+import ManagementMonthlyReport from  "./components/Management/src/components/monthlyreport/monthlyreport.jsx"
+import ManagementCustomizedReport from "./components/Management/src/components/customized/customized.jsx";
+
+
 import OperatorHome from "./components/Operator/src/components/homed/Homed.jsx";
 import OperatorTransaction from "./components/Operator/src/components/transaction/Transaction.jsx";
 import OperatorTransactionComp from "./components/Operator/src/components/transactioncomp/Transactioncomp.jsx";
@@ -91,7 +96,7 @@ import OperatorTransactionFromInbound from "./components/Operator/src/components
 import OperatorTransactionFromOutbound from "./components/Operator/src/components/transactionform1/Transactionform1.jsx";
 import OperatorDailyReport from "./components/Operator/src/components/dailyreport/dailyreport.jsx";
 import OperatorWeeklyReport from "./components/Operator/src/components/weeklyreport/weeklyreport.jsx";
-import OperatorMonthlyReport from  "./components/Operator/src/components/monthlyreport/monthlyreport.jsx"
+import OperatorMonthlyReport from "./components/Operator/src/components/monthlyreport/monthlyreport.jsx"
 import OperatorCustomizedReport from "./components/Operator/src/components/customized/customized.jsx"
 
 
@@ -196,7 +201,14 @@ const router = createBrowserRouter(
       <Route path="/ManagementQuality" element={<ManagementQuality />} />
       <Route path="/ManagementTransaction" element={<ManagementTransaction />} />
       <Route path="/ManagementLocation" element={<ManagementLocation />} />
+
+      <Route path="/ManagementDailyReport" element={<ManagementDailyReport />} />
+
       <Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
+      <Route path="/ManagementWeeklyReport" element={<ManagementWeeklyReport/>} />
+      <Route path="/ManagementMonthlyReport" element={<ManagementMonthlyReport/>} />
+      <Route path="/ManagementCustomizedReport" element={<ManagementCustomizedReport/>} />
+
 
 
       <Route path="/OperatorHome" element={<OperatorHome />} />
@@ -205,12 +217,12 @@ const router = createBrowserRouter(
       <Route path="/OperatorReport" element={<OperatorReport />} />
       <Route path="/OperatorTransactionFromInbound" element={<OperatorTransactionFromInbound />} />
       <Route path="/OperatorTransactionFromOutbound" element={<OperatorTransactionFromOutbound />} />
-      <Route path="/OperatorDailyReport" element={<OperatorDailyReport/>} />
-      <Route path="/OperatorWeeklyReport" element={<OperatorWeeklyReport/>} />
-      <Route path="/OperatorMonthlyReport" element={<OperatorMonthlyReport/>} />
-      <Route path="/OperatorCustomizedReport" element={<OperatorCustomizedReport/>} />
+      <Route path="/OperatorDailyReport" element={<OperatorDailyReport />} />
+      <Route path="/OperatorWeeklyReport" element={<OperatorWeeklyReport />} />
+      <Route path="/OperatorMonthlyReport" element={<OperatorMonthlyReport />} />
+      <Route path="/OperatorCustomizedReport" element={<OperatorCustomizedReport />} />
 
-      
+
 
 
       <Route path="/Demo" element={<Demo />} />

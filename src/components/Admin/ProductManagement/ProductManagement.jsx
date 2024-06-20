@@ -30,6 +30,9 @@ function ProductManagement() {
 
   }, []);
 
+  const userId = sessionStorage.getItem("userId");
+
+
   const fetchproductNames = () => {
     fetch("http://localhost:8080/api/v1/products/names")
       .then((response) => {
@@ -129,7 +132,7 @@ function ProductManagement() {
       productTypeName: finalproductTypeName,
     };
 
-    fetch("http://localhost:8080/api/v1/products/withType", {
+    fetch(`http://localhost:8080/api/v1/products/withType?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

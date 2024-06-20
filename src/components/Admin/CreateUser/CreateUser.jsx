@@ -23,6 +23,9 @@ function CreateUser() {
   const [isLoading, setIsLoading] = useState(false);
   const [roles, setRoles] = useState([]);
 
+
+  const userId = sessionStorage.getItem("userId");
+
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
@@ -136,7 +139,7 @@ function CreateUser() {
 
     console.log("Payload sent to the API:", userData);
 
-    fetch("http://localhost:8080/api/v1/users", {
+    fetch(`http://localhost:8080/api/v1/users?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

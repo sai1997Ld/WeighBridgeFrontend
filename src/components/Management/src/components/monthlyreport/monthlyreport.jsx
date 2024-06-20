@@ -2,60 +2,65 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Row, Col , Button} from "antd";
-import { Typography } from "antd";
+import { Typography, notification } from "antd";
 import moment from "moment";
-import SideBar5 from "../../../../SideBar/SideBar5";
+import Sidebar4 from "../../../../SideBar/SideBar4";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark , faDownload} from "@fortawesome/free-solid-svg-icons";
 import * as XLSX from "xlsx";
 
 const { Text } = Typography;
 
-const WeeklyReport = () => {
-  // Initialize with the current week's start and end date
+const ManagementMonthlyReport = () => {
   const [startDate, setStartDate] = useState(
-    moment().startOf("isoWeek").format("YYYY-MM-DD")
+    moment().startOf("month").format("YYYY-MM-DD")
   );
   const [endDate, setEndDate] = useState(
-    moment().endOf("isoWeek").format("YYYY-MM-DD")
+    moment().endOf("month").format("YYYY-MM-DD")
   );
   const [weighments, setWeighments] = useState([]);
   const navigate = useNavigate();
 
-  const handleStartDateChange = (event) => {
-    const start = event.target.value;
+  const handleMonthChange = (event) => {
+    const month = event.target.value;
+    const start = moment(month).startOf("month").format("YYYY-MM-DD");
+    const end = moment(month).endOf("month").format("YYYY-MM-DD");
     setStartDate(start);
-    const end = moment(start).add(6, "days").format("YYYY-MM-DD");
     setEndDate(end);
   };
-
-  const [userId,setUserId] = useState('');
-  useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
-    setUserId(userId);
-  }, []);
-
 
   useEffect(() => {
     fetchData(startDate, endDate);
   }, [startDate, endDate]);
 
   const fetchData = (start, end) => {
-    if (start && end) {
-      axios
-        .get(
-          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&userId=${userId}`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((response) => {
-          setWeighments(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    const selectedCompany = sessionStorage.getItem('selectedCompany');
+    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+  
+    if (!selectedCompany) {
+      console.error('Company not selected');
+      return;
     }
+  
+    const apiUrl = selectedSiteName && selectedSiteAddress
+      ? `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
+      : `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&companyName=${selectedCompany}`;
+  
+    axios
+      .get(apiUrl, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setWeighments(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        notification.error({
+          message: "Error",
+          description: "There was an error fetching the report. Please try again later.",
+        });
+      });
   };
 
   const goBack = () => {
@@ -63,7 +68,7 @@ const WeeklyReport = () => {
   };
 
   const downloadExcel = () => {
-    const fileName = "Weekly_Report.xlsx";
+    const fileName = "Monthly_Report.xlsx";
 
     // Prepare data for Excel export
     const data = weighments.flatMap((material) =>
@@ -82,20 +87,20 @@ const WeeklyReport = () => {
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Weekly Report");
+    XLSX.utils.book_append_sheet(wb, ws, "Monthly Report");
 
     // Save the file
     XLSX.writeFile(wb, fileName);
   };
   return (
-    <SideBar5>
+    <Sidebar4>
       <div className="container-fluid mt-0">
         <div className="mb-3 text-center">
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-            Weekly Transaction Report
+            Monthly Transaction Report
           </h2>
           <Row gutter={[16, 16]} justify="start" align="top">
             <Col
@@ -108,36 +113,15 @@ const WeeklyReport = () => {
                 alignItems: "center",
               }}
             >
-              <label htmlFor="startDate">Start Date:</label>
+              <label htmlFor="month">Select Month:</label>
               <input
-                type="date"
-                id="startDate"
-                name="startDate"
+                type="month"
+                id="month"
+                name="month"
                 className="form-control form-control-sm"
                 style={{ width: "120px" }}
-                value={startDate}
-                onChange={handleStartDateChange}
-              />
-            </Col>
-            <Col
-              xs={24}
-              sm={12}
-              md={6}
-              style={{
-                display: "flex",
-                justifyContent: "start",
-                alignItems: "center",
-              }}
-            >
-              <label htmlFor="endDate">End Date:</label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                className="form-control form-control-sm"
-                style={{ width: "120px" }}
-                value={endDate}
-                readOnly
+                value={moment(startDate).format("YYYY-MM")}
+                onChange={handleMonthChange}
               />
             </Col>
             <Button style={{backgroundColor: "#0077b6",color:"white"}} icon={<FontAwesomeIcon icon={faDownload} />} onClick={downloadExcel}>
@@ -267,8 +251,8 @@ const WeeklyReport = () => {
           </div>
         ))}
       </div>
-    </SideBar5>
+    </Sidebar4>
   );
 };
 
-export default WeeklyReport;
+export default ManagementMonthlyReport;

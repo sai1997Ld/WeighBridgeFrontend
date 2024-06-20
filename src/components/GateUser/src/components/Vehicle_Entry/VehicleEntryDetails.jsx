@@ -23,6 +23,9 @@ import {
 import Swal from "sweetalert2";
 import Select from "react-select";
 import axios from "axios";
+import Modal from "antd/es/modal/Modal";
+import NewVehicleRegistration from "./NewVehicleRegistration";
+
 
 function VehicleEntryDetails() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -38,6 +41,11 @@ function VehicleEntryDetails() {
   const [materialType, setMaterialType] = useState([]);
   const [vehicleNumbers, setVehicleNumbers] = useState([]);
   const [vehicleNo, setVehicleNo] = useState("");
+  const [selectedMaterialType, setSelectedMaterialType] = useState(null);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+
+
 
   //Code of Add New Vehicle
 
@@ -45,22 +53,50 @@ function VehicleEntryDetails() {
     navigate("/vehicle-registration");
   };
 
+  const getVehicles = async () => {
+    try {
+      const config = {
+        url: "http://localhost:8080/api/v1/vehicles?size=20",
+        method: 'get',
+
+      }
+      const response = await axios(config);
+      console.log({ response: response.data });
+      const numbers = response.data.map((vehicle) => ({
+        value: vehicle.vehicleNo,
+        label: vehicle.vehicleNo,
+      }));
+      setVehicleNumbers(numbers);
+
+      const vehicleData = await sessionStorage.getItem('vehicleData');
+
+      const requiredData = JSON.parse(vehicleData);
+
+      const tempVehicleNo = numbers?.filter((item) => item.value === requiredData?.vehicleNo);
+
+      setVehicleNo(tempVehicleNo);
+      // await handleVehicleNoKeyPress(requiredData?.vehicleNo)
+
+      console.log({ vehicleData: vehicleData.challanNo, requiredData: requiredData, numbers, tempVehicleNo, formData: { ...formData, ...requiredData } });
+
+      setFormData({ ...formData, ...requiredData })
+
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
   // Get API for Fetching  Vehicle No if Registerd:
   useEffect(() => {
     // Fetch vehicle numbers
-    fetch("http://localhost:8080/api/v1/vehicles?size=20")
-      .then((response) => response.json())
-      .then((data) => {
-        const numbers = data.map((vehicle) => ({
-          value: vehicle.vehicleNo,
-          label: vehicle.vehicleNo,
-        }));
-        setVehicleNumbers(numbers);
-      })
-      .catch((error) =>
-        console.error("Error fetching vehicle numbers:", error)
-      );
+    fetchMaterialList();
+    getVehicles();
   }, []);
+
+
+  // To add session userid in frontend
+
+  const userId = sessionStorage.getItem("userId");
 
   // Get API Vehicle No details if we select from dropdown.
 
@@ -73,14 +109,14 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           // Set transporter state with the data from the API response
           setTransporter(data.transporter);
           // Update other form data fields with the received data
-          setFormData((prevData) => ({
-            ...prevData,
-            vehicleNo: data.vehicleNo,
+          setFormData({
+            ...formData,
+            // vehicleNo: data.vehicleNo,
             noOfWheels: data.vehicleWheelsNo,
             vehicleType: data.vehicleType,
             transporter: data.transporter,
             rcFitnessUpto: data.vehicleFitnessUpTo,
-          }));
+          });
         })
         .catch((error) => {
           console.error("Error fetching supplier Address:", error);
@@ -107,34 +143,56 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         const data = await response.json();
         // Assuming data is an array of suppliers, update state or handle data accordingly
         console.log(data); // Log the data to see its structure
-        setSuppliers(data);
+        setSuppliers(data.map((supplier) => ({
+          value: supplier,
+          label: supplier,
+        })));
+
+
       } catch (error) {
         console.error("Error fetching supplier list:", error);
       }
     };
 
     fetchSupplierList();
+    // Retrieve supplier details from session storage
+    // const storedSupplierDetails = sessionStorage.getItem('supplierDetails');
+    // if (storedSupplierDetails) {
+    //   const parsedDetails = JSON.parse(storedSupplierDetails);
+    //   setFormData(parsedDetails);
+    //   setSelectedSupplier({ value: parsedDetails.supplier, label: parsedDetails.supplier });
+    // }
+
   }, []);
 
   // onChangeSupplier
-  const handleSupplierChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  // const handleSupplierChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({ ...formData, [name]: value, });
 
-    fetch(`http://localhost:8080/api/v1/supplier/get/${e.target.value}`)
+  const handleSupplierChange = (selectedOption) => {
+
+    setSelectedSupplier(selectedOption);
+
+    fetch(`http://localhost:8080/api/v1/supplier/get/${selectedOption.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+
         // Check if data is an array and has at least one element
         if (Array.isArray(data) && data.length > 0) {
           // Set the first element of the array as the supplier address
-          setFormData((prevData) => ({
-            ...prevData,
+          const newData = {
+            ...formData,
+            supplier: selectedOption.value,
             supplierAddressLine1: data[0],
-          }));
+
+          }
+          setFormData(newData);
+
+          // Save supplier details to session storage
+
+          sessionStorage.setItem('vehicleData', JSON.stringify(newData))
         }
       })
       .catch((error) => {
@@ -151,32 +209,36 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     navigate("/new-material");
   };
 
+  const handleMaterialChange = (selectedOption) => {
+    setFormData({ ...formData, material: selectedOption.value });
+    setSelectedMaterial(selectedOption);
+  };
+
   // Get API for Material:
 
-  useEffect(() => {
-    const fetchMaterialList = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/v1/materials/names",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+  const fetchMaterialList = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/v1/materials/names",
+        {
+          method: "GET",
+          credentials: "include",
         }
-        const data = await response.json();
-        // Assuming data is an array of Materials, update state or handle data accordingly
-        console.log(data); // Log the data to see its structure
-        setMaterials(data);
-      } catch (error) {
-        console.error("Error fetching Materials list:", error);
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    };
-
-    fetchMaterialList();
-  }, []);
+      const data = await response.json();
+      // Assuming data is an array of Materials, update state or handle data accordingly
+      console.log(data); // Log the data to see its structure
+      setMaterials(data.map((material) => ({
+        value: material,
+        label: material,
+      })));
+    } catch (error) {
+      console.error("Error fetching Materials list:", error);
+    }
+  };
 
   // Get API for Material Type:
   const fetchMaterialType = (e) => {
@@ -204,17 +266,30 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     //     console.error("Error fetching Material Type:", error);
     //   }
     // };
-    fetch(`http://localhost:8080/api/v1/materials/${e.target.value}/types`)
+    // getMaterialType(e.target.value);
+  };
+  const getMaterialType = (value) => {
+    fetch(`http://localhost:8080/api/v1/materials/${value}/types`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        const newMaterialTypes = data.map((d) => {
+          return {
+            label: d,
+            value: d
+          }
+        })
+        const newData = newMaterialTypes?.filter((item) => item?.value === formData?.materialType);
+        console.log({ newData })
+        setSelectedMaterialType(newData)
         // Assuming data is an array of materialType names
-        setMaterialType(data); // Update the state with the fetched material types
+        setMaterialType(newMaterialTypes); // Update the state with the fetched material types
+        // setMaterialType(data); // Update the state with the fetched material types
       })
       .catch((error) => {
         console.error("Error fetching material types:", error);
       });
-  };
+  }
 
   // const handleVehicleNoKeyPress = (e) => {
   //   if (e.key === "Enter") {
@@ -287,12 +362,12 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     transactionType: "Inbound",
   });
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    const newData = { ...formData, [name]: value, };
+    await sessionStorage.setItem('vehicleData', JSON.stringify(newData));
+    setFormData(newData);
+
 
     // Disable TP No if PO No is entered and vice versa
     // if (name === "poNo") {
@@ -307,13 +382,20 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     //   }));
     // }
   };
+  const handleAddVehicle = async (selectedOption) => {
+    const newData = { ...formData, vehicleNo: selectedOption?.value };
+    setFormData(newData)
+    await sessionStorage.setItem('vehicleData', JSON.stringify(newData));
+    setVehicleNo(selectedOption);
+    handleVehicleNoKeyPress(selectedOption.value);
+  }
 
   const handleSave = () => {
     // Check if any mandatory field is missing
     if (
-      !formData.poNo ||
-      !formData.tpNo ||
-      !formData.challanNo ||
+      // !formData.poNo ||
+      // !formData.tpNo ||
+      // !formData.challanNo ||
       !formData.challanDate ||
       !formData.material ||
       !formData.materialType ||
@@ -330,13 +412,16 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       });
       return;
     }
+    // Ensure transporter is defined and not null/undefined before calling toString()
+    // const transporterString = transporter ? transporter.toString() : "";
 
     const gateData = {
       // userId,
       challanDate: formData.challanDate,
       supplier: formData.supplier,
       supplierAddressLine1: formData.supplierAddressLine1,
-      transporter: transporter.toString(),
+      transporter: Array.isArray(transporter) ? transporter.toString() : '',
+      // transporter: transporterString,
       material: formData.material,
       materialType: formData.materialType,
       vehicle: formData.vehicleNo,
@@ -350,13 +435,14 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       // department: formData.department,
       transactionType: formData.transactionType,
     };
-
+    console.log({ gateData })
+    // return false
     // Create JSON payload for saving Inbound details
     const payload = JSON.stringify(gateData);
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://localhost:8080/api/v1/gate", {
+    fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -392,12 +478,13 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
             driverName: "",
             tpNetWeight: "",
             rcFitnessUpto: "",
-            // department: "",
             eWayBillNo: "",
             transactionType: "Inbound",
           });
           navigate("/VehicleEntry");
-        }, 3000);
+        },
+          // 3000
+        );
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -453,9 +540,27 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     navigate(-1);
   }
 
+  useEffect(() => {
+    if (formData.material) {
+      const newMaterial = materials.filter((item) => item.value === formData.material)
+      getMaterialType(formData.material);
+      setSelectedMaterial(newMaterial);
+      console.log(formData.material, newMaterial, materials);
+
+    }
+    if (formData.supplier) {
+      const newSupplier = suppliers.filter((item) => item.value === formData.supplier)
+      setSelectedSupplier(newSupplier);
+      console.log(formData.supplier, newSupplier, suppliers);
+
+    }
+
+  }, [formData])
+
   return (
     <SideBar2>
       <div>
+
         <div className="VehicleEntryDetailsMainContent">
           <button
             className="close-button"
@@ -496,7 +601,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="challanDate"
                               value={formData.challanDate}
                               onChange={handleChange}
-                              required
+                              // required
                               className="form-control"
                             />
                           </div>
@@ -514,7 +619,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="challanNo"
                               value={formData.challanNo}
                               onChange={handleChange}
-                              required
+                              // required
                               className="form-control"
                             />
                           </div>
@@ -530,7 +635,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 name="tpNo"
                                 value={formData.tpNo}
                                 onChange={handleChange}
-                                required
+                                // required
                                 className="form-control tpscanner"
                                 // disabled={!!formData.poNo}
                                 style={{ flexGrow: 1 }}
@@ -562,6 +667,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                             />
                           </div>
                           {/* Code of Material */}
+
                           <div className="col-md-6">
                             <label
                               htmlFor="material"
@@ -589,24 +695,27 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 }}
                               >
                                 <FontAwesomeIcon icon={faPlus} /> Add
+
                               </div>
                             </button>
-                            <select
+                            <Select
                               id="material"
                               name="material"
-                              value={formData.material}
-                              onChange={fetchMaterialType}
-                              className="form-select"
+                              options={materials}
+                              value={selectedMaterial}
+                              onChange={handleMaterialChange}
+                              // onChange={(selectedOption) => {
+                              //   setSelectedMaterial(selectedOption);
+                              //   const newData = { ...formData, material: selectedOption.value };
+                              //   sessionStorage.setItem('vehicleData', JSON.stringify(newData))
+                              //   setFormData(newData)
+                              // }
+                              // }
+                              placeholder="Select Material"
                               required
-                            >
-                              <option value="">Select material</option>
-                              {materials.map((m, index) => (
-                                <option key={index} value={m}>
-                                  {m}
-                                </option>
-                              ))}
-                            </select>
+                            />
                           </div>
+
                           {/* Code of Material Type */}
                           <div className="col-md-6 mb-3">
                             <label
@@ -615,7 +724,20 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                             >
                               Material Type:
                             </label>
-                            <select
+                            <Select
+
+                              options={materialType}
+                              value={selectedMaterialType}
+                              onChange={(selectedOption) => {
+                                setSelectedMaterialType(selectedOption);
+                                const newData = { ...formData, materialType: selectedOption.value };
+                                sessionStorage.setItem('vehicleData', JSON.stringify(newData))
+                                setFormData(newData)
+                              }
+                              }
+                              placeholder="Select MaterialType"
+                            />
+                            {/* <select
                               id="materialType"
                               name="materialType"
                               value={formData.materialType}
@@ -629,7 +751,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                   {materialType}
                                 </option>
                               ))}
-                            </select>
+                            </select> */}
                           </div>
                           {/* Code Of E-Way Bill No */}
                           <div className="col-md-6 col-sm-12">
@@ -683,12 +805,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               className="user-form-label"
                             >
                               Vehicle No:
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                              >
-                                {/* {" "} */}
-                                *{" "}
-                              </span>
+                              <span style={{ color: "red", fontWeight: "bold" }}>  *{" "} </span>
                             </label>
                             <button
                               type="button"
@@ -722,8 +839,9 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               options={vehicleNumbers}
                               value={vehicleNo}
                               onChange={(selectedOption) => {
-                                setVehicleNo(selectedOption);
-                                handleVehicleNoKeyPress(selectedOption.value);
+                                console.log(selectedOption)
+                                handleAddVehicle(selectedOption);
+
                               }}
                               id="vehicleNo"
                               placeholder="Select Vehicle No"
@@ -762,21 +880,16 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 <FontAwesomeIcon icon={faPlus} /> Add
                               </div>
                             </button>
-                            <select
+
+                            <Select
                               id="supplier"
                               name="supplier"
-                              value={formData.supplier}
+                              options={suppliers}
+                              value={selectedSupplier}
                               onChange={handleSupplierChange}
-                              className="form-select"
+                              placeholder="Select Supplier"
                               required
-                            >
-                              <option value="">Select Supplier</option>
-                              {suppliers.map((s, index) => (
-                                <option key={index} value={s}>
-                                  {s}
-                                </option>
-                              ))}
-                            </select>
+                            />
                           </div>
                           {/* Code of Driver DL No */}
                           <div className="col-md-6 col-sm-12">
