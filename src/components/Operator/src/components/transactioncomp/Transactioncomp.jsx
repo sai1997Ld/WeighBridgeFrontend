@@ -7,7 +7,8 @@ import axios from "axios";
 import { faSearch, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { Chart, ArcElement } from "chart.js/auto";
 import SideBar5 from "../../../../SideBar/SideBar5";
-import { Button } from "antd";
+import { Button, Dropdown } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 
 import { SearchOutlined } from "@ant-design/icons";
 import { Select, Input } from "antd";
@@ -56,10 +57,20 @@ const OperatorTransaction2 = () => {
 
   const itemsPerPage = 5;
 
+  
+  const [userId, setUserId] = useState('');
+  
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem('userId');
+    setUserId(userId);
+  }, []);
+
+
   const fetchData = (pageNumber) => {
     axios
       .get(
-        `http://localhost:8080/api/v1/weighment/getCompletedTransaction?page=${pageNumber}`,
+        `http://localhost:8080/api/v1/weighment/getCompletedTransaction?page=${pageNumber}&userId=${userId}`,
         {
           withCredentials: true,
         }
@@ -75,12 +86,14 @@ const OperatorTransaction2 = () => {
   };
 
   useEffect(() => {
+    if (userId){
     fetchData(pageNumber);
     const interval = setInterval(() => {
       fetchData(pageNumber);
     }, 5000);
     return () => clearInterval(interval);
-  }, [pageNumber]);
+  }
+  }, [userId,pageNumber]);
 
   useEffect(() => {
     Chart.register(ArcElement);
@@ -121,6 +134,7 @@ const OperatorTransaction2 = () => {
 
   const handleInputChange = (e) => {
     setSearchValue(e.target.value);
+    
   };
 
   const reload = () => {
@@ -139,12 +153,19 @@ const OperatorTransaction2 = () => {
 
     switch (searchOption) {
       case "ticketNo":
-        apiUrl += `?ticketNo=${searchValue}&page=${searchPageNumber}`;
+        apiUrl += `?ticketNo=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
         break;
 
       case "vehicleNo":
-        apiUrl += `?vehicleNo=${searchValue}&page=${searchPageNumber}`;
+        apiUrl += `?vehicleNo=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
         break;
+
+      case "transactionType":
+        apiUrl += `?transactionType=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
+        break;
+
+      case "materialName":
+        apiUrl += `?materialName=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
 
       default:
         break;
@@ -194,10 +215,18 @@ const OperatorTransaction2 = () => {
   );
 
   useEffect(() => {
-    if ((searchOption === "vehicleNo" || searchOption === "ticketNo") && searchValue) {
+    if(userId){
+    if (
+      (searchOption === "vehicleNo" ||
+        searchOption === "ticketNo" ||
+        searchOption === "transactionType" ||
+        searchOption === "materialName") &&
+      searchValue
+    ) {
       debouncedSearch(searchPageNumber);
     }
-  }, [searchValue, searchOption, searchPageNumber, debouncedSearch]);
+  }
+  }, [userId,searchValue, searchOption, searchPageNumber, debouncedSearch]);
 
   const handlePageChange = (page) => {
     setSearchPageNumber(page - 1);
@@ -297,28 +326,57 @@ const OperatorTransaction2 = () => {
                       onChange={handleSearchOptionChange}
                       style={{ width: "100%" }}
                     >
-                      <Select.Option value="">Select Option</Select.Option>
+                      <Select.Option value="">Select Option  </Select.Option>
                       <Select.Option value="ticketNo">Ticket No</Select.Option>
                       <Select.Option value="vehicleNo">
                         Vehicle No
                       </Select.Option>
+                      <Select.Option value="transactionType">
+                        Transaction Type
+                      </Select.Option>
+                      <Select.Option value="materialName">
+                        Material Name
+                      </Select.Option>
                     </Select>
                   </div>
-                  <Input
-                    value={searchValue}
-                    onChange={handleInputChange}
-                    style={{ width: "100%",marginLeft:"5%" }}
-                    suffix={<SearchOutlined />}
-                  />
-                  {/* <Button
-                    type="primary"
-                    onClick={() => handleSearch(searchPageNumber)}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    <SearchOutlined />
-                  </Button> */}
+                  <div style={{ width: "100%", marginLeft: "5%" }}>
+                    {searchOption === "transactionType" ? (
+                      <Select
+                        value={searchValue}
+                        onChange={(value) => setSearchValue(value)}
+                        style={{ width: "100%" }}
+                      >
+                        <Select.Option value="">
+                          Select Transaction Type
+                        </Select.Option>
+                        <Select.Option value="Inbound">Inbound</Select.Option>
+                        <Select.Option value="Outbound">Outbound</Select.Option>
+                      </Select>
+                    ) : (
+                      <Input
+                        value={searchValue}
+                        onChange={handleInputChange}
+                        style={{ width: "100%" }}
+                        suffix={<SearchOutlined />}
+                      />
+                    )}
+                  </div>
                 </div>
               </Col>
+              {/* <Col
+                xs={24}
+                sm={12}
+                md={6}
+                style={{
+                  display: "flex",
+                  justifyContent: "start",
+                  alignItems: "center",
+                }}
+              >
+                <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
+                  <Button icon={<FilterOutlined />}>Filter</Button>
+                </Dropdown>
+              </Col> */}
             </Row>
           </div>
         </div>

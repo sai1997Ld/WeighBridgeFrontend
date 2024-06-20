@@ -48,7 +48,11 @@ function TransactionFrom() {
   const [port, setPort] = useState(null);
   const [simulate, setSimulate] = useState(false);
 
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
+  
+  const userId = sessionStorage.getItem('userId');
+ 
   console.log(ticketNumber);
 
   useEffect(() => {
@@ -62,6 +66,7 @@ function TransactionFrom() {
         setGrossWeight(response.data.grossWeight);
         setTareWeight(response.data.tareWeight);
         setNetWeight(response.data.netWeight);
+        setSaveSuccess(false); 
       })
       .catch((error) => {
         console.error("Error fetching weighments:", error);
@@ -149,13 +154,15 @@ function TransactionFrom() {
       machineId: "1",
       ticketNo: ticketNumber,
       weight: inputValue,
+
     };
 
     axios
-      .post("http://localhost:8080/api/v1/weighment/measure", payload, {
+      .post(`http://localhost:8080/api/v1/weighment/measure?userId=${userId}`, payload, {
         withCredentials: true,
       })
       .then((response) => {
+        setSaveSuccess(true);
         console.log("Measurement saved:", response.data);
       })
       .catch((error) => {

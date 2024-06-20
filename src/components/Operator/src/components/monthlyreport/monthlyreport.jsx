@@ -28,16 +28,26 @@ const MonthlyReport = () => {
     setStartDate(start);
     setEndDate(end);
   };
+  const [userId, setUserId] = useState('');
+
+  useEffect(() =>{
+    const userId = sessionStorage.getItem('userId');
+    setUserId(userId);
+  }, []);
 
   useEffect(() => {
+    if(userId){
     fetchData(startDate, endDate);
-  }, [startDate, endDate]);
+  }
+  }, [userId,startDate, endDate]);
+
+ 
 
   const fetchData = (start, end) => {
     if (start && end) {
       axios
         .get(
-          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}`,
+          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&userId=${userId}`,
           {
             withCredentials: true,
           }

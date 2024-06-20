@@ -11,12 +11,10 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
 import { Modal, Typography } from "antd";
 import { Stack } from "@mui/material";
-import PendingIcon from '@mui/icons-material/Pending';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
 
-
-
+import PendingIcon from "@mui/icons-material/Pending";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 
 const TransactionUpdatesContainer = styled.div`
@@ -67,7 +65,6 @@ const TransactionUpdateBox = styled.div`
   }
 `;
 
-
 // Styled component for the table
 const StyledTable = styled.table`
   width: 100%;
@@ -97,12 +94,15 @@ function QualityCheck() {
   const [inboundCompleted, setInboundCompleted] = useState(0);
   const [outboundCompleted, setOutboundCompleted] = useState(0);
   const [showInboundConfirmation, setShowInboundConfirmation] = useState(false);
+
   const [transactionToRemove, setTransactionToRemove] = useState("");
   const userId  =  sessionStorage  .  getItem("userId");
+
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
+
 
   const fetchAllTransactions = async () => {
     try {
@@ -135,6 +135,17 @@ function QualityCheck() {
   const fetchPendingCounts = async () => {
     try {
       const totalPendingResponse = await fetch(
+
+        "http://localhost:8080/api/v1/qualities/total/pending",
+        { credentials: "include" }
+      );
+      const inboundPendingResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/inbound/pending",
+        { credentials: "include" }
+      );
+      const outboundPendingResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/outbound/pending",
+
         `http://localhost:8080/api/v1/qualities/total/pending?userId=${userId}`,
         { credentials: "include" }      
       );
@@ -144,6 +155,7 @@ function QualityCheck() {
       );
       const outboundPendingResponse = await fetch(
         `http://localhost:8080/api/v1/qualities/outbound/pending?userId=${userId}`,
+
         { credentials: "include" }
       );
 
@@ -165,6 +177,59 @@ function QualityCheck() {
           totalPendingResponse.status,
           inboundPendingResponse.status,
           outboundPendingResponse.status
+
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching pending counts:", error);
+    }
+  };
+
+  const fetchCompletedCounts = async () => {
+    try {
+      const totalCompletedResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/total-qct-completed-size",
+        { credentials: "include" }
+      );
+      const inboundCompletedResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/inbound-qct-completed-size",
+        { credentials: "include" }
+      );
+      const outboundCompletedResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/outbound-qct-completed-size",
+        { credentials: "include" }
+      );
+
+      if (
+        totalCompletedResponse.ok &&
+        inboundCompletedResponse.ok &&
+        outboundCompletedResponse.ok
+      ) {
+        const totalCompletedCount = await totalCompletedResponse.json();
+        const inboundCompletedCount = await inboundCompletedResponse.json();
+        const outboundCompletedCount = await outboundCompletedResponse.json();
+
+        setTotalCompleted(totalCompletedCount);
+        setInboundCompleted(inboundCompletedCount);
+        setOutboundCompleted(outboundCompletedCount);
+      } else {
+        console.error(
+          "Failed to fetch completed counts:",
+          totalCompletedResponse.status,
+          inboundCompletedResponse.status,
+          outboundCompletedResponse.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching completed counts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingCounts();
+    fetchCompletedCounts();
+  }, []);
+=======
         );
       }
     } catch (error) {
@@ -219,6 +284,7 @@ function QualityCheck() {
   }, []);
 
 
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -232,6 +298,13 @@ function QualityCheck() {
   };
 
 
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -263,12 +336,12 @@ function QualityCheck() {
 
       if (materialResponse.ok) {
         const materialData = await materialResponse.json();
-        const combinedOptions = [...materialData,];
+        const combinedOptions = [...materialData];
         setMaterialOptions(combinedOptions);
       } else {
         console.error(
           "Failed to fetch material or product options:",
-          materialResponse.status,
+          materialResponse.status
         );
       }
     } catch (error) {
@@ -315,7 +388,10 @@ function QualityCheck() {
         setFilteredData(data);
         setAllData(data);
       } else {
-        console.error("Failed to fetch outbound transactions:", response.status);
+        console.error(
+          "Failed to fetch outbound transactions:",
+          response.status
+        );
       }
     } catch (error) {
       console.error("Error fetching outbound transactions:", error);
@@ -327,12 +403,23 @@ function QualityCheck() {
       const selectedIndex = parseInt(key.split("-")[1], 10);
       setSelectedMaterial(materialOptions[selectedIndex]);
       setCurrentPage(0);
+
+      const filtered = allData.filter(
+        (item) =>
+          (selectedTransactionType === "" ||
+            item.transactionType.toLowerCase() ===
+              selectedTransactionType.toLowerCase()) &&
+          (materialOptions[selectedIndex] === "" ||
+            item.materialName.toLowerCase() ===
+              materialOptions[selectedIndex].toLowerCase())
+
       const filtered = allData.filter((item) =>
         (selectedTransactionType === "" ||
           item.transactionType.toLowerCase() ===
           selectedTransactionType.toLowerCase()) &&
         (materialOptions[selectedIndex] === "" ||
           item.materialName.toLowerCase() === materialOptions[selectedIndex].toLowerCase())
+
       );
       setFilteredData(filtered);
     } else if (key === "transaction-inbound") {
@@ -345,7 +432,6 @@ function QualityCheck() {
       fetchOutboundTransactions();
     }
   };
-
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
@@ -372,8 +458,6 @@ function QualityCheck() {
     navigate("/home");
   };
 
-
-
   const handleTicketClick = (ticketNumber, transactionType) => {
     const item = allData.find((item) => item.ticketNo === ticketNumber);
     if (item) {
@@ -386,12 +470,27 @@ function QualityCheck() {
     }
   };
 
-
-
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
   const removeTransaction = async (ticketNumber) => {
     try {
+
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/${ticketNumber}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        console.log(
+          `Transaction with ticket number ${ticketNumber} removed successfully`
+        );
+
       const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}?userId=${userId}`, {
         method: "PUT",
         headers: {
@@ -403,9 +502,14 @@ function QualityCheck() {
       if (response.ok) {
         console.log(`Transaction with ticket number ${ticketNumber} removed successfully`);
 
+
         // Update state to remove the transaction from the list
-        setAllData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
-        setFilteredData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
+        setAllData((prevData) =>
+          prevData.filter((item) => item.ticketNo !== ticketNumber)
+        );
+        setFilteredData((prevData) =>
+          prevData.filter((item) => item.ticketNo !== ticketNumber)
+        );
       } else {
         console.error("Failed to remove transaction:", response.status);
       }
@@ -419,12 +523,20 @@ function QualityCheck() {
       showModal();
       return;
     }
-  
+
     if (transactionType === "Inbound") {
       setTransactionToRemove(ticketNumber); // Store the ticketNumber
       setShowInboundConfirmation(true);
       return;
     }
+
+    console.log(`Removing transaction with ticket number ${ticketNumber}`);
+    await removeTransaction(ticketNumber);
+
+    // Re-fetch the counts
+    fetchPendingCounts();
+    fetchCompletedCounts();
+
   
     // Find the correct ticketNumber from the filteredData array
     const itemToRemove = filteredData.find((item) => item.ticketNo === ticketNumber);
@@ -439,18 +551,21 @@ function QualityCheck() {
     } else {
       console.log(`Transaction with ticket number ${ticketNumber} not found.`);
     }
+
   };
 
   const InboundConfirmationModal = ({ isOpen, onConfirm, onCancel }) => {
     return (
-      <Modal open={isOpen} onOk={onConfirm} onCancel={onCancel} title="Confirmation">
+      <Modal
+        open={isOpen}
+        onOk={onConfirm}
+        onCancel={onCancel}
+        title="Confirmation"
+      >
         <p>Are you sure you want to skip this inbound transaction?</p>
       </Modal>
     );
   };
-
-
-
 
   const handleSearch = async () => {
     if (searchQuery === "") {
@@ -528,7 +643,10 @@ function QualityCheck() {
           const data = await response.json();
           setFilteredData(data);
         } else {
-          console.error("Failed to search by supplier address:", response.status);
+          console.error(
+            "Failed to search by supplier address:",
+            response.status
+          );
         }
       } catch (error) {
         console.error("Error searching by supplier address:", error);
@@ -540,7 +658,11 @@ function QualityCheck() {
   return (
     <SideBar3>
       <div
-        style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
+        style={{
+          fontFamily: "Arial",
+          color: "#333",
+          "--table-border-radius": "30px",
+        }}
       >
         <div className="container-fluid mt-0">
           <div
@@ -552,7 +674,9 @@ function QualityCheck() {
                 value={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 disabledDate={disabledFutureDate}
+
                 format="DD-MM-YYYY" 
+
                 style={{
                   borderRadius: "5px",
                   boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -603,7 +727,13 @@ function QualityCheck() {
                   <Select.Option value="ticketNo">Ticket No</Select.Option>
                   <Select.Option value="vehicleNo">Vehicle No</Select.Option>
                   <Select.Option value="supplier">Supplier</Select.Option>
+
+                  <Select.Option value="supplierAddress">
+                    Supplier Address
+                  </Select.Option>
+
                   <Select.Option value="supplierAddress">Supplier Address</Select.Option>
+
                 </Select>
                 <Input.Search
                   placeholder="Search by Ticket No, Vehicle No, Supplier, or Address"
@@ -621,6 +751,7 @@ function QualityCheck() {
               </Dropdown>
             </div>
           </div>
+
 
           <TransactionUpdatesContainer>
             <TransactionUpdateBox bgColor="#CACDD1">
@@ -675,6 +806,56 @@ function QualityCheck() {
 
 
 
+          <TransactionUpdatesContainer>
+            <TransactionUpdateBox bgColor="#CACDD1">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Inbound Pending: {inboundPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#9FC0EF">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <CheckCircleIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Inbound Completed: {inboundCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#CACDD1">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Outbound Pending: {outboundPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#9FC0EF">
+              <Stack direction="row" alignItems="center" spacing={0}>
+                <CheckCircleIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Outbound Completed: {outboundCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#91CEC6">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Total Pending: {totalPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#6FBE88">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <DoneAllIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Total Completed: {totalCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+          </TransactionUpdatesContainer>
 
           <div
             className="table-responsive"
@@ -785,7 +966,14 @@ function QualityCheck() {
                 <tbody>
                   {Array.isArray(filteredData) &&
                     filteredData
+
+                      .slice(
+                        currentPage * itemsPerPage,
+                        (currentPage + 1) * itemsPerPage
+                      )
+
                       .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+
                       .map((item, index) => (
                         <tr key={index}>
                           <td
@@ -830,16 +1018,45 @@ function QualityCheck() {
                           >
                             {item.transactionType}
                           </td>
+
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            <EditNoteIcon
+                              style={{ color: "green", cursor: "pointer" }}
+                              onClick={() =>
+                                handleTicketClick(
+                                  item.ticketNo,
+                                  item.transactionType
+                                )
+                              }
+
                           <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
                             <EditNoteIcon
                               style={{ color: "green", cursor: "pointer" }}
                               onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
+
                             />
 
                             {transactionType === "inbound" && (
                               <PlaylistRemoveIcon
+
+                                style={{
+                                  color: "red",
+                                  cursor: "pointer",
+                                  marginLeft: "8px",
+                                }}
+                                onClick={() =>
+                                  handleRemoveTransaction(
+                                    item.ticketNo,
+                                    item.transactionType
+                                  )
+                                }
+
                                 style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
                                 onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
+
                               />
                             )}
                           </td>
@@ -853,8 +1070,13 @@ function QualityCheck() {
           <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
             <span>
               Showing {currentPage * itemsPerPage + 1} to{" "}
+
+              {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)}{" "}
+              of {filteredData.length} entries
+
               {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of{" "}
               {filteredData.length} {" "}entries
+
             </span>
             <div className="ml-auto">
               <button
@@ -959,6 +1181,26 @@ function QualityCheck() {
         <p>Quality parameter for Outbound must be filled.</p>
       </Modal>
       <InboundConfirmationModal
+
+        isOpen={showInboundConfirmation}
+        onConfirm={async () => {
+          const ticketNumber = filteredData.find(
+            (item) => item.transactionType === "Inbound"
+          )?.ticketNo;
+          if (ticketNumber) {
+            await removeTransaction(ticketNumber);
+            fetchPendingCounts();
+            fetchCompletedCounts();
+          }
+          setShowInboundConfirmation(false);
+        }}
+        onCancel={() => setShowInboundConfirmation(false)}
+      />
+    </SideBar3>
+  );
+}
+export default QualityCheck;
+
   isOpen={showInboundConfirmation}
   onConfirm={async () => {
     const itemToRemove = filteredData.find((item) => item.ticketNo === transactionToRemove);
@@ -979,3 +1221,4 @@ function QualityCheck() {
   );
 }
 export default QualityCheck;
+
