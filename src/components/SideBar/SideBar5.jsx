@@ -239,7 +239,7 @@ const SideBar5 = ({ children }) => {
           },
         }}
       >
-        <List sx={{ marginTop: "120px" }}>
+        <List sx={{ marginTop: "65px" }}>
            <ListItemButton
             component={Link}
             to="/OperatorTransaction"
