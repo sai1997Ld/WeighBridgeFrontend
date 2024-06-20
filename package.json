@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "depcheck": "depcheck",
+    "predev": "powershell -File ./pre-npm-run-dev.ps1",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
