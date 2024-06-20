@@ -44,6 +44,9 @@ function TransactionFrom2() {
 
   const ticketNumber = queryParams.get("ticketNumber");
 
+  
+  const userId = sessionStorage.getItem('userId');
+   
   console.log(ticketNumber);
 
   useEffect(() => {
@@ -155,7 +158,7 @@ function TransactionFrom2() {
     };
 
     axios
-      .post("http://localhost:8080/api/v1/weighment/measure", payload, {
+      .post(`http://localhost:8080/api/v1/weighment/measure?userId=${userId}`, payload, {
         withCredentials: true,
       })
       .then((response) => {
@@ -466,7 +469,7 @@ function TransactionFrom2() {
                     <input
                       type="text"
                       autoComplete="off"
-                      value={`${consignmentWeight} ton`}
+                      value={`${consignmentWeight} kg`}
                       className="abcx"
                       readOnly
                     />

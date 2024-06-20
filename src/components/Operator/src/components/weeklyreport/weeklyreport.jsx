@@ -29,6 +29,13 @@ const WeeklyReport = () => {
     setEndDate(end);
   };
 
+  const [userId,setUserId] = useState('');
+  useEffect(() => {
+    const userId = sessionStorage.getItem('userId');
+    setUserId(userId);
+  }, []);
+
+
   useEffect(() => {
     fetchData(startDate, endDate);
   }, [startDate, endDate]);
@@ -37,7 +44,7 @@ const WeeklyReport = () => {
     if (start && end) {
       axios
         .get(
-          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}`,
+          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&userId=${userId}`,
           {
             withCredentials: true,
           }

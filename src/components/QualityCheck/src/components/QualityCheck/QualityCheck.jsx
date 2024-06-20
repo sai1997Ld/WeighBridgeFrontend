@@ -10,14 +10,10 @@ import { FilterOutlined } from "@ant-design/icons";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
 import { Modal, Typography } from "antd";
-import {  Stack } from "@mui/material";
-import PendingIcon from '@mui/icons-material/Pending';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-
-
-
-
+import { Stack } from "@mui/material";
+import PendingIcon from "@mui/icons-material/Pending";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 const TransactionUpdatesContainer = styled.div`
   display: flex;
@@ -67,7 +63,6 @@ const TransactionUpdateBox = styled.div`
   }
 `;
 
-
 // Styled component for the table
 const StyledTable = styled.table`
   width: 100%;
@@ -111,135 +106,123 @@ function QualityCheck() {
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
   const navigate = useNavigate();
   const [filteredData, setFilteredData] = useState([]);
-const [allData, setAllData] = useState([]);
-const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [totalPending, setTotalPending] = useState(0);
-const [inboundPending, setInboundPending] = useState(0);
-const [outboundPending, setOutboundPending] = useState(0);
-const [totalCompleted, setTotalCompleted] = useState(0);
-const [inboundCompleted, setInboundCompleted] = useState(0);
-const [outboundCompleted, setOutboundCompleted] = useState(0);
-const [showInboundConfirmation, setShowInboundConfirmation] = useState(false);
+  const [allData, setAllData] = useState([]);
+  const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [totalPending, setTotalPending] = useState(0);
+  const [inboundPending, setInboundPending] = useState(0);
+  const [outboundPending, setOutboundPending] = useState(0);
+  const [totalCompleted, setTotalCompleted] = useState(0);
+  const [inboundCompleted, setInboundCompleted] = useState(0);
+  const [outboundCompleted, setOutboundCompleted] = useState(0);
+  const [showInboundConfirmation, setShowInboundConfirmation] = useState(false);
 
+  const disabledFutureDate = (current) => {
+    return current && current > moment().endOf("day");
+  };
 
+  const fetchPendingCounts = async () => {
+    try {
+      const totalPendingResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/total/pending",
+        { credentials: "include" }
+      );
+      const inboundPendingResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/inbound/pending",
+        { credentials: "include" }
+      );
+      const outboundPendingResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/outbound/pending",
+        { credentials: "include" }
+      );
 
+      if (
+        totalPendingResponse.ok &&
+        inboundPendingResponse.ok &&
+        outboundPendingResponse.ok
+      ) {
+        const totalPendingCount = await totalPendingResponse.json();
+        const inboundPendingCount = await inboundPendingResponse.json();
+        const outboundPendingCount = await outboundPendingResponse.json();
 
-const disabledFutureDate = (current) => {
-  return current && current > moment().endOf("day");
-};
-  
-  
-    
-    
-
-  
-    const fetchPendingCounts = async () => {
-      try {
-        const totalPendingResponse = await fetch(
-          "http://localhost:8080/api/v1/qualities/total/pending",
-          { credentials: "include" }
+        setTotalPending(totalPendingCount);
+        setInboundPending(inboundPendingCount);
+        setOutboundPending(outboundPendingCount);
+      } else {
+        console.error(
+          "Failed to fetch pending counts:",
+          totalPendingResponse.status,
+          inboundPendingResponse.status,
+          outboundPendingResponse.status
         );
-        const inboundPendingResponse = await fetch(
-          "http://localhost:8080/api/v1/qualities/inbound/pending",
-          { credentials: "include" }
-        );
-        const outboundPendingResponse = await fetch(
-          "http://localhost:8080/api/v1/qualities/outbound/pending",
-          { credentials: "include" }
-        );
-    
-        if (
-          totalPendingResponse.ok &&
-          inboundPendingResponse.ok &&
-          outboundPendingResponse.ok
-        ) {
-          const totalPendingCount = await totalPendingResponse.json();
-          const inboundPendingCount = await inboundPendingResponse.json();
-          const outboundPendingCount = await outboundPendingResponse.json();
-    
-          setTotalPending(totalPendingCount);
-          setInboundPending(inboundPendingCount);
-          setOutboundPending(outboundPendingCount);
-        } else {
-          console.error(
-            "Failed to fetch pending counts:",
-            totalPendingResponse.status,
-            inboundPendingResponse.status,
-            outboundPendingResponse.status
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching pending counts:", error);
       }
-    };
-    
-    const fetchCompletedCounts = async () => {
-      try {
-        const totalCompletedResponse = await fetch(
-          "http://localhost:8080/api/v1/qualities/total-qct-completed-size",
-          { credentials: "include" }
+    } catch (error) {
+      console.error("Error fetching pending counts:", error);
+    }
+  };
+
+  const fetchCompletedCounts = async () => {
+    try {
+      const totalCompletedResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/total-qct-completed-size",
+        { credentials: "include" }
+      );
+      const inboundCompletedResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/inbound-qct-completed-size",
+        { credentials: "include" }
+      );
+      const outboundCompletedResponse = await fetch(
+        "http://localhost:8080/api/v1/qualities/outbound-qct-completed-size",
+        { credentials: "include" }
+      );
+
+      if (
+        totalCompletedResponse.ok &&
+        inboundCompletedResponse.ok &&
+        outboundCompletedResponse.ok
+      ) {
+        const totalCompletedCount = await totalCompletedResponse.json();
+        const inboundCompletedCount = await inboundCompletedResponse.json();
+        const outboundCompletedCount = await outboundCompletedResponse.json();
+
+        setTotalCompleted(totalCompletedCount);
+        setInboundCompleted(inboundCompletedCount);
+        setOutboundCompleted(outboundCompletedCount);
+      } else {
+        console.error(
+          "Failed to fetch completed counts:",
+          totalCompletedResponse.status,
+          inboundCompletedResponse.status,
+          outboundCompletedResponse.status
         );
-        const inboundCompletedResponse = await fetch(
-          "http://localhost:8080/api/v1/qualities/inbound-qct-completed-size",
-          { credentials: "include" }
-        );
-        const outboundCompletedResponse = await fetch(
-          "http://localhost:8080/api/v1/qualities/outbound-qct-completed-size",
-          { credentials: "include" }
-        );
-    
-        if (
-          totalCompletedResponse.ok &&
-          inboundCompletedResponse.ok &&
-          outboundCompletedResponse.ok
-        ) {
-          const totalCompletedCount = await totalCompletedResponse.json();
-          const inboundCompletedCount = await inboundCompletedResponse.json();
-          const outboundCompletedCount = await outboundCompletedResponse.json();
-    
-          setTotalCompleted(totalCompletedCount);
-          setInboundCompleted(inboundCompletedCount);
-          setOutboundCompleted(outboundCompletedCount);
-        } else {
-          console.error(
-            "Failed to fetch completed counts:",
-            totalCompletedResponse.status,
-            inboundCompletedResponse.status,
-            outboundCompletedResponse.status
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching completed counts:", error);
       }
-    };
-    
+    } catch (error) {
+      console.error("Error fetching completed counts:", error);
+    }
+  };
 
-    useEffect(() => {
-      fetchPendingCounts();
-      fetchCompletedCounts();
-    }, []);
-    
+  useEffect(() => {
+    fetchPendingCounts();
+    fetchCompletedCounts();
+  }, []);
 
-const showModal = () => {
-  setIsModalOpen(true);
-};
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
 
-const handleOk = () => {
-  setIsModalOpen(false);
-};
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
 
-const handleCancel = () => {
-  setIsModalOpen(false);
-};
-
-
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchAllTransactions();
-setAllData(data);
-setFilteredData(data);
+      setAllData(data);
+      setFilteredData(data);
     };
 
     fetchData();
@@ -250,7 +233,6 @@ setFilteredData(data);
       setFilteredData(allData);
     }
   }, [searchQuery, allData]);
-  
 
   const homeMainContentRef = useRef(null);
 
@@ -262,15 +244,15 @@ setFilteredData(data);
           credentials: "include",
         }
       );
-  
+
       if (materialResponse.ok) {
         const materialData = await materialResponse.json();
-        const combinedOptions = [...materialData,];
+        const combinedOptions = [...materialData];
         setMaterialOptions(combinedOptions);
       } else {
         console.error(
           "Failed to fetch material or product options:",
-          materialResponse.status,
+          materialResponse.status
         );
       }
     } catch (error) {
@@ -303,7 +285,7 @@ setFilteredData(data);
       console.error("Error fetching inbound transactions:", error);
     }
   };
-  
+
   const fetchOutboundTransactions = async () => {
     try {
       const response = await fetch(
@@ -317,7 +299,10 @@ setFilteredData(data);
         setFilteredData(data);
         setAllData(data);
       } else {
-        console.error("Failed to fetch outbound transactions:", response.status);
+        console.error(
+          "Failed to fetch outbound transactions:",
+          response.status
+        );
       }
     } catch (error) {
       console.error("Error fetching outbound transactions:", error);
@@ -329,12 +314,14 @@ setFilteredData(data);
       const selectedIndex = parseInt(key.split("-")[1], 10);
       setSelectedMaterial(materialOptions[selectedIndex]);
       setCurrentPage(0);
-      const filtered = allData.filter((item) =>
-        (selectedTransactionType === "" ||
-          item.transactionType.toLowerCase() ===
-            selectedTransactionType.toLowerCase()) &&
-        (materialOptions[selectedIndex] === "" ||
-          item.materialName.toLowerCase() === materialOptions[selectedIndex].toLowerCase())
+      const filtered = allData.filter(
+        (item) =>
+          (selectedTransactionType === "" ||
+            item.transactionType.toLowerCase() ===
+              selectedTransactionType.toLowerCase()) &&
+          (materialOptions[selectedIndex] === "" ||
+            item.materialName.toLowerCase() ===
+              materialOptions[selectedIndex].toLowerCase())
       );
       setFilteredData(filtered);
     } else if (key === "transaction-inbound") {
@@ -347,7 +334,6 @@ setFilteredData(data);
       fetchOutboundTransactions();
     }
   };
-  
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
@@ -374,8 +360,6 @@ setFilteredData(data);
     navigate("/home");
   };
 
-
-
   const handleTicketClick = (ticketNumber, transactionType) => {
     const item = allData.find((item) => item.ticketNo === ticketNumber);
     if (item) {
@@ -387,27 +371,34 @@ setFilteredData(data);
       }
     }
   };
-  
-  
 
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-  
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/${ticketNumber}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
       if (response.ok) {
-        console.log(`Transaction with ticket number ${ticketNumber} removed successfully`);
-        
+        console.log(
+          `Transaction with ticket number ${ticketNumber} removed successfully`
+        );
+
         // Update state to remove the transaction from the list
-        setAllData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
-        setFilteredData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
+        setAllData((prevData) =>
+          prevData.filter((item) => item.ticketNo !== ticketNumber)
+        );
+        setFilteredData((prevData) =>
+          prevData.filter((item) => item.ticketNo !== ticketNumber)
+        );
       } else {
         console.error("Failed to remove transaction:", response.status);
       }
@@ -415,21 +406,21 @@ setFilteredData(data);
       console.error("Error removing transaction:", error);
     }
   };
-  
+
   const handleRemoveTransaction = async (ticketNumber, transactionType) => {
     if (transactionType === "Outbound") {
       showModal();
       return;
     }
-  
+
     if (transactionType === "Inbound") {
       setShowInboundConfirmation(true);
       return;
     }
-  
+
     console.log(`Removing transaction with ticket number ${ticketNumber}`);
     await removeTransaction(ticketNumber);
-  
+
     // Re-fetch the counts
     fetchPendingCounts();
     fetchCompletedCounts();
@@ -437,21 +428,23 @@ setFilteredData(data);
 
   const InboundConfirmationModal = ({ isOpen, onConfirm, onCancel }) => {
     return (
-      <Modal open={isOpen} onOk={onConfirm} onCancel={onCancel} title="Confirmation">
+      <Modal
+        open={isOpen}
+        onOk={onConfirm}
+        onCancel={onCancel}
+        title="Confirmation"
+      >
         <p>Are you sure you want to skip this inbound transaction?</p>
       </Modal>
     );
   };
-  
-  
-  
- 
+
   const handleSearch = async () => {
     if (searchQuery === "") {
       setFilteredData(allData);
       return;
     }
-  
+
     if (searchType === "ticketNo") {
       try {
         const response = await fetch(
@@ -522,19 +515,25 @@ setFilteredData(data);
           const data = await response.json();
           setFilteredData(data);
         } else {
-          console.error("Failed to search by supplier address:", response.status);
+          console.error(
+            "Failed to search by supplier address:",
+            response.status
+          );
         }
       } catch (error) {
         console.error("Error searching by supplier address:", error);
       }
     }
   };
-  
- 
+
   return (
     <SideBar3>
       <div
-        style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
+        style={{
+          fontFamily: "Arial",
+          color: "#333",
+          "--table-border-radius": "30px",
+        }}
       >
         <div className="container-fluid mt-0">
           <div
@@ -542,15 +541,15 @@ setFilteredData(data);
             style={{ marginTop: "1rem", marginBottom: "1rem" }}
           >
             <div style={{ flex: "1" }}>
-            <DatePicker
-      value={selectedDate}
-      onChange={(date) => setSelectedDate(date)}
-      disabledDate={disabledFutureDate}
-      style={{
-        borderRadius: "5px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      }}
-    />
+              <DatePicker
+                value={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                disabledDate={disabledFutureDate}
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+              />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -565,109 +564,106 @@ setFilteredData(data);
             </div>
             <div style={{ flex: "1" }}></div>
           </div>
- 
+
           <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-3 d-flex align-items-center mb-2 mb-md-0">
               Show
               <>
-  <InputNumber
-    min={1}
-    value={itemsPerPage}
-    onChange={(value) => setItemsPerPage(value)}
-    style={{
-      width: "60px",
-      marginLeft: "5px",
-      borderRadius: "5px",
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    }}
-  />
-  &nbsp;entries
-</>
-             
+                <InputNumber
+                  min={1}
+                  value={itemsPerPage}
+                  onChange={(value) => setItemsPerPage(value)}
+                  style={{
+                    width: "60px",
+                    marginLeft: "5px",
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  }}
+                />
+                &nbsp;entries
+              </>
             </div>
             <div className="col-12 col-md-6 mb-2 mb-md-0">
-            <div style={{ display: "flex", alignItems: "center" }}>
-  <Select
-    value={searchType}
-    onChange={(value) => setSearchType(value)}
-    style={{ width: 150, marginRight: "8px" }} // Increase width
-  >
-    <Select.Option value="select">Select</Select.Option>
-    <Select.Option value="ticketNo">Ticket No</Select.Option>
-    <Select.Option value="vehicleNo">Vehicle No</Select.Option>
-    <Select.Option value="supplier">Supplier</Select.Option>
-    <Select.Option value="supplierAddress">Supplier Address</Select.Option>
-  </Select>
-  <Input.Search
-    placeholder="Search by Ticket No, Vehicle No, Supplier, or Address"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    onSearch={handleSearch}
-    style={{ flex: 1, width: 200 }} // Decrease width
-  />
-</div>
-
-</div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Select
+                  value={searchType}
+                  onChange={(value) => setSearchType(value)}
+                  style={{ width: 150, marginRight: "8px" }} // Increase width
+                >
+                  <Select.Option value="select">Select</Select.Option>
+                  <Select.Option value="ticketNo">Ticket No</Select.Option>
+                  <Select.Option value="vehicleNo">Vehicle No</Select.Option>
+                  <Select.Option value="supplier">Supplier</Select.Option>
+                  <Select.Option value="supplierAddress">
+                    Supplier Address
+                  </Select.Option>
+                </Select>
+                <Input.Search
+                  placeholder="Search by Ticket No, Vehicle No, Supplier, or Address"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onSearch={handleSearch}
+                  style={{ flex: 1, width: 200 }} // Decrease width
+                />
+              </div>
+            </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
               <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
                 <Button icon={<FilterOutlined />}>Filter</Button>
               </Dropdown>
             </div>
           </div>
- 
+
           <TransactionUpdatesContainer>
-  <TransactionUpdateBox bgColor="#CACDD1">
-    <Stack direction="row" alignItems="center" spacing={1}>
-      <PendingIcon />
-      <Typography variant="body1" color="textSecondary">
-        Inbound Pending: {inboundPending}
-      </Typography>
-    </Stack>
-  </TransactionUpdateBox>
-  <TransactionUpdateBox bgColor="#9FC0EF">
-  <Stack direction="row" alignItems="center" spacing={1}>
-    <CheckCircleIcon />
-    <Typography variant="body1" color="textSecondary">
-      Inbound Completed: {inboundCompleted}
-    </Typography>
-  </Stack>
-</TransactionUpdateBox>
-  <TransactionUpdateBox bgColor="#CACDD1">
-    <Stack direction="row" alignItems="center" spacing={1}>
-      <PendingIcon />
-      <Typography variant="body1" color="textSecondary">
-        Outbound Pending: {outboundPending}
-      </Typography>
-    </Stack>
-  </TransactionUpdateBox>
-  <TransactionUpdateBox bgColor="#9FC0EF">
-  <Stack direction="row" alignItems="center" spacing={0}>
-    <CheckCircleIcon />
-    <Typography variant="body1" color="textSecondary">
-      Outbound Completed: {outboundCompleted}
-    </Typography>
-  </Stack>
-</TransactionUpdateBox>
-  <TransactionUpdateBox bgColor="#91CEC6">
-    <Stack direction="row" alignItems="center" spacing={1}>
-      <PendingIcon />
-      <Typography variant="body1" color="textSecondary">
-        Total Pending: {totalPending}
-      </Typography>
-    </Stack>
-  </TransactionUpdateBox>
-  <TransactionUpdateBox bgColor="#6FBE88">
-    <Stack direction="row" alignItems="center" spacing={1}>
-      <DoneAllIcon />
-      <Typography variant="body1" color="textSecondary">
-        Total Completed: {totalCompleted}
-      </Typography>
-    </Stack>
-  </TransactionUpdateBox>
-</TransactionUpdatesContainer>
-
-
-
+            <TransactionUpdateBox bgColor="#CACDD1">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Inbound Pending: {inboundPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#9FC0EF">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <CheckCircleIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Inbound Completed: {inboundCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#CACDD1">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Outbound Pending: {outboundPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#9FC0EF">
+              <Stack direction="row" alignItems="center" spacing={0}>
+                <CheckCircleIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Outbound Completed: {outboundCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#91CEC6">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PendingIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Total Pending: {totalPending}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+            <TransactionUpdateBox bgColor="#6FBE88">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <DoneAllIcon />
+                <Typography variant="body1" color="textSecondary">
+                  Total Completed: {totalCompleted}
+                </Typography>
+              </Stack>
+            </TransactionUpdateBox>
+          </TransactionUpdatesContainer>
 
           <div
             className="table-responsive"
@@ -776,79 +772,99 @@ setFilteredData(data);
                   </tr>
                 </thead>
                 <tbody>
-                {Array.isArray(filteredData) &&
-  filteredData
-    .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
-    .map((item, index) => (
-                      <tr key={index}>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.ticketNo}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.vehicleNo}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.materialName}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.materialType}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.supplierOrCustomerName}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.supplierOrCustomerAddress}
-                        </td>
-                        <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.transactionType}
-                        </td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
-                        <EditNoteIcon
-  style={{ color: "green", cursor: "pointer" }}
-  onClick={() => handleTicketClick(item.ticketNo, item.transactionType)}
-/>
+                  {Array.isArray(filteredData) &&
+                    filteredData
+                      .slice(
+                        currentPage * itemsPerPage,
+                        (currentPage + 1) * itemsPerPage
+                      )
+                      .map((item, index) => (
+                        <tr key={index}>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.ticketNo}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.vehicleNo}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.materialName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.materialType}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.supplierOrCustomerName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.supplierOrCustomerAddress}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.transactionType}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            <EditNoteIcon
+                              style={{ color: "green", cursor: "pointer" }}
+                              onClick={() =>
+                                handleTicketClick(
+                                  item.ticketNo,
+                                  item.transactionType
+                                )
+                              }
+                            />
 
-  {transactionType === "inbound" && (
-    <PlaylistRemoveIcon
-      style={{ color: "red", cursor: "pointer", marginLeft: "8px" }}
-      onClick={() => handleRemoveTransaction(item.ticketNo, item.transactionType)}
-    />
-  )}
-</td>
-                      </tr>
-                    ))}
+                            {transactionType === "inbound" && (
+                              <PlaylistRemoveIcon
+                                style={{
+                                  color: "red",
+                                  cursor: "pointer",
+                                  marginLeft: "8px",
+                                }}
+                                onClick={() =>
+                                  handleRemoveTransaction(
+                                    item.ticketNo,
+                                    item.transactionType
+                                  )
+                                }
+                              />
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </StyledTable>
             </div>
           </div>
           {/* Pagination */}
           <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-          <span>
-  Showing {currentPage * itemsPerPage + 1} to{" "}
-  {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of{" "}
-  {filteredData.length} {" "}entries
-</span>
+            <span>
+              Showing {currentPage * itemsPerPage + 1} to{" "}
+              {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)}{" "}
+              of {filteredData.length} entries
+            </span>
             <div className="ml-auto">
               <button
                 className="btn btn-outline-primary btn-sm me-2"
@@ -874,7 +890,7 @@ setFilteredData(data);
               >
                 &lt;
               </button>
- 
+
               {Array.from({ length: 3 }, (_, index) => {
                 const pageNumber = currentPage + index;
                 if (pageNumber >= pageCount) return null;
@@ -946,29 +962,29 @@ setFilteredData(data);
         </div>
       </div>
       <Modal
-      open={isModalOpen}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      title="Error"
-    >
-      <p>Quality parameter for Outbound must be filled.</p>
-    </Modal>
-    <InboundConfirmationModal
-  isOpen={showInboundConfirmation}
-  onConfirm={async () => {
-    const ticketNumber = filteredData.find(
-      (item) => item.transactionType === "Inbound"
-    )?.ticketNo;
-    if (ticketNumber) {
-      await removeTransaction(ticketNumber);
-      fetchPendingCounts();
-      fetchCompletedCounts();
-    }
-    setShowInboundConfirmation(false);
-  }}
-  onCancel={() => setShowInboundConfirmation(false)}
-/>
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        title="Error"
+      >
+        <p>Quality parameter for Outbound must be filled.</p>
+      </Modal>
+      <InboundConfirmationModal
+        isOpen={showInboundConfirmation}
+        onConfirm={async () => {
+          const ticketNumber = filteredData.find(
+            (item) => item.transactionType === "Inbound"
+          )?.ticketNo;
+          if (ticketNumber) {
+            await removeTransaction(ticketNumber);
+            fetchPendingCounts();
+            fetchCompletedCounts();
+          }
+          setShowInboundConfirmation(false);
+        }}
+        onCancel={() => setShowInboundConfirmation(false)}
+      />
     </SideBar3>
   );
- }
- export default QualityCheck;
+}
+export default QualityCheck;

@@ -25,11 +25,16 @@ const CustomizedReport = () => {
     setEndDate(event.target.value);
   };
 
+  const [userId,setUserId] =  useState('');
+  useEffect(() =>{
+    const userId= sessionStorage.getItem('userId');
+    setUserId(userId);
+  },[]);
   const fetchData = (start, end) => {
     if (start && end) {
       axios
         .get(
-          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}`,
+          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&userId=${userId}`,
           {
             withCredentials: true,
           }
@@ -44,8 +49,10 @@ const CustomizedReport = () => {
   };
 
   useEffect(() => {
+    if(userId){
     fetchData(startDate, endDate);
-  }, [startDate, endDate]);
+  }
+  }, [userId,startDate, endDate]);
   const goBack = () => {
     navigate(-1);
   };
