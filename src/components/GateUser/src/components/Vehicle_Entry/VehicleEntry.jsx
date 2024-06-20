@@ -24,9 +24,14 @@ import PendingIcon from '@mui/icons-material/Pending';
 
 
 
+
+
+
+
 const { Option } = Select;
 const api = axios.create({
   baseURL: 'http://localhost:8080/api/v1/gate',
+
   headers: {
     'Content-Type': 'application/json',
   },
@@ -64,6 +69,8 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const [outboundPending, setOutboundPending] = useState(null);
   const [Completed, setCompleted] = useState(null);
   // const [isEditDisabled, setIsEditDisabled] = useState(false);
+
+
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
@@ -114,6 +121,9 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   }
 `;
 
+  // To add session userid in frontend
+
+  const userId = sessionStorage.getItem("userId");
 
   // Code for Date:
 
@@ -138,6 +148,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     }
   };
 
+
   // Code for Searching:
 
   // const handleSearch = (value) => {
@@ -159,24 +170,24 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       return;
     }
 
-    let apiUrl = `${api.defaults.baseURL}/transactions/ongoing`;
+    let apiUrl = `${api.defaults.baseURL}/transactions/ongoing?userId=${userId}`;
 
     // Build the URL based on the selected search option
     switch (searchOption) {
       case 'ticketNo':
-        apiUrl += `?ticketNo=${searchValue}`;
+        apiUrl += `&ticketNo=${searchValue}`;
         break;
       case 'date':
-        apiUrl += `?date=${searchValue}`;
+        apiUrl += `&date=${searchValue}`;
         break;
       case 'vehicleNo':
-        apiUrl += `?vehicleNo=${searchValue}`;
+        apiUrl += `&vehicleNo=${searchValue}`;
         break;
       case 'supplier':
-        apiUrl += `?supplierName=${searchValue}`;
+        apiUrl += `&supplierName=${searchValue}`;
         break;
       case 'address':
-        apiUrl += `?address=${searchValue}`;
+        apiUrl += `&address=${searchValue}`;
         break;
       default:
         break;
@@ -205,7 +216,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   // Function to fetch material options from the API
   const fetchMaterialOptions = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/gate/fetch-ProductsOrMaterials", {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/fetch-ProductsOrMaterials?userId=${userId}`, {
         credentials: "include" // Include credentials option here
       });
       const data = await response.json();
@@ -285,7 +296,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const fetchDataByTransactionType = async (transactionType) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}&userId=${userId}`, {
         credentials: "include" // Include credentials option here
       });
       if (!response.ok) {
@@ -308,7 +319,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://localhost:8080/api/v1/gate", {
+    fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
       credentials: "include"
     })
       .then(response => {
@@ -345,7 +356,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   }, [currentPage]);
 
   const fetchData = (pageNumber) => {
-    fetch(`http://localhost:8080/api/v1/gate?page=${pageNumber}`, {
+    fetch(`http://localhost:8080/api/v1/gate?page=${pageNumber}&userId=${userId}`, {
       credentials: "include"
     })
       .then(response => {
@@ -361,7 +372,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         console.log("total Page " + data.totalPages);
         //API for InboundPending Status
         return axios.get(
-          "http://localhost:8080/api/v1/gate/count/Inbound",
+          `http://localhost:8080/api/v1/gate/count/Inbound?userId=${userId}`,
           {
             withCredentials: true,
           }
@@ -372,7 +383,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         console.log("Data from the second API:", secondResponse.data);
         //API for OutboundPending Status
         return axios.get(
-          "http://localhost:8080/api/v1/gate/count/Outbound",
+          `http://localhost:8080/api/v1/gate/count/Outbound?userId=${userId}`,
           {
             withCredentials: true,
           }
@@ -383,7 +394,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         console.log("Data from the third API:", thirdResponse.data);
         //API for Completed Status
         return axios.get(
-          "http://localhost:8080/api/v1/gate/count/Complete",
+          `http://localhost:8080/api/v1/gate/count/Complete?userId=${userId}`,
           {
             withCredentials: true,
           }
@@ -467,7 +478,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   //  code Of Edit API:
   const handleEdit = (ticketNo) => {
     // Make the API call using Axios with credentials
-    axios.get(`http://localhost:8080/api/v1/gate/edit/${ticketNo}`, {
+    axios.get(`http://localhost:8080/api/v1/gate/edit/${ticketNo}?userId=${userId}`, {
       withCredentials: true // Include credentials with the request
     })
       .then(response => {
@@ -490,7 +501,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const handleVehicleExit = async (ticketNo) => {
     console.log(`handleVehicleExit called with ticketNo: ${ticketNo}`); // Log the ticket number to ensure the function is called
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/out/${ticketNo}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/out/${ticketNo}?userId=${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -546,7 +557,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`);
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -863,9 +874,6 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
               }}
               onClick={() => setCurrentPage(pageCount - 1)}
             >
-
-
-
               {pageCount}
             </button>
           )}
