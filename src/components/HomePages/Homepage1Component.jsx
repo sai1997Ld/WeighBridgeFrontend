@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import {
   faUsers,
   faUsersSlash,
@@ -12,28 +11,18 @@ import {
   faUserFriends,
   faBuilding,
 } from "@fortawesome/free-solid-svg-icons";
-
 import "./HomePage1.css";
-
 import SideBar from "../SideBar/SideBar";
-
 import { Link, useNavigate } from "react-router-dom";
 
 function HomePage1Component() {
   const [activeUsers, setActiveUsers] = useState(0);
-
   const [inactiveUsers, setInactiveUsers] = useState(0);
-
   const [registeredTrucks, setRegisteredTrucks] = useState(0);
-
   const [allUsers, setAllUsers] = useState(0);
-
   const [transporters, setTransporters] = useState(0);
-
   const [suppliers, setSuppliers] = useState(0);
-
   const [customers, setCustomers] = useState(0);
-
   const [companies, setCompanies] = useState(0);
 
   const navigate = useNavigate();
@@ -45,86 +34,44 @@ function HomePage1Component() {
   const handleInactiveCard = () => {
     navigate("/manage-user", { state: "INACTIVE" });
   };
+
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/home/all-users")
-      .then((response) => response.json())
+    const fetchAllData = async () => {
+      try {
+        const [
+          allUsersResponse,
+          activeUsersResponse,
+          inactiveUsersResponse,
+          transportersResponse,
+          companiesResponse,
+          suppliersResponse,
+          customersResponse,
+          registeredTrucksResponse,
+        ] = await Promise.all([
+          axios.get("http://localhost:8080/api/v1/home/all-users"),
+          axios.get("http://localhost:8080/api/v1/home/active-users"),
+          axios.get("http://localhost:8080/api/v1/home/inactive-users"),
+          axios.get("http://localhost:8080/api/v1/home/transporters"),
+          axios.get("http://localhost:8080/api/v1/home/companies"),
+          axios.get("http://localhost:8080/api/v1/home/suppliers"),
+          axios.get("http://localhost:8080/api/v1/home/customers"),
+          axios.get("http://localhost:8080/api/v1/home/vehicles"),
+        ]);
 
-      .then((data) => setAllUsers(data))
+        setAllUsers(allUsersResponse.data);
+        setActiveUsers(activeUsersResponse.data);
+        setInactiveUsers(inactiveUsersResponse.data);
+        setTransporters(transportersResponse.data);
+        setCompanies(companiesResponse.data);
+        setSuppliers(suppliersResponse.data);
+        setCustomers(customersResponse.data);
+        setRegisteredTrucks(registeredTrucksResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-      .catch((error) => console.error("Error fetching all users:", error));
-
-    // Fetch active users
-
-    fetch("http://localhost:8080/api/v1/home/active-users")
-      .then((response) => response.json())
-
-      .then((data) => setActiveUsers(data))
-
-      .catch((error) => console.error("Error fetching active users:", error));
-
-    // Fetch inactive users
-
-    fetch("http://localhost:8080/api/v1/home/inactive-users")
-      .then((response) => response.json())
-
-      .then((data) => setInactiveUsers(data))
-
-      .catch((error) => console.error("Error fetching inactive users:", error));
-
-    // Fetch registered trucks
-
-    fetch("http://localhost:8080/api/v1/home/transporters")
-      .then((response) => response.json())
-
-      .then((data) => setTransporters(data))
-
-      .catch((error) =>
-        console.error("Error fetching registered trucks:", error)
-      );
-
-    // Fetch registered companies
-
-    fetch("http://localhost:8080/api/v1/home/companies")
-      .then((response) => response.json())
-
-      .then((data) => setCompanies(data))
-
-      .catch((error) =>
-        console.error("Error fetching registered companies:", error)
-      );
-
-    // Fetch registered suppliers
-
-    fetch("http://localhost:8080/api/v1/home/suppliers")
-      .then((response) => response.json())
-
-      .then((data) => setSuppliers(data))
-
-      .catch((error) =>
-        console.error("Error fetching registered suppliers:", error)
-      );
-
-    // Fetch registered customers
-
-    fetch("http://localhost:8080/api/v1/home/customers")
-      .then((response) => response.json())
-
-      .then((data) => setCustomers(data))
-
-      .catch((error) =>
-        console.error("Error fetching registered customers:", error)
-      );
-
-    // Fetch registered vehicles
-
-    fetch("http://localhost:8080/api/v1/home/vehicles")
-      .then((response) => response.json())
-
-      .then((data) => setRegisteredTrucks(data))
-
-      .catch((error) =>
-        console.error("Error fetching registered vehicles:", error)
-      );
+    fetchAllData();
   }, []);
 
   return (
@@ -143,8 +90,7 @@ function HomePage1Component() {
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faUser} size="3x" />
                   <h5 className="card-title-home">Total Users</h5>
-                  <p className="card-text-home">{allUsers}</p>{" "}
-                  {/* Placeholder data */}
+                  <p className="card-text-home">{allUsers}</p>
                 </div>
               </div>
             </Link>
@@ -157,9 +103,7 @@ function HomePage1Component() {
               <div className="card card-gradient-active card-gradient">
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faUsers} size="3x" />
-
                   <h5 className="card-title-home admin">Active Users</h5>
-
                   <p className="card-text-home">{activeUsers}</p>
                 </div>
               </div>
@@ -173,9 +117,7 @@ function HomePage1Component() {
               <div className="card card-gradient-inactive card-gradient">
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faUsersSlash} size="3x" />
-
                   <h5 className="card-title-home admin">Inactive Users</h5>
-
                   <p className="card-text-home">{inactiveUsers}</p>
                 </div>
               </div>
@@ -190,8 +132,7 @@ function HomePage1Component() {
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faTruckMoving} size="3x" />
                   <h5 className="card-title-home admin">Transporters</h5>
-                  <p className="card-text-home">{transporters}</p>{" "}
-                  {/* Placeholder data */}
+                  <p className="card-text-home">{transporters}</p>
                 </div>
               </div>
             </Link>
@@ -204,9 +145,7 @@ function HomePage1Component() {
               <div className="card card-gradient-registered card-gradient">
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faTruck} size="3x" />
-
                   <h5 className="card-title-home admin">Vehicles</h5>
-
                   <p className="card-text-home">{registeredTrucks}</p>
                 </div>
               </div>
@@ -221,8 +160,7 @@ function HomePage1Component() {
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faBuilding} size="3x" />
                   <h5 className="card-title-home admin">Companies</h5>
-                  <p className="card-text-home">{companies}</p>{" "}
-                  {/* Placeholder data */}
+                  <p className="card-text-home">{companies}</p>
                 </div>
               </div>
             </Link>
@@ -236,8 +174,7 @@ function HomePage1Component() {
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faUserTie} size="3x" />
                   <h5 className="card-title-home admin">Suppliers</h5>
-                  <p className="card-text-home">{suppliers}</p>{" "}
-                  {/* Placeholder data */}
+                  <p className="card-text-home">{suppliers}</p>
                 </div>
               </div>
             </Link>
@@ -251,8 +188,7 @@ function HomePage1Component() {
                 <div className="card-body-home">
                   <FontAwesomeIcon icon={faUserFriends} size="3x" />
                   <h5 className="card-title-home admin">Customers</h5>
-                  <p className="card-text-home">{customers}</p>{" "}
-                  {/* Placeholder data */}
+                  <p className="card-text-home">{customers}</p>
                 </div>
               </div>
             </Link>
