@@ -111,7 +111,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           // Update other form data fields with the received data
           setFormData({
             ...formData,
-            // vehicleNo: data.vehicleNo,
+            vehicleNo: data.vehicleNo,
             noOfWheels: data.vehicleWheelsNo,
             vehicleType: data.vehicleType,
             transporter: data.transporter,
@@ -383,6 +383,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     // }
   };
   const handleAddVehicle = async (selectedOption) => {
+    console.log({ vehicleNo: selectedOption.value })
     const newData = { ...formData, vehicleNo: selectedOption?.value };
     setFormData(newData)
     await sessionStorage.setItem('vehicleData', JSON.stringify(newData));
@@ -391,6 +392,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   }
 
   const handleSave = () => {
+    console.log(formData);
     // Check if any mandatory field is missing
     if (
       // !formData.poNo ||
@@ -460,31 +462,9 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         });
 
         // Reset form data after 3 seconds and navigate to VehicleEntry page
-        setTimeout(() => {
-          setFormData({
-            challanDate: "",
-            poNo: "",
-            tpNo: "",
-            challanNo: "",
-            vehicleNo: "",
-            vehicleType: "",
-            noOfWheels: "",
-            supplier: "",
-            supplierAddressLine1: "",
-            transporter: "",
-            material: "",
-            materialType: "",
-            driverDLNo: "",
-            driverName: "",
-            tpNetWeight: "",
-            rcFitnessUpto: "",
-            eWayBillNo: "",
-            transactionType: "Inbound",
-          });
-          navigate("/VehicleEntry");
-        },
-          // 3000
-        );
+        sessionStorage.removeItem("vehicleData");
+        handleClear();
+        navigate("/VehicleEntry");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -518,6 +498,11 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       eWayBillNo: "",
       transactionType: "Inbound ",
     });
+
+    setSelectedMaterialType(null);
+    setSelectedMaterial(null);
+    setSelectedSupplier(null);
+    setVehicleNo(null);
   };
 
   const handleCapturePicture = () => {
@@ -555,7 +540,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
 
     }
 
-  }, [formData])
+  }, [formData.material, formData.supplier])
 
   return (
     <SideBar2>
@@ -619,7 +604,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="challanNo"
                               value={formData.challanNo}
                               onChange={handleChange}
-                              // required
+
                               className="form-control"
                             />
                           </div>
@@ -635,7 +620,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 name="tpNo"
                                 value={formData.tpNo}
                                 onChange={handleChange}
-                                // required
+
                                 className="form-control tpscanner"
                                 // disabled={!!formData.poNo}
                                 style={{ flexGrow: 1 }}
@@ -661,7 +646,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="poNo"
                               value={formData.poNo}
                               onChange={handleChange}
-                              required
+
                               className="form-control"
                             // disabled={!!formData.tpNo}
                             />

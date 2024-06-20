@@ -158,7 +158,7 @@ const SideBar2 = ({ children }) => {
                 fontFamily: "monospace", // Adjust the spacing between roles and Avatar
               }}
             >
-              {userName.split(" ")[0]}
+              {userName?.split(" ")[0]}
             </Typography>
             <Avatar
               onClick={handleUserProfileClick}
@@ -245,7 +245,7 @@ const SideBar2 = ({ children }) => {
               <Typography
                 sx={{ color: "white", textAlign: "center", fontWeight: "bold" }}
               >
-                Roles: {roles.join(", ")}
+                Roles: {roles?.join(", ")}
               </Typography>
               <IconButton color="error" onClick={handleSignOut} sx={{ mt: 2 }}>
                 <PowerSettingsNewOutlined />
