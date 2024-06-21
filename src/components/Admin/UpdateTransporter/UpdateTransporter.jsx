@@ -77,7 +77,7 @@ function UpdateTransporter() {
       transporterAddress,
     };
 
-    fetch(`http://localhost:8080/api/v1/transporter/${transporter.id}`, {
+    fetch(`http://localhost:8080/api/v1/transporter/${transporter.id}?userId=${sessionStorage.getItem('userId')}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
