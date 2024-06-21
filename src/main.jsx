@@ -177,7 +177,7 @@ const router = createBrowserRouter(
       <Route path="/ManagementQuality" element={<ManagementQuality />} />
       <Route path="/ManagementTransaction" element={<ManagementTransaction />} />
       <Route path="/ManagementLocation" element={<ManagementLocation />} />
-<Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
+      <Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
       <Route path="/ManagementWeeklyReport" element={<ManagementWeeklyReport/>} />
       <Route path="/ManagementMonthlyReport" element={<ManagementMonthlyReport/>} />
       <Route path="/ManagementCustomizedReport" element={<ManagementCustomizedReport/>} />

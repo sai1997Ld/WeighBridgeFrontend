@@ -405,7 +405,7 @@ function TransactionFrom() {
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-7">
               <h5>Weighment Details:</h5>
-              <div className="row">
+              <div className="row mb-2">
                 <div className="col-md-8">
                   <div className="sub">
                     <input
