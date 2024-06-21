@@ -4,15 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
   faEraser,
-  faRectangleXmark
+  faRectangleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import SideBar3 from "../../../../SideBar/SideBar3";
 import { useMediaQuery } from "react-responsive";
 import { Chart, ArcElement } from "chart.js/auto";
 import styled from 'styled-components';
+import { Modal } from 'antd';
 
 // Import Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
+
 
 const MainContent = styled.div`
   min-height: calc(100vh - 80vh); /* Adjust the value (56px) as needed for your navbar height */
@@ -35,9 +37,11 @@ const StyledButton = styled.button`
   }
 `;
 
-const QualityOutboundDetails = () => {
+const QualityInboundDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAtLeastOneParameterFilled, setIsAtLeastOneParameterFilled] = useState(false);
 
   const [formData, setFormData] = useState({
     date: null,
@@ -55,23 +59,30 @@ const QualityOutboundDetails = () => {
     materialName: null,
     materialType: null,
   });
-  
-  const [isFormValid, setIsFormValid] = useState(false);// Initialize isFormValid as false
+
+  const [parameters, setParameters] = useState({});
+
+  const [isFormValid, setIsFormValid] = useState(false); // Initialize isFormValid as false
+  const userId = sessionStorage.getItem("userId");
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
   const checkFormValidity = () => {
-    const requiredFields = Object.keys(parameters);
-    const allFieldsFilled = requiredFields.every(
-      (fieldName) => formData[fieldName] !== null && formData[fieldName] !== ""
+    const atLeastOneParameterFilled = Object.keys(parameters).some((parameterName) => 
+      formData[parameterName] !== null && formData[parameterName] !== ""
     );
-    setIsFormValid(allFieldsFilled);
+    console.log("Parameters:", parameters);
+    console.log("Form data:", formData);
+    console.log("At least one parameter filled:", atLeastOneParameterFilled);
+    setIsAtLeastOneParameterFilled(atLeastOneParameterFilled);
   };
 
 
-  useEffect(() => {
-    checkFormValidity();
-  }, [formData]);
 
-  const [parameters, setParameters] = useState({});
+  useEffect(() => {
+    console.log("Form data or parameters changed");
+    checkFormValidity();
+  }, [formData, parameters]);
+
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -99,11 +110,11 @@ const QualityOutboundDetails = () => {
         let response;
         if (urlData.transactionType === "Inbound") {
           response = await fetch(
-            `http://localhost:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}`
+            `http://localhost:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}&userId=${userId}`
           );
         } else {
           response = await fetch(
-            `http://localhost:8080/api/v1/products/parameters?productName=${urlData.materialName}`
+            `http://localhost:8080/api/v1/products/parameters?productName=${urlData.materialName}&userId=${userId}`
           );
         }
         const data = await response.json();
@@ -128,48 +139,50 @@ const QualityOutboundDetails = () => {
   }, []);
 
   const handleSave = async () => {
-    let data;
-    if (formData.transactionType === "Inbound") {
-      data = {
-        ...Object.keys(parameters).reduce((acc, parameterName) => {
-          acc[parameterName] = formData[parameterName];
-          return acc;
-        }, {}),
-      };
-    } else {
-      data = {
-        ...Object.keys(parameters).reduce((acc, parameterName) => {
-          acc[parameterName] = formData[parameterName];
-          return acc;
-        }, {}),
-      };
+    checkFormValidity();
+  
+    let data = Object.keys(parameters).reduce((acc, parameterName) => {
+      if (formData[parameterName] !== null && formData[parameterName] !== "") {
+        acc[parameterName] = formData[parameterName];
+      }
+      return acc;
+    }, {});
+  
+    if (Object.keys(data).length === 0) {
+      setIsModalVisible(true);
+      return;
     }
   
     console.log("Form data being sent:", data);
   
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/qualities/${formData.ticketNo}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${formData.ticketNo}?userId=${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
   
       if (response.ok) {
         console.log("Data saved successfully");
-        const queryString = new URLSearchParams(data).toString();
-        navigate(`/QualityCheck?${queryString}`);
+        setIsSuccessModalVisible(true);
       } else {
         console.error("Error saving data:", response.status);
+        setIsModalVisible(true);
       }
     } catch (error) {
       console.error("Error saving data:", error);
+      setIsModalVisible(true);
     }
+  };
+  const handleSuccessOk = () => {
+    setIsSuccessModalVisible(false);
+    navigate('/home2'); // Replace '/home' with the actual path to your home page
+  };
+  const handleOk = () => {
+    setIsModalVisible(false);
   };
 
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
@@ -190,7 +203,19 @@ const QualityOutboundDetails = () => {
     setMaterial(event.target.value);
   };
 
-  
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    console.log(`Input changed: ${name} = ${value}`);
+    setFormData((prevFormData) => {
+      const newFormData = {
+        ...prevFormData,
+        [name]: value,
+      };
+      console.log("New form data:", newFormData);
+      return newFormData;
+    });
+    checkFormValidity();
+  };
 
   useEffect(() => {
     // Any side effect code can be placed here
@@ -210,40 +235,36 @@ const QualityOutboundDetails = () => {
     if (!allowedCharacters.test(event.key)) {
       event.preventDefault();
     }
-   };
-   
-   const renderFieldWithBox = (
+  };
+
+  const renderFieldWithBox = (
     fieldName,
     propertyName,
-    isReadOnly = false
+    isReadOnly = false,
+    isRequired = false
   ) => {
-    const isRequired =
-      formData.materialName === "Sponge Iron" &&
-      Object.keys(parameters).includes(propertyName);
     const inputStyle = isReadOnly
       ? { borderColor: "#ced4da", backgroundColor: "rgb(239, 239, 239)" }
       : {};
-    const asteriskStyle = isRequired ? { color: "red" } : {};
     const value = formData[propertyName] !== null ? formData[propertyName] : "";
-  
+
     // Get the parameter range
     const parameter = parameters[propertyName];
     const rangeFrom = parameter ? parseFloat(parameter.rangeFrom) : null;
     const rangeTo = parameter ? parseFloat(parameter.rangeTo) : null;
     const inputValue = parseFloat(value);
-  
+
     // Determine the class based on whether the value falls within the range and the field is not read-only
     let inputClass = "form-control";
     if (!isReadOnly && !isNaN(rangeFrom) && !isNaN(rangeTo) && !isNaN(inputValue)) {
       inputClass += inputValue >= rangeFrom && inputValue <= rangeTo ? " is-valid" : " is-invalid";
     }
-  
+
     return (
       <div className="col-md-3 mb-3">
         <label htmlFor={propertyName} className="form-label" style={{ marginBottom: "0" }}>
-        {fieldName}:
-        {isRequired && <span style={asteriskStyle}>*</span>}
-      </label>
+          {fieldName}:
+        </label>
         <input
           type="text"
           name={propertyName}
@@ -260,19 +281,8 @@ const QualityOutboundDetails = () => {
       </div>
     );
   };
-  
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value !== "" ? value : null,
-    }));
-  };
-  
 
-  
-   
-   const handleClear = () => {
+  const handleClear = () => {
     setFormData({
       ...formData,
       ...Object.keys(parameters).reduce((acc, parameterName) => {
@@ -280,51 +290,46 @@ const QualityOutboundDetails = () => {
         return acc;
       }, {}),
     });
-   };
+  };
 
-   
-   
-   const goBack = () => {
+  const goBack = () => {
     navigate(-1);
   }
-   return (
+
+  return (
     <SideBar3>
       <div className="d-flex">
         <div className="flex-grow-1" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
-        <button
-    className="close-button"
-    onClick={goBack}
-    style={{
-    position: 'absolute',
-    marginRight: 10,
-    backgroundColor: 'transparent',
-    color: '#f11212',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: 30,
-    outline: 'none',
-    }}
->
-<FontAwesomeIcon icon={faRectangleXmark} />
-</button>
+          <button
+            className="close-button"
+            onClick={goBack}
+            style={{
+              position: 'absolute',
+              marginRight: 10,
+              backgroundColor: 'transparent',
+              color: '#f11212',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 30,
+              outline: 'none',
+            }}
+          >
+            <FontAwesomeIcon icon={faRectangleXmark} />
+          </button>
           <h2
-  className="text-center p-2 mb-0" 
-  style={{ fontFamily: "Arial", fontSize: "clamp(12px, 4vw, 30px)" }}
->
-  Quality Outbound Transaction Details
-</h2>
-
-          
+            className="text-center p-2 mb-0"
+            style={{ fontFamily: "Arial", fontSize: "clamp(12px, 4vw, 30px)" }}
+          >
+            Quality Inbound Transaction Details
+          </h2>
           <MainContent>
             <TransFormMainDiv>
               <div className="container-fluid overflow-hidden">
-              
                 <div className="d-flex justify-content-between align-items-center mb-2 ml-6">
-                  
                 </div>
                 <div className="row">
                   <div className="col-lg-12">
-                    <div className="card mb-3 p-0 border shadow-lg">
+                    <div className="card mb-3 p-2 border shadow-lg">
                       <div className="card-body">
                         <div className="row">
                           {renderFieldWithBox("TicketNo", "ticketNo", true)}
@@ -334,8 +339,8 @@ const QualityOutboundDetails = () => {
                           {renderFieldWithBox("Tp No", "tpNo", true)}
                           {renderFieldWithBox("Po No", "poNo", true)}
                           {renderFieldWithBox("Challan No", "challanNo", true)}
-                          {renderFieldWithBox("Product", "materialName", true)}
-                          {renderFieldWithBox("Product Type", "materialType", true)}
+                          {renderFieldWithBox("Material", "materialName", true)}
+                          {renderFieldWithBox("Material Type", "materialType", true)}
                           {formData.transactionType === "Inbound" && (
                             <>
                               {renderFieldWithBox("Supplier", "supplierOrCustomerName", true)}
@@ -350,7 +355,7 @@ const QualityOutboundDetails = () => {
                 </div>
                 <div className="row">
                   <div className="col-lg-12">
-                    <div className="card mb-3 p-0 border shadow-lg">
+                    <div className="card mb-3 p-3 border shadow-lg">
                       <div className="card-body">
                         <div className="row">
                           {Object.keys(parameters).map((parameterName) => (
@@ -362,46 +367,35 @@ const QualityOutboundDetails = () => {
                                 true
                               )}
                             </React.Fragment>
-                        ))}
-                         <div className="row justify-content-end">
-  <div className="col-md-3 col-sm-3 d-flex justify-content-end">
-    <button
-      type="button"
-      className="btn btn-danger me-4 btn-hover"
-      style={{
-        backgroundColor: "white",
-        color: "#d63031",
-        border: "1px solid #cccccc",
-        width: "100px",
-        height: "40px",
-        marginTop: "30px",
-        marginLeft: "20px",
-      }}
-      onClick={handleClear}
-    >
-      <FontAwesomeIcon icon={faEraser} className="me-1" /> Clear
-    </button>
-    <button
-      type="button"
-      className="btn btn-success-1 btn-hover"
-      style={{
-        backgroundColor: "white",
-        color: "#008060",
-        width: "100px",
-        height: "40px",
-        marginTop: "30px",
-        border: "1px solid #cccccc",
-      }}
-      onClick={isFormValid ? handleSave : null}
-      disabled={!isFormValid}
-    >
-      <FontAwesomeIcon icon={faSave} className="me-1" /> Save
-    </button>
-  </div>
-</div>
-
-
-                          
+                          ))}
+                          <div className="col-md-12 col-sm-12 d-flex justify-content-end">
+                            <button
+                              type="button"
+                              className="btn btn-danger me-4 btn-hover"
+                              style={{
+                                backgroundColor: "white",
+                                color: "#d63031",
+                                border: "1px solid #cccccc",
+                                width: "100px",
+                              }}
+                              onClick={handleClear}
+                            >
+                              <FontAwesomeIcon icon={faEraser} className="me-1" /> Clear
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-success-1 btn-hover"
+                              style={{
+                                backgroundColor: "white",
+                                color: "#008060",
+                                width: "100px",
+                                border: "1px solid #cccccc",
+                              }}
+                              onClick={handleSave} // Always call handleSave
+                            >
+                              <FontAwesomeIcon icon={faSave} className="me-1" /> Save
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -412,8 +406,25 @@ const QualityOutboundDetails = () => {
           </MainContent>
         </div>
       </div>
+      <Modal
+  title="Success"
+  visible={isSuccessModalVisible}
+  onOk={handleSuccessOk}
+  onCancel={handleSuccessOk}
+  okText="OK"
+>
+  <p>Data saved successfully.</p>
+</Modal>
+      <Modal
+        title="Error"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleOk}
+        okText="OK"
+      >
+        <p>Please provide input for at least one field in order to save.</p>
+      </Modal>
     </SideBar3>
-   );
-   };
-   
-   export default QualityOutboundDetails;
+  );
+};
+export default QualityInboundDetails;

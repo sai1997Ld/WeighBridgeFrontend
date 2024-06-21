@@ -354,8 +354,12 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     }
 
 
-  // Get the selected date and format it as "DD-MM-YYYY"
-  const formattedDate = moment(selectedDate).format('DD-MM-YYYY');
+ 
+  // Format the selected date as "DD-MM-YYYY"
+  const year = selectedDate.year();
+  const month = String(selectedDate.month() + 1).padStart(2, '0');
+  const day = String(selectedDate.date()).padStart(2, '0');
+  const formattedDate = `${day}-${month}-${year}`;
 
   const apiUrl = selectedSiteName && selectedSiteAddress
     ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}&startDate=${formattedDate}`
@@ -438,7 +442,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
               <div style={{ flex: "2" }}>
                 <DatePicker
                   value={selectedDate}
-                  onChange={(date) => setSelectedDate(date)}
+                  onChange={handleDateChange}
                   disabledDate={disabledFutureDate}
                   format="DD-MM-YYYY"
                   style={{

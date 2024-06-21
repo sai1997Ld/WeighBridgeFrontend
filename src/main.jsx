@@ -102,6 +102,62 @@ const SalesTransporter = lazy(() => import('./components/Sales/SalesTransporter/
 const SalesVehicle = lazy(() => import('./components/Sales/SalesVehicle/SalesVehicle.jsx'));
 
 
+import SalesDetails from "./components/GateUser/src/components/Vehicle_Entry/SalesDetails.jsx";
+import Report from "./components/GateUser/src/components/Report/Report.jsx";
+import Print from "./components/GateUser/src/components/Print/Print.jsx";
+import Camera from "./components/GateUser/src/components/Camera/Camera.jsx";
+import Capture from "./components/GateUser/src/components/Camera/Capture.jsx";
+
+import QualityHomePage from "./components/QualityCheck/src/components/QHome/QualityHomePage.jsx";
+import QualityCheck from "./components/QualityCheck/src/components/QualityCheck/QualityCheck.jsx";
+import QualityCompleted from "./components/QualityCheck/src/components/QualityCheck/QualityCompleted.jsx";
+import QualityInboundDashboard from "./components/QualityCheck/src/components/QualityCheck/QualityInboundDashboard.jsx";
+import QualityOutboundDashboard from "./components/QualityCheck/src/components/QualityCheck/QualityOutboundDashboard.jsx";
+import QualityInboundDetails from "./components/QualityCheck/src/components/QualityCheck/QualityInboundDetails.jsx";
+import QualityOutboundDetails from "./components/QualityCheck/src/components/QualityCheck/QualityOutboundDetails.jsx";
+import QPrint from "./components/QualityCheck/src/components/Print/Print.jsx";
+import QReport from "./components/QualityCheck/src/components/Report/QReport.jsx";
+import PrintTicket from "./components/QualityCheck/src/components/QualityCheck/PrintTicket";
+
+import ManagementHome from "./components/Management/src/components/Home/ManagementHome.jsx";
+import ManagementCamera from "./components/Management/src/components/Camera/Camera.jsx";
+import ManagementReport from "./components/Management/src/components/Report/Report.jsx";
+import ManagementGateEntry from "./components/Management/src/components/GateEntry/GateEntry.jsx";
+import ManagementGateExit from "./components/Management/src/components/GateExit/GateExit.jsx";
+import ManagementWeighbridge from "./components/Management/src/components/Weighbridge/Weighbridge.jsx";
+import ManagementQuality from "./components/Management/src/components/Quality/Quality.jsx";
+import ManagementTransaction from "./components/Management/src/components/Transaction/Transaction.jsx";
+import ManagementLocation from "./components/Management/src/components/Location/Location.jsx";
+import ManagementDailyReport from "./components/Management/src/components/dailyreport/dailyreport.jsx";
+
+import ManagementWeeklyReport from "./components/Management/src/components/weeklyreport/weeklyreport.jsx";
+import ManagementMonthlyReport from  "./components/Management/src/components/monthlyreport/monthlyreport.jsx"
+import ManagementCustomizedReport from "./components/Management/src/components/customized/customized.jsx";
+
+
+import OperatorHome from "./components/Operator/src/components/homed/Homed.jsx";
+import OperatorTransaction from "./components/Operator/src/components/transaction/Transaction.jsx";
+import OperatorTransactionComp from "./components/Operator/src/components/transactioncomp/Transactioncomp.jsx";
+import OperatorReport from "./components/Operator/src/components/report/Report.jsx";
+import OperatorTransactionFromInbound from "./components/Operator/src/components/transactionform/TransactionFrom.jsx";
+import OperatorTransactionFromOutbound from "./components/Operator/src/components/transactionform1/Transactionform1.jsx";
+import OperatorDailyReport from "./components/Operator/src/components/dailyreport/dailyreport.jsx";
+import OperatorWeeklyReport from "./components/Operator/src/components/weeklyreport/weeklyreport.jsx";
+import OperatorMonthlyReport from "./components/Operator/src/components/monthlyreport/monthlyreport.jsx"
+import OperatorCustomizedReport from "./components/Operator/src/components/customized/customized.jsx"
+
+
+
+import SalesOrder from "./components/Sales/SalesOrder/SalesOrder.jsx";
+import ProcessOrder from "./components/Sales/ProcessOrder/ProcessOrder.jsx";
+import SideBar6 from "./components/SideBar/Sidebar6.jsx";
+import SalesDisplay from "./components/Sales/SalesDisplay/SalesDisplay.jsx";
+import SalesCustomer from "./components/Sales/SalesCustomer/SalesCustomer.jsx";
+import SalesTransporter from "./components/Sales/SalesTransporter/SalesTranporter.jsx";
+import SalesVehicle from "./components/Sales/SalesVehicle/SalesVehicle.jsx";
+
+import Demo from "./components/Demo/Demo.jsx";
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(

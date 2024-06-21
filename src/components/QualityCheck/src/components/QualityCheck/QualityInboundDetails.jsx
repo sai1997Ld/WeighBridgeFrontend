@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
   faEraser,
-  faPrint,
   faRectangleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import SideBar3 from "../../../../SideBar/SideBar3";
@@ -15,6 +14,7 @@ import { Modal } from 'antd';
 
 // Import Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
+
 
 const MainContent = styled.div`
   min-height: calc(100vh - 80vh); /* Adjust the value (56px) as needed for your navbar height */
@@ -63,22 +63,23 @@ const QualityInboundDetails = () => {
   const [parameters, setParameters] = useState({});
 
   const [isFormValid, setIsFormValid] = useState(false); // Initialize isFormValid as false
-
-
+  const userId = sessionStorage.getItem("userId");
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
   const checkFormValidity = () => {
-    const requiredFields = ["ticketNo", "date", "vehicleNo", "transporterName", "tpNo", "poNo", "challanNo", "materialName", "materialType"];
-    const requiredFieldsFilled = requiredFields.every((fieldName) => formData[fieldName] !== null && formData[fieldName] !== "");
-    setIsFormValid(requiredFieldsFilled);
-  
-    // Check if at least one of the parameter fields is filled
-    const atLeastOneParameterFilled = Object.keys(parameters).some((fieldName) => formData[fieldName] !== null && formData[fieldName] !== "");
+    const atLeastOneParameterFilled = Object.keys(parameters).some((parameterName) => 
+      formData[parameterName] !== null && formData[parameterName] !== ""
+    );
+    console.log("Parameters:", parameters);
+    console.log("Form data:", formData);
+    console.log("At least one parameter filled:", atLeastOneParameterFilled);
     setIsAtLeastOneParameterFilled(atLeastOneParameterFilled);
   };
-  
+
 
 
   useEffect(() => {
+    console.log("Form data or parameters changed");
     checkFormValidity();
   }, [formData, parameters]);
 
@@ -109,11 +110,11 @@ const QualityInboundDetails = () => {
         let response;
         if (urlData.transactionType === "Inbound") {
           response = await fetch(
-            `http://localhost:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}`
+            `http://localhost:8080/api/v1/materials/parameters?materialName=${urlData.materialName}&supplierName=${urlData.supplierOrCustomerName}&supplierAddress=${urlData.supplierOrCustomerAddress}&userId=${userId}`
           );
         } else {
           response = await fetch(
-            `http://localhost:8080/api/v1/products/parameters?productName=${urlData.materialName}`
+            `http://localhost:8080/api/v1/products/parameters?productName=${urlData.materialName}&userId=${userId}`
           );
         }
         const data = await response.json();
@@ -138,33 +139,24 @@ const QualityInboundDetails = () => {
   }, []);
 
   const handleSave = async () => {
-    if (!isAtLeastOneParameterFilled) {
+    checkFormValidity();
+  
+    let data = Object.keys(parameters).reduce((acc, parameterName) => {
+      if (formData[parameterName] !== null && formData[parameterName] !== "") {
+        acc[parameterName] = formData[parameterName];
+      }
+      return acc;
+    }, {});
+  
+    if (Object.keys(data).length === 0) {
       setIsModalVisible(true);
       return;
-    }
-  
-    // Existing save operation logic
-    let data;
-    if (formData.transactionType === "Inbound") {
-      data = {
-        ...Object.keys(parameters).reduce((acc, parameterName) => {
-          acc[parameterName] = formData[parameterName];
-          return acc;
-        }, {}),
-      };
-    } else {
-      data = {
-        ...Object.keys(parameters).reduce((acc, parameterName) => {
-          acc[parameterName] = formData[parameterName];
-          return acc;
-        }, {}),
-      };
     }
   
     console.log("Form data being sent:", data);
   
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/${formData.ticketNo}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/${formData.ticketNo}?userId=${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,19 +167,20 @@ const QualityInboundDetails = () => {
   
       if (response.ok) {
         console.log("Data saved successfully");
-        const queryString = new URLSearchParams(data).toString();
-        navigate(`/QualityCheck?${queryString}`);
+        setIsSuccessModalVisible(true);
       } else {
         console.error("Error saving data:", response.status);
-        // Show an error modal or handle the error as desired
+        setIsModalVisible(true);
       }
     } catch (error) {
       console.error("Error saving data:", error);
-      // Show an error modal or handle the error as desired
+      setIsModalVisible(true);
     }
   };
-  
-  
+  const handleSuccessOk = () => {
+    setIsSuccessModalVisible(false);
+    navigate('/home2'); // Replace '/home' with the actual path to your home page
+  };
   const handleOk = () => {
     setIsModalVisible(false);
   };
@@ -212,10 +205,16 @@ const QualityInboundDetails = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+    console.log(`Input changed: ${name} = ${value}`);
+    setFormData((prevFormData) => {
+      const newFormData = {
+        ...prevFormData,
+        [name]: value,
+      };
+      console.log("New form data:", newFormData);
+      return newFormData;
+    });
+    checkFormValidity();
   };
 
   useEffect(() => {
@@ -283,7 +282,6 @@ const QualityInboundDetails = () => {
     );
   };
 
-
   const handleClear = () => {
     setFormData({
       ...formData,
@@ -294,11 +292,9 @@ const QualityInboundDetails = () => {
     });
   };
 
-
   const goBack = () => {
     navigate(-1);
   }
-
 
   return (
     <SideBar3>
@@ -320,7 +316,6 @@ const QualityInboundDetails = () => {
           >
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
-
           <h2
             className="text-center p-2 mb-0"
             style={{ fontFamily: "Arial", fontSize: "clamp(12px, 4vw, 30px)" }}
@@ -388,36 +383,38 @@ const QualityInboundDetails = () => {
                               <FontAwesomeIcon icon={faEraser} className="me-1" /> Clear
                             </button>
                             <button
-  type="button"
-  className="btn btn-success-1 btn-hover"
-  style={{
-    backgroundColor: "white",
-    color: "#008060",
-    width: "100px",
-    border: "1px solid #cccccc",
-  }}
-  onClick={handleSave} // Always call handleSave
->
-  <FontAwesomeIcon icon={faSave} className="me-1" /> Save
-</button>
-
-
+                              type="button"
+                              className="btn btn-success-1 btn-hover"
+                              style={{
+                                backgroundColor: "white",
+                                color: "#008060",
+                                width: "100px",
+                                border: "1px solid #cccccc",
+                              }}
+                              onClick={handleSave} // Always call handleSave
+                            >
+                              <FontAwesomeIcon icon={faSave} className="me-1" /> Save
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
-
             </TransFormMainDiv>
-
           </MainContent>
         </div>
       </div>
+      <Modal
+  title="Success"
+  visible={isSuccessModalVisible}
+  onOk={handleSuccessOk}
+  onCancel={handleSuccessOk}
+  okText="OK"
+>
+  <p>Data saved successfully.</p>
+</Modal>
       <Modal
         title="Error"
         visible={isModalVisible}
@@ -430,5 +427,4 @@ const QualityInboundDetails = () => {
     </SideBar3>
   );
 };
-
 export default QualityInboundDetails;

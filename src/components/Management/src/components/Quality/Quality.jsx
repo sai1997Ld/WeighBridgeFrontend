@@ -310,8 +310,11 @@ function ManagementQuality() {
         return;
       }
   
-      // Get the selected date and format it as "YYYY-MM-DD"
-      const formattedDate = moment(selectedDate).format('DD-MM-YYYY');
+      // Format the selected date as "DD-MM-YYYY"
+      const year = selectedDate.year();
+      const month = String(selectedDate.month() + 1).padStart(2, '0');
+      const day = String(selectedDate.date()).padStart(2, '0');
+      const formattedDate = `${day}-${month}-${year}`;
   
       const apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
   
@@ -340,7 +343,6 @@ function ManagementQuality() {
       console.error('Error fetching API data:', error);
     }
   };
-
   useEffect(() => {
     fetchApiData();
   }, [selectedDate]);
