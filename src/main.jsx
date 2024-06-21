@@ -62,15 +62,15 @@ import Print from "./components/GateUser/src/components/Print/Print.jsx";
 import Camera from "./components/GateUser/src/components/Camera/Camera.jsx";
 import Capture from "./components/GateUser/src/components/Camera/Capture.jsx";
 
+import QualityHomePage from "./components/QualityCheck/src/components/QHome/QualityHomePage.jsx";
 import QualityCheck from "./components/QualityCheck/src/components/QualityCheck/QualityCheck.jsx";
+import QualityCompleted from "./components/QualityCheck/src/components/QualityCheck/QualityCompleted.jsx";
 import QualityInboundDashboard from "./components/QualityCheck/src/components/QualityCheck/QualityInboundDashboard.jsx";
 import QualityOutboundDashboard from "./components/QualityCheck/src/components/QualityCheck/QualityOutboundDashboard.jsx";
-import QPrint from "./components/QualityCheck/src/components/Print/Print.jsx";
-import QReport from "./components/QualityCheck/src/components/Report/QReport.jsx";
 import QualityInboundDetails from "./components/QualityCheck/src/components/QualityCheck/QualityInboundDetails.jsx";
 import QualityOutboundDetails from "./components/QualityCheck/src/components/QualityCheck/QualityOutboundDetails.jsx";
-import QualityHomePage from "./components/QualityCheck/src/components/QHome/QualityHomePage.jsx";
-import QualityCompleted from "./components/QualityCheck/src/components/QualityCheck/QualityCompleted.jsx";
+import QPrint from "./components/QualityCheck/src/components/Print/Print.jsx";
+import QReport from "./components/QualityCheck/src/components/Report/QReport.jsx";
 import PrintTicket from "./components/QualityCheck/src/components/QualityCheck/PrintTicket";
 
 import ManagementHome from "./components/Management/src/components/Home/ManagementHome.jsx";
