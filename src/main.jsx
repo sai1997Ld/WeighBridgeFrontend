@@ -1,47 +1,42 @@
-import "./index.css";
-import ReactDOM from "react-dom/client";
-import {
-  Route,
-  RouterProvider,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy } from 'react';
+import ReactDOM from 'react-dom/client';
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+import './index.css';
 
 
-const HomePage1 = lazy(() => import("./components/HomePages/HomePage1.jsx"));
-import HomePage2 from "./components/HomePages/HomePage2.jsx";
-import HomePage3 from "./components/HomePages/HomePage3.jsx";
-import HomePage4 from "./components/HomePages/HomePage4.jsx";
-import HomePage5 from "./components/HomePages/HomePage5.jsx";
-import HomePage6 from "./components/HomePages/HomePage6.jsx";
+const HomePage1 = lazy(() => import('./components/HomePages/HomePage1.jsx'));
+const HomePage2 = lazy(() => import('./components/HomePages/HomePage2.jsx'));
+const HomePage3 = lazy(() => import('./components/HomePages/HomePage3.jsx'));
+const HomePage4 = lazy(() => import('./components/HomePages/HomePage4.jsx'));
+const HomePage5 = lazy(() => import('./components/HomePages/HomePage5.jsx'));
+const HomePage6 = lazy(() => import('./components/HomePages/HomePage6.jsx'));
+const Spinner = lazy(() => import('./Spinner'));
 
-import LoginUser from "./components/Login/LoginUser.jsx";
-import ResetPassword from "./components/ResetPassword/ResetPassword.jsx";
-import Forgot from "./components/Forgot/Forgot.jsx";
-import CreateUser from "./components/Admin/CreateUser/CreateUser.jsx";
-import ManageUser from "./components/Admin/ManageUser/ManageUser.jsx";
-import UpdateUser from "./components/Admin/UpdateUser/UpdateUser.jsx";
-import CompanyManagement from "./components/Admin/CompanyManagement/CompanyManagement.jsx";
-import SiteManagement from "./components/Admin/SiteManagement/SiteManagement.jsx";
-import Vehicle from "./components/Admin/Vehicle/Vehicle.jsx";
-import Transporter from "./components/Admin/Transporter/Transporter.jsx";
-import Customer from "./components/Admin/Customer/Customer.jsx";
-import Supplier from "./components/Admin/Supplier/Supplier.jsx";
-import ViewCompany from "./components/Admin/ViewCompany/ViewCompany.jsx";
-import ViewSupplier from "./components/Admin/ViewSupplier/ViewSupplier.jsx";
-import ViewVehicle from "./components/Admin/ViewVehicle/ViewVehicle.jsx";
-import ViewCustomer from "./components/Admin/ViewCustomer/ViewCustomer.jsx";
-import ViewMaterial from "./components/Admin/ViewMaterial/ViewMaterial.jsx";
-import ViewProduct from "./components/Admin/ViewProduct/ViewProduct.jsx";
-import MaterialManagement from "./components/Admin/MaterialManagement/MaterialManagement.jsx";
-import ProductManagement from "./components/Admin/ProductManagement/ProductManagement.jsx";
-import RoleManagement from "./components/Admin/RoleManagement/RoleManagement.jsx";
-import ViewTransporter from "./components/Admin/ViewTranporter/ViewTransporter.jsx";
-import UpdateTransporter from "./components/Admin/UpdateTransporter/UpdateTransporter.jsx";
-import UpdateCustomer from "./components/Admin/UpdateCustomer/UpdateCustomer.jsx";
-import UpdateSupplier from "./components/Admin/UpdateSupplier/UpdateSupplier.jsx";
-
+const LoginUser = lazy(() => import('./components/Login/LoginUser.jsx'));
+const ResetPassword = lazy(() => import('./components/ResetPassword/ResetPassword.jsx'));
+const Forgot = lazy(() => import('./components/Forgot/Forgot.jsx'));
+const CreateUser = lazy(() => import('./components/Admin/CreateUser/CreateUser.jsx'));
+const ManageUser = lazy(() => import('./components/Admin/ManageUser/ManageUser.jsx'));
+const UpdateUser = lazy(() => import('./components/Admin/UpdateUser/UpdateUser.jsx'));
+const CompanyManagement = lazy(() => import('./components/Admin/CompanyManagement/CompanyManagement.jsx'));
+const SiteManagement = lazy(() => import('./components/Admin/SiteManagement/SiteManagement.jsx'));
+const Vehicle = lazy(() => import('./components/Admin/Vehicle/Vehicle.jsx'));
+const Transporter = lazy(() => import('./components/Admin/Transporter/Transporter.jsx'));
+const Customer = lazy(() => import('./components/Admin/Customer/Customer.jsx'));
+const Supplier = lazy(() => import('./components/Admin/Supplier/Supplier.jsx'));
+const ViewCompany = lazy(() => import('./components/Admin/ViewCompany/ViewCompany.jsx'));
+const ViewSupplier = lazy(() => import('./components/Admin/ViewSupplier/ViewSupplier.jsx'));
+const ViewVehicle = lazy(() => import('./components/Admin/ViewVehicle/ViewVehicle.jsx'));
+const ViewCustomer = lazy(() => import('./components/Admin/ViewCustomer/ViewCustomer.jsx'));
+const ViewMaterial = lazy(() => import('./components/Admin/ViewMaterial/ViewMaterial.jsx'));
+const ViewProduct = lazy(() => import('./components/Admin/ViewProduct/ViewProduct.jsx'));
+const MaterialManagement = lazy(() => import('./components/Admin/MaterialManagement/MaterialManagement.jsx'));
+const ProductManagement = lazy(() => import('./components/Admin/ProductManagement/ProductManagement.jsx'));
+const RoleManagement = lazy(() => import('./components/Admin/RoleManagement/RoleManagement.jsx'));
+const ViewTransporter = lazy(() => import('./components/Admin/ViewTranporter/ViewTransporter.jsx'));
+const UpdateTransporter = lazy(() => import('./components/Admin/UpdateTransporter/UpdateTransporter.jsx'));
+const UpdateCustomer = lazy(() => import('./components/Admin/UpdateCustomer/UpdateCustomer.jsx'));
+const UpdateSupplier = lazy(() => import('./components/Admin/UpdateSupplier/UpdateSupplier.jsx'));
 
 import VehicleEntry from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntry.jsx";
 import CompletedTransaction from "./components/GateUser/src/components/Vehicle_Entry/CompletedTransaction.jsx";
@@ -54,6 +49,57 @@ import NewMaterial from "./components/GateUser/src/components/Vehicle_Entry/NewM
 import NewTransporter from "./components/GateUser/src/components/Vehicle_Entry/NewTransporter.jsx";
 
 
+const SalesDetails = lazy(() => import('./components/GateUser/src/components/Vehicle_Entry/SalesDetails.jsx'));
+const Report = lazy(() => import('./components/GateUser/src/components/Report/Report.jsx'));
+const Print = lazy(() => import('./components/GateUser/src/components/Print/Print.jsx'));
+const Camera = lazy(() => import('./components/GateUser/src/components/Camera/Camera.jsx'));
+const Capture = lazy(() => import('./components/GateUser/src/components/Camera/Capture.jsx'));
+
+const QualityCheck = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/QualityCheck.jsx'));
+const QualityInboundDashboard = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/QualityInboundDashboard.jsx'));
+const QualityOutboundDashboard = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/QualityOutboundDashboard.jsx'));
+const QPrint = lazy(() => import('./components/QualityCheck/src/components/Print/Print.jsx'));
+const QReport = lazy(() => import('./components/QualityCheck/src/components/Report/QReport.jsx'));
+const QualityInboundDetails = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/QualityInboundDetails.jsx'));
+const QualityOutboundDetails = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/QualityOutboundDetails.jsx'));
+const QualityHomePage = lazy(() => import('./components/QualityCheck/src/components/QHome/QualityHomePage.jsx'));
+const QualityCompleted = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/QualityCompleted.jsx'));
+const PrintTicket = lazy(() => import('./components/QualityCheck/src/components/QualityCheck/PrintTicket.jsx'));
+
+
+const ManagementHome = lazy(() => import('./components/Management/src/components/Home/ManagementHome.jsx'));
+const ManagementCamera = lazy(() => import('./components/Management/src/components/Camera/Camera.jsx'));
+const ManagementReport = lazy(() => import('./components/Management/src/components/Report/Report.jsx'));
+const ManagementGateEntry = lazy(() => import('./components/Management/src/components/GateEntry/GateEntry.jsx'));
+const ManagementGateExit = lazy(() => import('./components/Management/src/components/GateExit/GateExit.jsx'));
+const ManagementWeighbridge = lazy(() => import('./components/Management/src/components/Weighbridge/Weighbridge.jsx'));
+const ManagementQuality = lazy(() => import('./components/Management/src/components/Quality/Quality.jsx'));
+const ManagementTransaction = lazy(() => import('./components/Management/src/components/Transaction/Transaction.jsx'));
+const ManagementLocation = lazy(() => import('./components/Management/src/components/Location/Location.jsx'));
+const ManagementDailyReport = lazy(() => import('./components/Management/src/components/dailyreport/dailyreport.jsx'));
+const ManagementWeeklyReport = lazy(() => import('./components/Management/src/components/weeklyreport/weeklyreport.jsx'));
+const ManagementMonthlyReport = lazy(() => import('./components/Management/src/components/monthlyreport/monthlyreport.jsx'));
+const ManagementCustomizedReport = lazy(() => import('./components/Management/src/components/customized/customized.jsx'));
+
+
+const OperatorHome = lazy(() => import('./components/Operator/src/components/homed/Homed.jsx'));
+const OperatorTransaction = lazy(() => import('./components/Operator/src/components/transaction/Transaction.jsx'));
+const OperatorTransactionComp = lazy(() => import('./components/Operator/src/components/transactioncomp/Transactioncomp.jsx'))
+const OperatorReport = lazy(() => import('./components/Operator/src/components/report/Report.jsx'));
+const OperatorTransactionFromInbound = lazy(() => import('./components/Operator/src/components/transactionform/TransactionFrom.jsx'));
+const OperatorTransactionFromOutbound = lazy(() => import('./components/Operator/src/components/transactionform1/Transactionform1.jsx'));
+const OperatorDailyReport = lazy(() => import('./components/Operator/src/components/dailyreport/dailyreport.jsx'));
+const OperatorWeeklyReport = lazy(() => import('./components/Operator/src/components/weeklyreport/weeklyreport.jsx'));
+const OperatorMonthlyReport = lazy(() => import('./components/Operator/src/components/monthlyreport/monthlyreport.jsx'));
+const OperatorCustomizedReport = lazy(() => import('./components/Operator/src/components/customized/customized.jsx'));
+
+const SalesOrder = lazy(() => import('./components/Sales/SalesOrder/SalesOrder.jsx'));
+const ProcessOrder = lazy(() => import('./components/Sales/ProcessOrder/ProcessOrder.jsx'));
+const SideBar6 = lazy(() => import('./components/SideBar/Sidebar6.jsx'));
+const SalesDisplay = lazy(() => import('./components/Sales/SalesDisplay/SalesDisplay.jsx'));
+const SalesCustomer = lazy(() => import('./components/Sales/SalesCustomer/SalesCustomer.jsx'));
+const SalesTransporter = lazy(() => import('./components/Sales/SalesTransporter/SalesTranporter.jsx'));
+const SalesVehicle = lazy(() => import('./components/Sales/SalesVehicle/SalesVehicle.jsx'));
 
 
 import SalesDetails from "./components/GateUser/src/components/Vehicle_Entry/SalesDetails.jsx";
@@ -112,25 +158,18 @@ import SalesVehicle from "./components/Sales/SalesVehicle/SalesVehicle.jsx";
 
 import Demo from "./components/Demo/Demo.jsx";
 
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/" element={<LoginUser />} />
       <Route path="/forgot-password" element={<Forgot />} />
-      <Route
-        path="/home1"
-        element={
-          <Suspense fallback={<div>Loading...</div>}>
-            <HomePage1 />
-          </Suspense>
-        }
-      />
+      <Route path="/home1" element={<HomePage1 />} />
       <Route path="/home2" element={<HomePage2 />} />
       <Route path="/home3" element={<HomePage3 />} />
       <Route path="/home4" element={<HomePage4 />} />
       <Route path="/home5" element={<HomePage5 />} />
       <Route path="/home6" element={<HomePage6 />} />
-
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/manage-user" element={<ManageUser />} />
       <Route path="/update-user" element={<UpdateUser />} />
@@ -154,7 +193,6 @@ const router = createBrowserRouter(
       <Route path="/update-transporter" element={<UpdateTransporter />} />
       <Route path="/update-customer" element={<UpdateCustomer />} />
       <Route path="/update-supplier" element={<UpdateSupplier />} />
-
       <Route path="/SalesOrder" element={<SalesOrder />} />
       <Route path="/ProcessOrder" element={<ProcessOrder />} />
       <Route path="/Sidebar6" element={<SideBar6 />} />
@@ -162,7 +200,6 @@ const router = createBrowserRouter(
       <Route path="/SalesCustomer" element={<SalesCustomer />} />
       <Route path="/SalesTransporter" element={<SalesTransporter />} />
       <Route path="/SalesVehicle" element={<SalesVehicle />} />
-
       <Route path="/VehicleEntry" element={<VehicleEntry />} />
       <Route path="/completed-transaction" element={<CompletedTransaction />} />
       <Route path="/VehicleEntryDetails" element={<VehicleEntryDetails />} />
@@ -172,15 +209,11 @@ const router = createBrowserRouter(
       <Route path="/new-supplier" element={<NewSupplier />} />
       <Route path="/new-material" element={<NewMaterial />} />
       <Route path="/new-transporter" element={<NewTransporter />} />
-
-
-
       <Route path="/Sales-Details" element={<SalesDetails />} />
       <Route path="/reports" element={<Report />} />
       <Route path="/Print" element={<Print />} />
       <Route path="/camera" element={<Camera />} />
       <Route path="/Capture" element={<Capture />} />
-
       <Route path="/QualityHomePage" element={<QualityHomePage />} />
       <Route path="/QualityCheck" element={<QualityCheck />} />
       <Route path="/QualityCompleted" element={<QualityCompleted />} />
@@ -191,8 +224,6 @@ const router = createBrowserRouter(
       <Route path="/QualityInboundDashboard" element={<QualityInboundDashboard />} />
       <Route path="/QualityOutboundDashboard" element={<QualityOutboundDashboard />} />
       <Route path="/PrintTicket" element={<PrintTicket />} />
-
-
       <Route path="/ManagementHome" element={<ManagementHome />} />
       <Route path="/ManagementCamera" element={<ManagementCamera />} />
       <Route path="/ManagementReport" element={<ManagementReport />} />
@@ -202,16 +233,10 @@ const router = createBrowserRouter(
       <Route path="/ManagementQuality" element={<ManagementQuality />} />
       <Route path="/ManagementTransaction" element={<ManagementTransaction />} />
       <Route path="/ManagementLocation" element={<ManagementLocation />} />
-
-      <Route path="/ManagementDailyReport" element={<ManagementDailyReport />} />
-
-      <Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
+<Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
       <Route path="/ManagementWeeklyReport" element={<ManagementWeeklyReport/>} />
       <Route path="/ManagementMonthlyReport" element={<ManagementMonthlyReport/>} />
       <Route path="/ManagementCustomizedReport" element={<ManagementCustomizedReport/>} />
-
-
-
       <Route path="/OperatorHome" element={<OperatorHome />} />
       <Route path="/OperatorTransaction" element={<OperatorTransaction />} />
       <Route path="/OperatorTransactionComp" element={<OperatorTransactionComp />} />
@@ -222,15 +247,13 @@ const router = createBrowserRouter(
       <Route path="/OperatorWeeklyReport" element={<OperatorWeeklyReport />} />
       <Route path="/OperatorMonthlyReport" element={<OperatorMonthlyReport />} />
       <Route path="/OperatorCustomizedReport" element={<OperatorCustomizedReport />} />
-
-
-
-
-      <Route path="/Demo" element={<Demo />} />
+      <Route path="/Spinner" element={<Spinner />} />
     </Route>
   )
 );
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <Suspense fallback={<Spinner />}>
+    <RouterProvider router={router} />
+  </Suspense>
 );

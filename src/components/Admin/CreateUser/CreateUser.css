@@ -1,28 +1,5 @@
-/* .create-user-form {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-} */
 
-.btn-hover:hover {
-  background-color: #d63031 !important;
-  color: #fff !important;
-}
 
-.btn-success-1 {
-  color: #008060 !important;
-}
-
-.btn-danger {
-  color: #d63031 !important;
-}
-
-.create-main-content {
-  margin-bottom: 1rem;
-}
-
-.btn-hover.btn-success-1:hover {
-  background-color: #008060 !important;
-  color: #fff !important;
-}
 
 .spinner-container {
   display: flex;

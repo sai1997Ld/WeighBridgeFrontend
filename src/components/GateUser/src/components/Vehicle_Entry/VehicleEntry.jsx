@@ -164,13 +164,13 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     setSearchValue(e.target.value);
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (pageNumber = 0) => {
     if (!searchValue) {
       message.error('Please enter a search value');
       return;
     }
 
-    let apiUrl = `${api.defaults.baseURL}/transactions/ongoing?userId=${userId}`;
+    let apiUrl = `${api.defaults.baseURL}/transactions/ongoing?userId=${userId}&page=${pageNumber}`;
 
     // Build the URL based on the selected search option
     switch (searchOption) {
@@ -351,7 +351,10 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     if (currentPage !== null) {
-      fetchData(currentPage);
+      if (searchValue) {
+        handleSearch(currentPage);
+      }
+      else fetchData(currentPage);
     }
   }, [currentPage]);
 
@@ -691,7 +694,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                   style={{ width: "200px", }}
                   value={searchValue}
                   onChange={handleInputChange}
-                  onPressEnter={handleSearch} // Optionally allow search on Enter key press
+                  onPressEnter={() => { handleSearch(0), setCurrentPage(0) }} // Optionally allow search on Enter key press
                 />
               )}
             </div>
