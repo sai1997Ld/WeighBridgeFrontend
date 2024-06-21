@@ -100,13 +100,13 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
         setSearchValue(e.target.value);
     };
 
-    const handleSearch = async () => {
+    const handleSearch = async (pageNumber = 0) => {
         if (!searchValue) {
             message.error('Please enter a search value');
             return;
         }
 
-        let apiUrl = `${api.defaults.baseURL}/transactions/completed?userId=${userId}`;
+        let apiUrl = `${api.defaults.baseURL}/transactions/completed?userId=${userId}&page=${pageNumber}`;
 
         // Build the URL based on the selected search option
         switch (searchOption) {
@@ -176,7 +176,10 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
 
     useEffect(() => {
         if (currentPage !== null) {
-            fetchData(currentPage);
+            if (searchValue) {
+                handleSearch(currentPage);
+            }
+            else fetchData(currentPage);
         }
     }, [currentPage]);
 
@@ -277,73 +280,73 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
 
     // Code for Quality Report:
 
-    const handleQualityReportDownload = async (ticketNo) => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}`);
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            const data = await response.json();
-            console.log(data);
-            const doc = new jsPDF();
+    // const handleQualityReportDownload = async (ticketNo) => {
+    //     try {
+    //         const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
+    //         if (!response.ok) {
+    //             throw new Error("Network response was not ok");
+    //         }
+    //         const data = await response.json();
+    //         console.log(data);
+    //         const doc = new jsPDF();
 
-            const text = data.companyName;
-            const textWidth = doc.getTextWidth(text);
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const x = (pageWidth - textWidth) / 2;
-            doc.setFontSize(18);
-            doc.text(text, x, 22);
+    //         const text = data.companyName;
+    //         const textWidth = doc.getTextWidth(text);
+    //         const pageWidth = doc.internal.pageSize.getWidth();
+    //         const x = (pageWidth - textWidth) / 2;
+    //         doc.setFontSize(18);
+    //         doc.text(text, x, 22);
 
-            doc.setFontSize(12);
-            doc.setTextColor(100);
-            const subtitle1 = data.companyAddress;
-            const subtitle2 = `Generated on: ${new Date().toLocaleDateString()}`;
-            const subtitleWidth1 = doc.getTextWidth(subtitle1);
-            const subtitleWidth2 = doc.getTextWidth(subtitle2);
-            const subtitleX1 = (pageWidth - subtitleWidth1) / 2;
-            const subtitleX2 = (pageWidth - subtitleWidth2) / 2;
-            doc.text(subtitle1, subtitleX1, 32);
-            doc.text(subtitle2, subtitleX2, 38);
+    //         doc.setFontSize(12);
+    //         doc.setTextColor(100);
+    //         const subtitle1 = data.companyAddress;
+    //         const subtitle2 = `Generated on: ${new Date().toLocaleDateString()}`;
+    //         const subtitleWidth1 = doc.getTextWidth(subtitle1);
+    //         const subtitleWidth2 = doc.getTextWidth(subtitle2);
+    //         const subtitleX1 = (pageWidth - subtitleWidth1) / 2;
+    //         const subtitleX2 = (pageWidth - subtitleWidth2) / 2;
+    //         doc.text(subtitle1, subtitleX1, 32);
+    //         doc.text(subtitle2, subtitleX2, 38);
 
-            // Add the additional details before the table
-            const details = [
-                `Ticket No: ${data.ticketNo}`,
-                `Date: ${data.date}`,
-                `Vehicle No: ${data.vehicleNo}`,
-                `Material/Product: ${data.materialOrProduct}`,
-                `Material/Product Type: ${data.materialTypeOrProductType}`,
-                `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
-                `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-                `Transaction Type: ${data.transactionType}`
-            ];
+    //         // Add the additional details before the table
+    //         const details = [
+    //             `Ticket No: ${data.ticketNo}`,
+    //             `Date: ${data.date}`,
+    //             `Vehicle No: ${data.vehicleNo}`,
+    //             `Material/Product: ${data.materialOrProduct}`,
+    //             `Material/Product Type: ${data.materialTypeOrProductType}`,
+    //             `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
+    //             `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
+    //             `Transaction Type: ${data.transactionType}`
+    //         ];
 
-            doc.setFontSize(14);
-            let yPosition = 50; // Initial Y position for the details
-            details.forEach(detail => {
-                doc.text(detail, 20, yPosition);
-                yPosition += 10; // Increment Y position for each detail line
-            });
+    //         doc.setFontSize(14);
+    //         let yPosition = 50; // Initial Y position for the details
+    //         details.forEach(detail => {
+    //             doc.text(detail, 20, yPosition);
+    //             yPosition += 10; // Increment Y position for each detail line
+    //         });
 
-            // Move the table start position down to avoid overlapping with details
-            yPosition += 10;
+    //         // Move the table start position down to avoid overlapping with details
+    //         yPosition += 10;
 
-            const filteredEntries = Object.entries(data.qualityParameters).filter(
-                ([key, value]) => value !== null && value !== undefined && value !== ""
-            );
+    //         const filteredEntries = Object.entries(data.qualityParameters).filter(
+    //             ([key, value]) => value !== null && value !== undefined && value !== ""
+    //         );
 
-            const tableBody = filteredEntries.map(([key, value]) => [key, value]);
-            doc.autoTable({
-                startY: yPosition,
-                head: [["Field", "Value"]],
-                body: tableBody,
-            });
+    //         const tableBody = filteredEntries.map(([key, value]) => [key, value]);
+    //         doc.autoTable({
+    //             startY: yPosition,
+    //             head: [["Field", "Value"]],
+    //             body: tableBody,
+    //         });
 
-            doc.save("quality_report.pdf");
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            alert("Failed to download the quality report. Please try again later.");
-        }
-    };
+    //         doc.save("quality_report.pdf");
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error);
+    //         alert("Failed to download the quality report. Please try again later.");
+    //     }
+    // };
 
     // API Code for Print:
 
@@ -447,7 +450,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
                                     style={{ width: "200px", }}
                                     value={searchValue}
                                     onChange={handleInputChange}
-                                    onPressEnter={handleSearch} // Optionally allow search on Enter key press
+                                    onPressEnter={() => handleSearch(0)} // Optionally allow search on Enter key press
                                 />
                             )}
                         </div>
