@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./Transactioncomp.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileWord } from "@fortawesome/free-solid-svg-icons";
+
 import axios from "axios";
-import { faSearch, faPrint } from "@fortawesome/free-solid-svg-icons";
-import { Chart, ArcElement } from "chart.js/auto";
+import {  faPrint } from "@fortawesome/free-solid-svg-icons";
+
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button, Dropdown } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+
 
 import { SearchOutlined } from "@ant-design/icons";
 import { Select, Input } from "antd";
@@ -50,11 +50,6 @@ const OperatorTransaction2 = () => {
     }
   };
 
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
-
   const itemsPerPage = 5;
 
   
@@ -95,28 +90,7 @@ const OperatorTransaction2 = () => {
   }
   }, [userId,pageNumber]);
 
-  useEffect(() => {
-    Chart.register(ArcElement);
 
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
-
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   const api = axios.create({
     baseURL: "http://localhost:8080/search/v1/Api",
@@ -276,6 +250,7 @@ const OperatorTransaction2 = () => {
   return (
     <SideBar5>
       <div
+      className="container-fluid"
         style={{
           fontFamily: "Arial",
           color: "#333",
@@ -287,7 +262,7 @@ const OperatorTransaction2 = () => {
             <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
               Completed Transaction
             </h2>
-            <Row gutter={[16, 16]} justify="start" align="top">
+            <Row gutter={[16, 16]} justify="space-between" align="top">
               <Col
                 xs={24}
                 sm={12}
@@ -343,7 +318,7 @@ const OperatorTransaction2 = () => {
                     {searchOption === "transactionType" ? (
                       <Select
                         value={searchValue}
-                        onChange={(value) => setSearchValue(value)}
+                        onChange={(value) => {setSearchValue(value);setSearchPageNumber(0)}}
                         style={{ width: "100%" }}
                       >
                         <Select.Option value="">
