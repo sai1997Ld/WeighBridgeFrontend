@@ -16,19 +16,11 @@ import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRectangleXmark,
-  faFloppyDisk,
-  faPrint,
-  faTrash,
   faSave,
-  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 
 function TransactionFrom2() {
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const navigate = useNavigate();
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
   const queryParams = new URLSearchParams(window.location.search);
 
   const [inputValue, setInputValue] = useState();
@@ -168,30 +160,6 @@ function TransactionFrom2() {
         console.error("Error saving measurement:", error);
       });
   };
-
-  useEffect(() => {
-    Chart.register(ArcElement);
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
-
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   const [formData, setFormData] = useState({
     date: "",
     inTime: "",
@@ -237,7 +205,7 @@ function TransactionFrom2() {
 
   return (
     <SideBar5>
-      <div>
+      <div className="container-fluid">
         <div className="container-fluid">
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={ faRectangleXmark}  />
