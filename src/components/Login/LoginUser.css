@@ -36,8 +36,8 @@
 }
 
 .login-form {
-  width: 100%; /* Ensure the form takes full width */
-  max-width: 200px; /* Limit the form width */
+  width: 100%; 
+  max-width: 200px; 
 }
 
 .login-truck-image {
@@ -84,4 +84,21 @@
 
 .login-forgot-password:hover {
   text-decoration: underline;
+}
+
+.password-input {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ccc;
+}
+
+.password-toggle:hover {
+  color: #333;
 }

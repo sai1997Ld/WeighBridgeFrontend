@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Select from "react-select";
-import { Line, Bar } from 'react-chartjs-2';
+import { Line, Bar, } from 'react-chartjs-2';
 import axios from 'axios';
 import Swal from "sweetalert2";
 import SideBar4 from '../SideBar/SideBar4';
