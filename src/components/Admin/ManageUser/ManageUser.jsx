@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./ManageUser.css";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { Table, Tag, Button, Input, Pagination } from "antd";
+import { Table, Tag, Button, Input, Pagination, Tooltip } from "antd"; // Import Tooltip
 import Swal from "sweetalert2";
 import SideBar from "../../SideBar/SideBar";
 import "antd/dist/reset.css";
@@ -279,32 +279,38 @@ function ManageUser() {
                     <div className="action-buttons">
                       {record.status === "ACTIVE" ? (
                         <>
-                          <Button
-                            onClick={() => handleDelete(record.userId)}
-                            style={{ marginRight: "8px" }}
-                          >
+                          <Tooltip title="Delete">
+                            <Button
+                              onClick={() => handleDelete(record.userId)}
+                              style={{ marginRight: "8px" }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faUserXmark}
+                                style={{ color: "red" }}
+                                className="action-icon delete-icon"
+                              />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip title="Edit">
+                            <Button onClick={() => handleEdit(record)}>
+                              <FontAwesomeIcon
+                                icon={faPencilAlt}
+                                style={{ color: "orange" }}
+                                className="action-icon activate-icon"
+                              />
+                            </Button>
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <Tooltip title="Activate">
+                          <Button onClick={() => handleActivate(record.userId)}>
                             <FontAwesomeIcon
-                              icon={faUserXmark}
-                              style={{ color: "red" }}
-                              className="action-icon delete-icon"
-                            />
-                          </Button>
-                          <Button onClick={() => handleEdit(record)}>
-                            <FontAwesomeIcon
-                              icon={faPencilAlt}
-                              style={{ color: "orange" }}
+                              icon={faUserCheck}
+                              style={{ color: "green" }}
                               className="action-icon activate-icon"
                             />
                           </Button>
-                        </>
-                      ) : (
-                        <Button onClick={() => handleActivate(record.userId)}>
-                          <FontAwesomeIcon
-                            icon={faUserCheck}
-                            style={{ color: "green" }}
-                            className="action-icon activate-icon"
-                          />
-                        </Button>
+                        </Tooltip>
                       )}
                     </div>
                   )}

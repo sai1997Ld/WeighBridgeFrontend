@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Button } from "antd";
+import { Table, Button, Tooltip } from "antd";
 import SideBar from "../../SideBar/SideBar";
 import "./ViewProduct.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -58,10 +58,12 @@ const ViewProduct = () => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <Button
-          icon={<VisibilityIcon />}
-          onClick={() => handleViewClick(record.productName)}
-        />
+        <Tooltip title="View Parameters">
+          <Button
+            icon={<VisibilityIcon />}
+            onClick={() => handleViewClick(record.productName)}
+          />
+        </Tooltip>
       ),
     },
   ];

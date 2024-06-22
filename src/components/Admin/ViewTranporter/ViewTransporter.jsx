@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Input, Tag } from "antd";
+import { Table, Button, Input, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faTruck, faHome} from "@fortawesome/free-solid-svg-icons";
+import {
+  faPencilAlt,
+  faTruck,
+  faHome,
+} from "@fortawesome/free-solid-svg-icons";
 import SideBar from "../../SideBar/SideBar";
 import "./ViewTransporter.css";
 import { Link } from "react-router-dom";
@@ -17,7 +21,9 @@ const ViewTransporter = () => {
 
   const fetchTransporterData = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/transporter/details");
+      const response = await fetch(
+        "http://localhost:8080/api/v1/transporter/details"
+      );
       const data = await response.json();
       setTransporters(data);
     } catch (error) {
@@ -31,10 +37,14 @@ const ViewTransporter = () => {
         fetchTransporterData(); // Fetch all transporters if search field is empty
         return;
       }
-      const response = await fetch(`http://localhost:8080/api/v1/transporter/${transporterIdFilter}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/transporter/${transporterIdFilter}`
+      );
       if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(errorResponse.message || 'Failed to fetch transporter data');
+        throw new Error(
+          errorResponse.message || "Failed to fetch transporter data"
+        );
       }
       const transporterData = await response.json();
       setTransporters([transporterData]); // Update transporters state with fetched transporter data
@@ -59,17 +69,28 @@ const ViewTransporter = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://localhost:8080/api/v1/transporter/${transporterId}/activate`, {
-            method: "PUT",
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/v1/transporter/${transporterId}/activate`,
+            {
+              method: "PUT",
+            }
+          );
           if (response.ok) {
-            Swal.fire("Activated!", "The transporter is active now.", "success");
+            Swal.fire(
+              "Activated!",
+              "The transporter is active now.",
+              "success"
+            );
             fetchTransporterData();
           } else {
             Swal.fire("Failed", "Failed to activate transporter", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while activating the transporter.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while activating the transporter.",
+            "error"
+          );
           console.error("Error activating transporter:", error);
         }
       }
@@ -88,17 +109,28 @@ const ViewTransporter = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://localhost:8080/api/v1/transporter/${transporterId}/deactivate`, {
-            method: "DELETE",
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/v1/transporter/${transporterId}/deactivate`,
+            {
+              method: "DELETE",
+            }
+          );
           if (response.ok) {
-            Swal.fire("Deactivated!", "The transporter is inactive now.", "success");
+            Swal.fire(
+              "Deactivated!",
+              "The transporter is inactive now.",
+              "success"
+            );
             fetchTransporterData();
           } else {
             Swal.fire("Failed", "Failed to deactivate transporter", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while deactivating the transporter.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while deactivating the transporter.",
+            "error"
+          );
           console.error("Error deactivating transporter:", error);
         }
       }
@@ -145,9 +177,7 @@ const ViewTransporter = () => {
       ],
       onFilter: (value, record) => record.status === value,
       render: (text) => (
-        <Tag color={text === "ACTIVE" ? "green" : "red"}>
-          {text}
-        </Tag>
+        <Tag color={text === "ACTIVE" ? "green" : "red"}>{text}</Tag>
       ),
     },
     {
@@ -157,16 +187,35 @@ const ViewTransporter = () => {
         <div className="action-buttons">
           {record.status === "ACTIVE" ? (
             <>
-              <Button onClick={() => handleDeactivate(record.id)} style={{ marginRight: "8px" }}>
-                <FontAwesomeIcon icon={faTruck} style={{ color: "red" }} className="action-icon" />
-              </Button>
-              <Button onClick={() => handleEdit(record)}>
-                <FontAwesomeIcon icon={faPencilAlt} style={{ color: "orange" }} className="action-icon" />
-              </Button>
+              <Tooltip title="Delete">
+                <Button
+                  onClick={() => handleDeactivate(record.id)}
+                  style={{ marginRight: "8px" }}
+                >
+                  <FontAwesomeIcon
+                    icon={faTruck}
+                    style={{ color: "red" }}
+                    className="action-icon"
+                  />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Edit">
+                <Button onClick={() => handleEdit(record)}>
+                  <FontAwesomeIcon
+                    icon={faPencilAlt}
+                    style={{ color: "orange" }}
+                    className="action-icon"
+                  />
+                </Button>
+              </Tooltip>
             </>
           ) : (
             <Button onClick={() => handleActivate(record.id)}>
-              <FontAwesomeIcon icon={faTruck} style={{ color: "green" }} className="action-icon" />
+              <FontAwesomeIcon
+                icon={faTruck}
+                style={{ color: "green" }}
+                className="action-icon"
+              />
             </Button>
           )}
         </div>
@@ -177,12 +226,16 @@ const ViewTransporter = () => {
   return (
     <SideBar>
       <div className="view-transporter-page container-fluid">
-      <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Manage Transporter</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+        <div className="d-flex justify-content-between align-items-center">
+          <h2 className="text-center mx-auto">Manage Transporter</h2>
+          <Link to={"/home1"}>
+            <FontAwesomeIcon
+              icon={faHome}
+              style={{ float: "right", fontSize: "1.5em" }}
+              className="mb-3"
+            />
+          </Link>
+        </div>
         <div className="filters">
           <Search
             placeholder="Search Transporter ID"
