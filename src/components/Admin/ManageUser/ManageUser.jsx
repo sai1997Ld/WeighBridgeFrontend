@@ -44,7 +44,9 @@ function ManageUser() {
       if (result.isConfirmed) {
         try {
           const response = await fetch(
-            `http://localhost:8080/api/v1/users/${userId}/deactivate`,
+            `http://localhost:8080/api/v1/users/${userId}/deactivate?user=${sessionStorage.getItem(
+              "userId"
+            )}`,
             {
               method: "DELETE",
             }
@@ -80,7 +82,9 @@ function ManageUser() {
       if (result.isConfirmed) {
         try {
           const response = await fetch(
-            `http://localhost:8080/api/v1/users/${userId}/activate`,
+            `http://localhost:8080/api/v1/users/${userId}/activate?user=${sessionStorage.getItem(
+              "userId"
+            )}`,
             {
               method: "PUT",
             }
@@ -105,7 +109,9 @@ function ManageUser() {
 
   const fetchUserData = async () => {
     try {
-      let url = `http://localhost:8080/api/v1/users?page=${currentPage - 1}&size=${pageSize}`;
+      let url = `http://localhost:8080/api/v1/users?page=${
+        currentPage - 1
+      }&size=${pageSize}`;
       if (status) {
         url = `http://localhost:8080/api/v1/users/userStatus?userStatus=${status}`;
       }
