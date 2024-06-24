@@ -49,6 +49,7 @@ const SideBar = ({ children }) => {
   const [openCustomer, setOpenCustomer] = useState(false);
   const [openMaterial, setOpenMaterial] = useState(false);
   const [openProduct, setOpenProduct] = useState(false);
+  const [openCamera, setOpenCamera] = useState(false);
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -88,6 +89,11 @@ const SideBar = ({ children }) => {
   const handleMaterialClick = () => {
     setOpenMaterial(!openMaterial);
     setSelectedItem(openMaterial ? null : "material");
+  };
+
+  const handleCameraClick = () => {
+    setOpenCamera(!openCamera);
+    setSelectedItem(openCamera ? null : "camera");
   };
 
   const handleProductClick = () => {
@@ -964,9 +970,7 @@ const SideBar = ({ children }) => {
           </Collapse>
 
           <ListItemButton
-            component={Link}
-            to="/CameraMaster"
-            onClick={() => handleItemClick("camera")}
+            onClick={handleCameraClick}
             selected={selectedItem === "camera"}
             sx={{
               "&.Mui-selected": {
@@ -986,8 +990,51 @@ const SideBar = ({ children }) => {
             <ListItemIcon>
               <VideoCallRounded />
             </ListItemIcon>
-            <ListItemText primary="Camera" />
+            <ListItemText primary="Camera Management" />
+            {openCamera ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
+          <Collapse in={openCamera} timeout="auto" unmountOnExit>
+  <List
+    component="div"
+    disablePadding
+    sx={{ paddingLeft: "55px", listStyleType: "disc" }}
+  >
+    <ListItemButton
+      component={Link}
+      to="/CameraMaster"
+      onClick={() => handleCameraClick()}
+      selected={selectedItem === "addCamera"}
+      sx={{
+        "&.Mui-selected, &:hover": {
+          color: "#3e8ee6",
+        },
+        "&.Mui-selected:hover": {
+          color: "#2c74d1",
+        },
+        display: "list-item",
+      }}
+    >
+      <ListItemText primary="Add Camera" />
+    </ListItemButton>
+    <ListItemButton
+      component={Link}
+      to="/view-camera"
+      onClick={() => handleCameraClick()}
+      selected={selectedItem === "manageCamera"}
+      sx={{
+        "&.Mui-selected, &:hover": {
+          color: "#3e8ee6",
+        },
+        "&.Mui-selected:hover": {
+          color: "#2c74d1",
+        },
+        display: "list-item",
+      }}
+    >
+      <ListItemText primary="Manage Camera" />
+    </ListItemButton>
+  </List>
+</Collapse>
 
           <ListItemButton
             onClick={handleSignOut2}
@@ -1001,7 +1048,7 @@ const SideBar = ({ children }) => {
                 color: "white",
               },
               "&.Mui-selected:hover": {
-                backgroundColor: "#2c74d1", // Update the hover color for the selected state
+                backgroundColor: "#2c74d1", 
                 color: "white",
               },
             }}

@@ -201,7 +201,7 @@ const CameraMaster = () => {
           ) : (
             <>
               <div className="d-flex justify-content-between align-items-center">
-                <h2 className="text-center mx-auto">{editMode ? "Update Camera" : "Camera Management"}</h2>
+                <h2 className="text-center mx-auto">{editMode ? "Update Camera" : "Camera Registration"}</h2>
                 <Link to={"/home1"}>
                   <FontAwesomeIcon
                     icon={faHome}
