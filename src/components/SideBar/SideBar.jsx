@@ -2,7 +2,6 @@ import { useState } from "react";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./Sidebar.css";
 
-
 import {
   Drawer,
   List,
@@ -28,6 +27,7 @@ import {
   Build,
   BusinessCenter,
   Store,
+  VideoCallRounded,
   Commute,
   Group,
   ExitToApp,
@@ -39,14 +39,13 @@ import {
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-
 const SideBar = ({ children }) => {
   const [openUser, setOpenUser] = useState(false);
   const [openCompany, setOpenCompany] = useState(false);
   const [openTransport, setOpenTransport] = useState(false);
   const [openVehicle, setOpenVehicle] = useState(false);
   const [openSupplier, setOpenSupplier] = useState(false);
-  
+
   const [openCustomer, setOpenCustomer] = useState(false);
   const [openMaterial, setOpenMaterial] = useState(false);
   const [openProduct, setOpenProduct] = useState(false);
@@ -118,8 +117,6 @@ const SideBar = ({ children }) => {
 
   const open = Boolean(anchorEl);
 
-  
-
   const handleSignOut = () => {
     // Clear session storage
     sessionStorage.clear();
@@ -151,23 +148,23 @@ const SideBar = ({ children }) => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, sign out",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         // Clear session storage
         sessionStorage.clear();
- 
+
         // Clear browser history and redirect
         window.location.href = "/";
- 
+
         // Additional history manipulation to prevent users from navigating back
         if (window.history && window.history.pushState) {
           // Use replaceState to clear the existing history
           window.history.replaceState(null, null, "/");
- 
+
           // Add a dummy entry to the history to replace current entry
           window.history.pushState(null, null, "/");
- 
+
           // Prevent users from navigating back to the previous state
           window.onpopstate = function (event) {
             window.history.go(1);
@@ -833,138 +830,164 @@ const SideBar = ({ children }) => {
           </Collapse>
 
           <ListItemButton
-        onClick={handleMaterialClick}
-        selected={selectedItem === "material"}
-        sx={{
-          "&.Mui-selected": {
-            backgroundColor: "#3e8ee6",
-            color: "white",
-          },
-          "&:hover": {
-            backgroundColor: "#3e8ee6",
-            color: "white",
-          },
-          "&.Mui-selected:hover": {
-            backgroundColor: "#2c74d1",
-            color: "white",
-          },
-        }}
-      >
-        <ListItemIcon>
-          <Handyman />
-        </ListItemIcon>
-        <ListItemText primary="Material Management" />
-        {openMaterial ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={openMaterial} timeout="auto" unmountOnExit>
-        <List
-          component="div"
-          disablePadding
-          sx={{ paddingLeft: "55px", listStyleType: "disc" }}
-        >
-          <ListItemButton
-            component={Link}
-            to="/material-management"
-            onClick={() => handleItemClick("addMaterial")}
-            selected={selectedItem === "addMaterial"}
+            onClick={handleMaterialClick}
+            selected={selectedItem === "material"}
             sx={{
-              "&.Mui-selected, &:hover": {
-                color: "#3e8ee6",
+              "&.Mui-selected": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
+              },
+              "&:hover": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
               },
               "&.Mui-selected:hover": {
-                color: "#2c74d1",
+                backgroundColor: "#2c74d1",
+                color: "white",
               },
-              display: "list-item",
             }}
           >
-            <ListItemText primary="Add Material" />
+            <ListItemIcon>
+              <Handyman />
+            </ListItemIcon>
+            <ListItemText primary="Material Management" />
+            {openMaterial ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
-          <ListItemButton
-            component={Link}
-            to="/view-material"
-            onClick={() => handleItemClick("viewMaterial")}
-            selected={selectedItem === "viewMaterial"}
-            sx={{
-              "&.Mui-selected, &:hover": {
-                color: "#3e8ee6",
-              },
-              "&.Mui-selected:hover": {
-                color: "#2c74d1",
-              },
-              display: "list-item",
-            }}
-          >
-            <ListItemText primary="View Material" />
-          </ListItemButton>
-        </List>
-      </Collapse>
+          <Collapse in={openMaterial} timeout="auto" unmountOnExit>
+            <List
+              component="div"
+              disablePadding
+              sx={{ paddingLeft: "55px", listStyleType: "disc" }}
+            >
+              <ListItemButton
+                component={Link}
+                to="/material-management"
+                onClick={() => handleItemClick("addMaterial")}
+                selected={selectedItem === "addMaterial"}
+                sx={{
+                  "&.Mui-selected, &:hover": {
+                    color: "#3e8ee6",
+                  },
+                  "&.Mui-selected:hover": {
+                    color: "#2c74d1",
+                  },
+                  display: "list-item",
+                }}
+              >
+                <ListItemText primary="Add Material" />
+              </ListItemButton>
+              <ListItemButton
+                component={Link}
+                to="/view-material"
+                onClick={() => handleItemClick("viewMaterial")}
+                selected={selectedItem === "viewMaterial"}
+                sx={{
+                  "&.Mui-selected, &:hover": {
+                    color: "#3e8ee6",
+                  },
+                  "&.Mui-selected:hover": {
+                    color: "#2c74d1",
+                  },
+                  display: "list-item",
+                }}
+              >
+                <ListItemText primary="View Material" />
+              </ListItemButton>
+            </List>
+          </Collapse>
 
-      <ListItemButton
-        onClick={handleProductClick}
-        selected={selectedItem === "product"}
-        sx={{
-          "&.Mui-selected": {
-            backgroundColor: "#3e8ee6",
-            color: "white",
-          },
-          "&:hover": {
-            backgroundColor: "#3e8ee6",
-            color: "white",
-          },
-          "&.Mui-selected:hover": {
-            backgroundColor: "#2c74d1",
-            color: "white",
-          },
-        }}
-      >
-        <ListItemIcon>
-          <ProductionQuantityLimits />
-        </ListItemIcon>
-        <ListItemText primary="Product Management" />
-        {openProduct ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={openProduct} timeout="auto" unmountOnExit>
-        <List
-          component="div"
-          disablePadding
-          sx={{ paddingLeft: "55px", listStyleType: "disc" }}
-        >
           <ListItemButton
-            component={Link}
-            to="/product-management"
-            onClick={() => handleItemClick("addProduct")}
-            selected={selectedItem === "addProduct"}
+            onClick={handleProductClick}
+            selected={selectedItem === "product"}
             sx={{
-              "&.Mui-selected, &:hover": {
-                color: "#3e8ee6",
+              "&.Mui-selected": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
+              },
+              "&:hover": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
               },
               "&.Mui-selected:hover": {
-                color: "#2c74d1",
+                backgroundColor: "#2c74d1",
+                color: "white",
               },
-              display: "list-item",
             }}
           >
-            <ListItemText primary="Add Product" />
+            <ListItemIcon>
+              <ProductionQuantityLimits />
+            </ListItemIcon>
+            <ListItemText primary="Product Management" />
+            {openProduct ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
+          <Collapse in={openProduct} timeout="auto" unmountOnExit>
+            <List
+              component="div"
+              disablePadding
+              sx={{ paddingLeft: "55px", listStyleType: "disc" }}
+            >
+              <ListItemButton
+                component={Link}
+                to="/product-management"
+                onClick={() => handleItemClick("addProduct")}
+                selected={selectedItem === "addProduct"}
+                sx={{
+                  "&.Mui-selected, &:hover": {
+                    color: "#3e8ee6",
+                  },
+                  "&.Mui-selected:hover": {
+                    color: "#2c74d1",
+                  },
+                  display: "list-item",
+                }}
+              >
+                <ListItemText primary="Add Product" />
+              </ListItemButton>
+              <ListItemButton
+                component={Link}
+                to="/view-product"
+                onClick={() => handleItemClick("viewProduct")}
+                selected={selectedItem === "viewProduct"}
+                sx={{
+                  "&.Mui-selected, &:hover": {
+                    color: "#3e8ee6",
+                  },
+                  "&.Mui-selected:hover": {
+                    color: "#2c74d1",
+                  },
+                  display: "list-item",
+                }}
+              >
+                <ListItemText primary="View Product" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+
           <ListItemButton
             component={Link}
-            to="/view-product"
-            onClick={() => handleItemClick("viewProduct")}
-            selected={selectedItem === "viewProduct"}
+            to="/CameraMaster"
+            onClick={() => handleItemClick("camera")}
+            selected={selectedItem === "camera"}
             sx={{
-              "&.Mui-selected, &:hover": {
-                color: "#3e8ee6",
+              "&.Mui-selected": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
+              },
+              "&:hover": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
               },
               "&.Mui-selected:hover": {
-                color: "#2c74d1",
+                backgroundColor: "#2c74d1",
+                color: "white",
               },
-              display: "list-item",
             }}
           >
-            <ListItemText primary="View Product" />
+            <ListItemIcon>
+              <VideoCallRounded />
+            </ListItemIcon>
+            <ListItemText primary="Camera" />
           </ListItemButton>
-        </List>
-      </Collapse>
 
           <ListItemButton
             onClick={handleSignOut2}

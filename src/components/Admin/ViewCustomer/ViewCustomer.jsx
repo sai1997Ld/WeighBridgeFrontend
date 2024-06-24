@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Table, Button, Input, Tag } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState, useEffect } from "react";
+import { Table, Button, Input, Tag, Tooltip } from "antd";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPencilAlt,
   faUserCheck,
   faUserXmark,
-  faHome
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import SideBar from "../../SideBar/SideBar";
-import './ViewCustomer.css';
-import { Link } from 'react-router-dom';
+import "./ViewCustomer.css";
+import { Link } from "react-router-dom";
 
 const { Search } = Input;
 
@@ -36,10 +36,14 @@ const ViewCustomer = () => {
         fetchCustomerData(); // Fetch all customers if search field is empty
         return;
       }
-      const response = await fetch(`http://localhost:8080/api/v1/customers/get/id/${customerIdFilter}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/customers/get/id/${customerIdFilter}`
+      );
       if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(errorResponse.message || 'Failed to fetch customer data');
+        throw new Error(
+          errorResponse.message || "Failed to fetch customer data"
+        );
       }
       const customerData = await response.json();
       setCustomers([customerData]); // Update customers state with fetched customer data
@@ -64,9 +68,12 @@ const ViewCustomer = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://localhost:8080/api/v1/customers/active/${customerId}`, {
-            method: "PUT",
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/v1/customers/active/${customerId}`,
+            {
+              method: "PUT",
+            }
+          );
           if (response.ok) {
             Swal.fire("Activated!", "The customer is active now.", "success");
             fetchCustomerData();
@@ -74,7 +81,11 @@ const ViewCustomer = () => {
             Swal.fire("Failed", "Failed to activate customer", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while activating the customer.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while activating the customer.",
+            "error"
+          );
           console.error("Error activating customer:", error);
         }
       }
@@ -93,17 +104,28 @@ const ViewCustomer = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://localhost:8080/api/v1/customers/delete/${customerId}`, {
-            method: "DELETE",
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/v1/customers/delete/${customerId}`,
+            {
+              method: "DELETE",
+            }
+          );
           if (response.ok) {
-            Swal.fire("Deactivated!", "The customer is inactive now.", "success");
+            Swal.fire(
+              "Deactivated!",
+              "The customer is inactive now.",
+              "success"
+            );
             fetchCustomerData();
           } else {
             Swal.fire("Failed", "Failed to deactivate customer", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while deactivating the customer.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while deactivating the customer.",
+            "error"
+          );
           console.error("Error deactivating customer:", error);
         }
       }
@@ -116,68 +138,66 @@ const ViewCustomer = () => {
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'customerId',
-      key: 'customerId',
+      title: "ID",
+      dataIndex: "customerId",
+      key: "customerId",
     },
     {
-      title: 'Name',
-      dataIndex: 'customerName',
-      key: 'customerName',
+      title: "Name",
+      dataIndex: "customerName",
+      key: "customerName",
     },
     {
-      title: 'Email',
-      dataIndex: 'customerEmail',
-      key: 'customerEmail',
+      title: "Email",
+      dataIndex: "customerEmail",
+      key: "customerEmail",
     },
     {
-      title: 'Contact No',
-      dataIndex: 'customerContactNo',
-      key: 'customerContactNo',
+      title: "Contact No",
+      dataIndex: "customerContactNo",
+      key: "customerContactNo",
     },
     {
-      title: 'Address Line 1',
-      dataIndex: 'customerAddressLine1',
-      key: 'customerAddressLine1',
+      title: "Address Line 1",
+      dataIndex: "customerAddressLine1",
+      key: "customerAddressLine1",
     },
     {
-      title: 'Address Line 2',
-      dataIndex: 'customerAddressLine2',
-      key: 'customerAddressLine2',
+      title: "Address Line 2",
+      dataIndex: "customerAddressLine2",
+      key: "customerAddressLine2",
     },
     {
-      title: 'City',
-      dataIndex: 'city',
-      key: 'city',
+      title: "City",
+      dataIndex: "city",
+      key: "city",
     },
     {
-      title: 'State',
-      dataIndex: 'state',
-      key: 'state',
+      title: "State",
+      dataIndex: "state",
+      key: "state",
     },
     {
-      title: 'Country',
-      dataIndex: 'country',
-      key: 'country',
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
     },
     {
-      title: 'ZIP',
-      dataIndex: 'zip',
-      key: 'zip',
+      title: "ZIP",
+      dataIndex: "zip",
+      key: "zip",
     },
     {
-      title: 'Status',
-      dataIndex: 'customerStatus',
-      key: 'customerStatus',
+      title: "Status",
+      dataIndex: "customerStatus",
+      key: "customerStatus",
       filters: [
         { text: "Active", value: "ACTIVE" },
         { text: "Inactive", value: "INACTIVE" },
       ],
       onFilter: (value, record) => record.customerStatus === value,
       render: (text) => (
-        <Tag color={text === "ACTIVE" ? "green" : "red"}>
-          {text}
-        </Tag>
+        <Tag color={text === "ACTIVE" ? "green" : "red"}>{text}</Tag>
       ),
     },
     {
@@ -187,16 +207,35 @@ const ViewCustomer = () => {
         <div className="action-buttons">
           {record.customerStatus === "ACTIVE" ? (
             <>
-              <Button onClick={() => handleDeactivate(record.customerId)} style={{ marginRight: "8px" }}>
-                <FontAwesomeIcon icon={faUserXmark} style={{ color: "red" }} className="action-icon" />
-              </Button>
-              <Button onClick={() => handleEdit(record)}>
-                <FontAwesomeIcon icon={faPencilAlt} style={{ color: "orange" }} className="action-icon" />
-              </Button>
+              <Tooltip title="Delete">
+                <Button
+                  onClick={() => handleDeactivate(record.customerId)}
+                  style={{ marginRight: "8px" }}
+                >
+                  <FontAwesomeIcon
+                    icon={faUserXmark}
+                    style={{ color: "red" }}
+                    className="action-icon"
+                  />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Edit">
+                <Button onClick={() => handleEdit(record)}>
+                  <FontAwesomeIcon
+                    icon={faPencilAlt}
+                    style={{ color: "orange" }}
+                    className="action-icon"
+                  />
+                </Button>
+              </Tooltip>
             </>
           ) : (
             <Button onClick={() => handleActivate(record.customerId)}>
-              <FontAwesomeIcon icon={faUserCheck} style={{ color: "green" }} className="action-icon" />
+              <FontAwesomeIcon
+                icon={faUserCheck}
+                style={{ color: "green" }}
+                className="action-icon"
+              />
             </Button>
           )}
         </div>
@@ -206,13 +245,17 @@ const ViewCustomer = () => {
 
   return (
     <SideBar>
-      <div className='view-customer-page container-fluid'>
-      <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Manage Customer</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+      <div className="view-customer-page container-fluid">
+        <div className="d-flex justify-content-between align-items-center">
+          <h2 className="text-center mx-auto">Manage Customer</h2>
+          <Link to={"/home1"}>
+            <FontAwesomeIcon
+              icon={faHome}
+              style={{ float: "right", fontSize: "1.5em" }}
+              className="mb-3"
+            />
+          </Link>
+        </div>
         <div className="filters">
           <Search
             placeholder="Search Customer ID"

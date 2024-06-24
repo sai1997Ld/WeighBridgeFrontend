@@ -2,10 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./transaction.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileWord } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { faSearch, faPrint } from "@fortawesome/free-solid-svg-icons";
-import { Chart, ArcElement } from "chart.js/auto";
+import { faPrint,faTruck } from "@fortawesome/free-solid-svg-icons";
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button } from "antd";
 import { Typography } from "antd";
@@ -62,11 +60,6 @@ const OperatorTransaction2 = () => {
       navigate(`/OperatorTransactionFromOutbound/?ticketNumber=${ticketNo}`);
     }
   };
-
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
 
   const itemsPerPage = 5;
 
@@ -137,33 +130,12 @@ const OperatorTransaction2 = () => {
       fetchData(pageNumber);
       const interval = setInterval(() => {
         fetchData(pageNumber);
-      }, 5000);
+      }, 50000);
       return () => clearInterval(interval);
     }
   }, [userId, pageNumber]);
 
-  useEffect(() => {
-    Chart.register(ArcElement);
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
-
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+ 
 
   const api = axios.create({
     baseURL: "http://localhost:8080/search/v1/Api",
@@ -176,7 +148,8 @@ const OperatorTransaction2 = () => {
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
     setSearchValue("");
-    setSearchPageNumber(0); // Reset the search value when the option changes
+    setSearchPageNumber(0);
+     // Reset the search value when the option changes
   };
 
   const handleInputChange = (e) => {
@@ -195,7 +168,7 @@ const OperatorTransaction2 = () => {
       setSearchWeighments([]);
       return;
     }
-    let apiUrl = `${api.defaults.baseURL}/searchApi`;
+    let apiUrl = `${api.defaults.baseURL}/serachApi/Inprocess`;
 
     switch (searchOption) {
       case "ticketNo":
@@ -362,6 +335,7 @@ const OperatorTransaction2 = () => {
   return (
     <SideBar5>
       <div
+      className="container-fluid "
         style={{
           fontFamily: "Arial",
           color: "#333",
@@ -369,11 +343,11 @@ const OperatorTransaction2 = () => {
         }}
       >
         <div className="container-fluid mt-0">
-          <div className="mb-3 text-center">
+          <div className="mb-3 mt-1 text-center">
             <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
               Transaction Dashboard
             </h2>
-            <Row gutter={[16, 16]} justify="start" align="top">
+            <Row gutter={[16, 16]} justify="space-between" align="top">
               <Col
                 xs={24}
                 sm={12}
@@ -401,12 +375,12 @@ const OperatorTransaction2 = () => {
                 md={6}
                 style={{
                   display: "flex",
-                  justifyContent: "start",
+                  justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-               <div className="d-flex" style={{ alignItems: "center" }}>
-                  <div className="mr-2">
+               <div  style={{ display:"flex" ,float:"right"}}>
+                  <div>
                     <Select
                       value={searchOption}
                       onChange={handleSearchOptionChange}
@@ -429,7 +403,7 @@ const OperatorTransaction2 = () => {
                     {searchOption === "transactionType" ? (
                       <Select
                         value={searchValue}
-                        onChange={(value) => setSearchValue(value)}
+                        onChange={(value) => {setSearchValue(value);setSearchPageNumber(0); }}
                         style={{ width: "100%" }}
                       >
                         <Select.Option value="">
@@ -456,21 +430,25 @@ const OperatorTransaction2 = () => {
           <TransactionUpdatesContainer>
             <TransactionUpdateBox bgColor="#BDBDBD">
               <Text>
+              <FontAwesomeIcon icon={faTruck}  style={{paddingRight:"5px"}}/>
                 Inbound Pending Tare Weight: <b>{pendingTareInbound}</b>
               </Text>
             </TransactionUpdateBox>
-            <TransactionUpdateBox bgColor="#36A2EB">
+            <TransactionUpdateBox bgColor="#88CCFA">
               <Text>
+              <FontAwesomeIcon icon={faTruck}  style={{paddingRight:"5px"}}/>
                 Inbound Pending Gross Weight: <b>{pendingGrossInbound}</b>
               </Text>
             </TransactionUpdateBox>
             <TransactionUpdateBox bgColor="#BDBDBD">
               <Text>
+              <FontAwesomeIcon icon={faTruck} flip="horizontal" style={{paddingLeft:"5px"}} />
                 Outbound Pending Tare Weight: <b>{pendingTareOutbound}</b>
               </Text>
             </TransactionUpdateBox>
-            <TransactionUpdateBox bgColor="#36A2EB">
+            <TransactionUpdateBox bgColor="#88CCFA">
               <Text>
+              <FontAwesomeIcon icon={faTruck} style={{paddingLeft:"5px"}} flip="horizontal" />
                 Outbound Pending Gross Weight: <b>{pendingGrossOutbound}</b>
               </Text>
             </TransactionUpdateBox>

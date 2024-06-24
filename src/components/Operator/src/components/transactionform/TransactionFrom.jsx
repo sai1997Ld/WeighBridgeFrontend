@@ -19,21 +19,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRectangleXmark,
   faPlay,
-  faFloppyDisk,
-  faPrint,
-  faSave,
   faTrash,
+  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { DisabledByDefault } from "@mui/icons-material";
-import { Alert } from "antd";
 
 
 function TransactionFrom() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const navigate = useNavigate();
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
+
   const queryParams = new URLSearchParams(window.location.search);
 
   const [inputValue, setInputValue] = useState();
@@ -170,29 +165,6 @@ function TransactionFrom() {
       });
   };
 
-  useEffect(() => {
-    Chart.register(ArcElement);
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
-
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   const [formData, setFormData] = useState({
     date: "",
     inTime: "",
@@ -303,12 +275,12 @@ function TransactionFrom() {
 
   return (
     <SideBar5>
-      <div>
+      <div className="container-fluid">
         <div className="container-fluid">
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
-          <h2 className="text-center mb-2">Inbound Transaction Form</h2>
+          <h2 className="text-center mb-3 mt-1">Inbound Transaction Form</h2>
           <div className="row ">
             <div className="col-md-3 mb-3">
               <input
@@ -322,6 +294,20 @@ function TransactionFrom() {
                 readOnly
               />
             </div>
+            <div className="col-md-6 mb-3" >
+            <button
+                type="button"
+                className="btn btn-primary"
+                onClick={connectSerial}
+                style={{float:"right"}}
+              >
+                Connect Serial
+              </button>
+              <button onClick={toggleSimulation} className="btn btn-success"  style={{float:"right",marginRight:"10px"}}>
+                <FontAwesomeIcon icon={simulate ? faRectangleXmark : faPlay} />{" "}
+                {simulate ? "Stop Simulation" : "Start Simulation"}
+              </button>
+              </div>
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-3 mb-3">
@@ -525,17 +511,7 @@ function TransactionFrom() {
                   </div>
                 </div>
               </div>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={connectSerial}
-              >
-                Connect Serial
-              </button>
-              <button onClick={toggleSimulation} className="btn btn-success" style={{justifyContent:"center",marginLeftLeft:"2%"}}>
-                <FontAwesomeIcon icon={simulate ? faRectangleXmark : faPlay} />{" "}
-                {simulate ? "Stop Simulation" : "Start Simulation"}
-              </button>
+              
             </div>
             <div className="col-md-5 ">
               <div className="grid-container" id="z3">

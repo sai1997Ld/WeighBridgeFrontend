@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Table, Button, Input, Tag } from 'antd';
-import Swal from 'sweetalert2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState, useEffect } from "react";
+import { Table, Button, Input, Tag, Tooltip } from "antd";
+import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPencilAlt,
   faUserCheck,
   faUserXmark,
-  faHome
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import SideBar from "../../SideBar/SideBar";
-import './ViewSupplier.css';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import "./ViewSupplier.css";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const { Search } = Input;
 
@@ -36,10 +36,14 @@ const ViewSupplier = () => {
         fetchSupplierData(); // Fetch all suppliers if search field is empty
         return;
       }
-      const response = await fetch(`http://localhost:8080/api/v1/supplier/get/id/${supplierIdFilter}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/supplier/get/id/${supplierIdFilter}`
+      );
       if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(errorResponse.message || 'Failed to fetch supplier data');
+        throw new Error(
+          errorResponse.message || "Failed to fetch supplier data"
+        );
       }
       const supplierData = await response.json();
       setSuppliers([supplierData]); // Update suppliers state with fetched supplier data
@@ -64,9 +68,12 @@ const ViewSupplier = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://localhost:8080/api/v1/supplier/active/${supplierId}`, {
-            method: "PUT",
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/v1/supplier/active/${supplierId}`,
+            {
+              method: "PUT",
+            }
+          );
           if (response.ok) {
             Swal.fire("Activated!", "The supplier is active now.", "success");
             fetchSupplierData();
@@ -74,7 +81,11 @@ const ViewSupplier = () => {
             Swal.fire("Failed", "Failed to activate supplier", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while activating the supplier.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while activating the supplier.",
+            "error"
+          );
           console.error("Error activating supplier:", error);
         }
       }
@@ -93,17 +104,28 @@ const ViewSupplier = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`http://localhost:8080/api/v1/supplier/delete/${supplierId}`, {
-            method: "DELETE",
-          });
+          const response = await fetch(
+            `http://localhost:8080/api/v1/supplier/delete/${supplierId}`,
+            {
+              method: "DELETE",
+            }
+          );
           if (response.ok) {
-            Swal.fire("Deactivated!", "The supplier is inactive now.", "success");
+            Swal.fire(
+              "Deactivated!",
+              "The supplier is inactive now.",
+              "success"
+            );
             fetchSupplierData();
           } else {
             Swal.fire("Failed", "Failed to deactivate supplier", "error");
           }
         } catch (error) {
-          Swal.fire("Error", "An error occurred while deactivating the supplier.", "error");
+          Swal.fire(
+            "Error",
+            "An error occurred while deactivating the supplier.",
+            "error"
+          );
           console.error("Error deactivating supplier:", error);
         }
       }
@@ -116,68 +138,66 @@ const ViewSupplier = () => {
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'supplierId',
-      key: 'supplierId',
+      title: "ID",
+      dataIndex: "supplierId",
+      key: "supplierId",
     },
     {
-      title: 'Name',
-      dataIndex: 'supplierName',
-      key: 'supplierName',
+      title: "Name",
+      dataIndex: "supplierName",
+      key: "supplierName",
     },
     {
-      title: 'Email',
-      dataIndex: 'supplierEmail',
-      key: 'supplierEmail',
+      title: "Email",
+      dataIndex: "supplierEmail",
+      key: "supplierEmail",
     },
     {
-      title: 'Contact No',
-      dataIndex: 'supplierContactNo',
-      key: 'supplierContactNo',
+      title: "Contact No",
+      dataIndex: "supplierContactNo",
+      key: "supplierContactNo",
     },
     {
-      title: 'Address Line 1',
-      dataIndex: 'supplierAddressLine1',
-      key: 'supplierAddressLine1',
+      title: "Address Line 1",
+      dataIndex: "supplierAddressLine1",
+      key: "supplierAddressLine1",
     },
     {
-      title: 'Address Line 2',
-      dataIndex: 'supplierAddressLine2',
-      key: 'supplierAddressLine2',
+      title: "Address Line 2",
+      dataIndex: "supplierAddressLine2",
+      key: "supplierAddressLine2",
     },
     {
-      title: 'City',
-      dataIndex: 'city',
-      key: 'city',
+      title: "City",
+      dataIndex: "city",
+      key: "city",
     },
     {
-      title: 'State',
-      dataIndex: 'state',
-      key: 'state',
+      title: "State",
+      dataIndex: "state",
+      key: "state",
     },
     {
-      title: 'Country',
-      dataIndex: 'country',
-      key: 'country',
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
     },
     {
-      title: 'ZIP',
-      dataIndex: 'zip',
-      key: 'zip',
+      title: "ZIP",
+      dataIndex: "zip",
+      key: "zip",
     },
     {
-      title: 'Status',
-      dataIndex: 'supplierStatus',
-      key: 'supplierStatus',
+      title: "Status",
+      dataIndex: "supplierStatus",
+      key: "supplierStatus",
       filters: [
         { text: "Active", value: "ACTIVE" },
         { text: "Inactive", value: "INACTIVE" },
       ],
       onFilter: (value, record) => record.supplierStatus === value,
       render: (text) => (
-        <Tag color={text === "ACTIVE" ? "green" : "red"}>
-          {text}
-        </Tag>
+        <Tag color={text === "ACTIVE" ? "green" : "red"}>{text}</Tag>
       ),
     },
     {
@@ -187,16 +207,35 @@ const ViewSupplier = () => {
         <div className="action-buttons">
           {record.supplierStatus === "ACTIVE" ? (
             <>
-              <Button onClick={() => handleDeactivate(record.supplierId)} style={{ marginRight: "8px" }}>
-                <FontAwesomeIcon icon={faUserXmark} style={{ color: "red" }} className="action-icon" />
-              </Button>
-              <Button onClick={() => handleEdit(record)}>
-                <FontAwesomeIcon icon={faPencilAlt} style={{ color: "orange" }} className="action-icon" />
-              </Button>
+              <Tooltip title="Delete">
+                <Button
+                  onClick={() => handleDeactivate(record.supplierId)}
+                  style={{ marginRight: "8px" }}
+                >
+                  <FontAwesomeIcon
+                    icon={faUserXmark}
+                    style={{ color: "red" }}
+                    className="action-icon"
+                  />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Edit">
+                <Button onClick={() => handleEdit(record)}>
+                  <FontAwesomeIcon
+                    icon={faPencilAlt}
+                    style={{ color: "orange" }}
+                    className="action-icon"
+                  />
+                </Button>
+              </Tooltip>
             </>
           ) : (
             <Button onClick={() => handleActivate(record.supplierId)}>
-              <FontAwesomeIcon icon={faUserCheck} style={{ color: "green" }} className="action-icon" />
+              <FontAwesomeIcon
+                icon={faUserCheck}
+                style={{ color: "green" }}
+                className="action-icon"
+              />
             </Button>
           )}
         </div>
@@ -206,13 +245,17 @@ const ViewSupplier = () => {
 
   return (
     <SideBar>
-      <div className='view-supplier-page container-fluid'>
-      <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Manage Supplier</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+      <div className="view-supplier-page container-fluid">
+        <div className="d-flex justify-content-between align-items-center">
+          <h2 className="text-center mx-auto">Manage Supplier</h2>
+          <Link to={"/home1"}>
+            <FontAwesomeIcon
+              icon={faHome}
+              style={{ float: "right", fontSize: "1.5em" }}
+              className="mb-3"
+            />
+          </Link>
+        </div>
         <div className="filters">
           <Search
             placeholder="Search Supplier ID"
@@ -222,7 +265,7 @@ const ViewSupplier = () => {
             onSearch={fetchSupplierById}
           />
         </div>
-        <div className='table-responsive'>
+        <div className="table-responsive">
           <Table
             dataSource={suppliers}
             columns={columns}
