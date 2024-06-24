@@ -71,13 +71,7 @@ const CameraMaster = () => {
     if (
       company.trim() === "" ||
       site.trim() === "" ||
-      !user ||
-      topCameraUrl.trim() === "" ||
-      bottomCameraUrl.trim() === "" ||
-      leftCameraUrl.trim() === "" ||
-      rightCameraUrl.trim() === "" ||
-      frontCameraUrl.trim() === "" ||
-      backCameraUrl.trim() === ""
+      !user 
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -251,10 +245,7 @@ const CameraMaster = () => {
                         <div className="col-md-4">
                           <label htmlFor="topCameraUrl" className="form-label">
                             Top Camera URL
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                           
                           </label>
                           <input
                             type="url"
@@ -263,7 +254,7 @@ const CameraMaster = () => {
                             placeholder="Enter Top Camera URL"
                             value={topCameraUrl}
                             onChange={(e) => setTopCameraUrl(e.target.value)}
-                            required
+                            
                           />
                         </div>
                         <div className="col-md-4">
@@ -272,10 +263,7 @@ const CameraMaster = () => {
                             className="form-label"
                           >
                             Bottom Camera URL
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                          
                           </label>
                           <input
                             type="url"
@@ -284,16 +272,13 @@ const CameraMaster = () => {
                             placeholder="Enter Bottom Camera URL"
                             value={bottomCameraUrl}
                             onChange={(e) => setBottomCameraUrl(e.target.value)}
-                            required
+                            
                           />
                         </div>
                         <div className="col-md-4">
                           <label htmlFor="leftCameraUrl" className="form-label">
                             Left Camera URL
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                        
                           </label>
                           <input
                             type="url"
@@ -302,7 +287,7 @@ const CameraMaster = () => {
                             placeholder="Enter Left Camera URL"
                             value={leftCameraUrl}
                             onChange={(e) => setLeftCameraUrl(e.target.value)}
-                            required
+                            
                           />
                         </div>
                       </div>
@@ -313,10 +298,7 @@ const CameraMaster = () => {
                             className="form-label"
                           >
                             Right Camera URL
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                         
                           </label>
                           <input
                             type="url"
@@ -325,7 +307,7 @@ const CameraMaster = () => {
                             placeholder="Enter Right Camera URL"
                             value={rightCameraUrl}
                             onChange={(e) => setRightCameraUrl(e.target.value)}
-                            required
+                            
                           />
                         </div>
                         <div className="col-md-4">
@@ -334,10 +316,7 @@ const CameraMaster = () => {
                             className="form-label"
                           >
                             Front Camera URL
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                          
                           </label>
                           <input
                             type="url"
@@ -346,16 +325,13 @@ const CameraMaster = () => {
                             placeholder="Enter Front Camera URL"
                             value={frontCameraUrl}
                             onChange={(e) => setFrontCameraUrl(e.target.value)}
-                            required
+                            
                           />
                         </div>
                         <div className="col-md-4">
                           <label htmlFor="backCameraUrl" className="form-label">
                             Back Camera URL
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                         
                           </label>
                           <input
                             type="url"
@@ -364,7 +340,7 @@ const CameraMaster = () => {
                             placeholder="Enter Back Camera URL"
                             value={backCameraUrl}
                             onChange={(e) => setBackCameraUrl(e.target.value)}
-                            required
+                            
                           />
                         </div>
                       </div>
