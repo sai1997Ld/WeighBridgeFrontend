@@ -5,9 +5,13 @@ import Swal from "sweetalert2";
 import Select from "react-select";
 import "./CameraMaster.css";
 import SideBar from "../../SideBar/SideBar";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const CameraMaster = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [editMode, setEditMode] = useState(false);
+  const [cameraId, setCameraId] = useState(null);
   const [company, setCompany] = useState("");
   const [site, setSite] = useState("");
   const [user, setUser] = useState(null);
@@ -27,6 +31,15 @@ const CameraMaster = () => {
   ];
 
   useEffect(() => {
+    fetchCompanies();
+    if (location.state && location.state.editMode) {
+      setEditMode(true);
+      setCameraId(location.state.cameraId);
+      fetchCameraDetails(location.state.cameraId);
+    }
+  }, [location]);
+
+  const fetchCompanies = () => {
     fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
       .then((data) => {
@@ -36,12 +49,38 @@ const CameraMaster = () => {
       .catch((error) => {
         console.error("Error fetching company list:", error);
       });
-  }, []);
+  };
+
+  const fetchCameraDetails = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/camera/getById/${id}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch camera details");
+      }
+      const data = await response.json();
+      setCompany(data.companyName);
+      setSite(data.siteName);
+      setUser({ value: data.role, label: data.role });
+      setTopCameraUrl(data.topCamUrl1);
+      setBottomCameraUrl(data.bottomCamUrl2);
+      setLeftCameraUrl(data.leftCamUrl5);
+      setRightCameraUrl(data.RightCamUrl6);
+      setFrontCameraUrl(data.frontCamUrl3);
+      setBackCameraUrl(data.backCamUrl4);
+      fetchSites(data.companyName);
+    } catch (error) {
+      console.error("Error fetching camera details:", error);
+      Swal.fire("Error", "Failed to fetch camera details", "error");
+    }
+  };
 
   const handleCompanyChange = (e) => {
     setCompany(e.target.value);
+    fetchSites(e.target.value);
+  };
 
-    fetch(`http://localhost:8080/api/v1/sites/company/${e.target.value}`)
+  const fetchSites = (companyName) => {
+    fetch(`http://localhost:8080/api/v1/sites/company/${companyName}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Site List:", data);
@@ -68,11 +107,7 @@ const CameraMaster = () => {
   };
 
   const handleSave = () => {
-    if (
-      company.trim() === "" ||
-      site.trim() === "" ||
-      !user 
-    ) {
+    if (company.trim() === "" || site.trim() === "" || !user) {
       Swal.fire({
         title: "Please fill in all the required fields.",
         icon: "warning",
@@ -100,8 +135,14 @@ const CameraMaster = () => {
 
     console.log("Payload sent to the API:", cameraData);
 
-    fetch(`http://localhost:8080/api/v1/camera/cameraMaster?userId=${sessionStorage.getItem('userId')}`, {
-      method: "POST",
+    const url = editMode
+      ? `http://localhost:8080/api/v1/camera/updateByCamId/${cameraId}?userId=${sessionStorage.getItem('userId')}`
+      : `http://localhost:8080/api/v1/camera/cameraMaster?userId=${sessionStorage.getItem('userId')}`;
+
+    const method = editMode ? "PUT" : "POST";
+
+    fetch(url, {
+      method: method,
       headers: {
         "Content-Type": "application/json",
       },
@@ -110,7 +151,7 @@ const CameraMaster = () => {
     })
       .then(async (response) => {
         if (response.ok) {
-          return response.text(); 
+          return response.text();
         } else {
           const error = await response.json();
           throw new Error(error.message);
@@ -126,7 +167,11 @@ const CameraMaster = () => {
             confirmButton: "btn btn-success",
           },
         });
-        handleClear();
+        if (editMode) {
+          navigate("/view-camera");
+        } else {
+          handleClear();
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -156,7 +201,7 @@ const CameraMaster = () => {
           ) : (
             <>
               <div className="d-flex justify-content-between align-items-center">
-                <h2 className="text-center mx-auto">Camera Master</h2>
+                <h2 className="text-center mx-auto">{editMode ? "Update Camera" : "Camera Management"}</h2>
                 <Link to={"/home1"}>
                   <FontAwesomeIcon
                     icon={faHome}
@@ -179,10 +224,7 @@ const CameraMaster = () => {
                         <div className="col-md-4">
                           <label htmlFor="company" className="form-label">
                             Company Name
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                           </label>
                           <select
                             className="form-select"
@@ -202,10 +244,7 @@ const CameraMaster = () => {
                         <div className="col-md-4">
                           <label htmlFor="site" className="form-label">
                             Site Name
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                           </label>
                           <select
                             className="form-select"
@@ -225,16 +264,11 @@ const CameraMaster = () => {
                         <div className="col-md-4">
                           <label htmlFor="user" className="form-label">
                             User
-                            <span style={{ color: "red", fontWeight: "bold" }}>
-                              {" "}
-                              *
-                            </span>
+                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                           </label>
                           <Select
                             value={user}
-                            onChange={(selectedOption) =>
-                              setUser(selectedOption)
-                            }
+                            onChange={(selectedOption) => setUser(selectedOption)}
                             options={userOptions}
                             isSearchable
                             placeholder="Select User"
@@ -245,7 +279,6 @@ const CameraMaster = () => {
                         <div className="col-md-4">
                           <label htmlFor="topCameraUrl" className="form-label">
                             Top Camera URL
-                           
                           </label>
                           <input
                             type="url"
@@ -254,16 +287,11 @@ const CameraMaster = () => {
                             placeholder="Enter Top Camera URL"
                             value={topCameraUrl}
                             onChange={(e) => setTopCameraUrl(e.target.value)}
-                            
                           />
                         </div>
                         <div className="col-md-4">
-                          <label
-                            htmlFor="bottomCameraUrl"
-                            className="form-label"
-                          >
+                          <label htmlFor="bottomCameraUrl" className="form-label">
                             Bottom Camera URL
-                          
                           </label>
                           <input
                             type="url"
@@ -272,13 +300,11 @@ const CameraMaster = () => {
                             placeholder="Enter Bottom Camera URL"
                             value={bottomCameraUrl}
                             onChange={(e) => setBottomCameraUrl(e.target.value)}
-                            
                           />
                         </div>
                         <div className="col-md-4">
                           <label htmlFor="leftCameraUrl" className="form-label">
                             Left Camera URL
-                        
                           </label>
                           <input
                             type="url"
@@ -287,18 +313,13 @@ const CameraMaster = () => {
                             placeholder="Enter Left Camera URL"
                             value={leftCameraUrl}
                             onChange={(e) => setLeftCameraUrl(e.target.value)}
-                            
                           />
                         </div>
                       </div>
                       <div className="row mb-3">
                         <div className="col-md-4">
-                          <label
-                            htmlFor="rightCameraUrl"
-                            className="form-label"
-                          >
+                          <label htmlFor="rightCameraUrl" className="form-label">
                             Right Camera URL
-                         
                           </label>
                           <input
                             type="url"
@@ -307,16 +328,11 @@ const CameraMaster = () => {
                             placeholder="Enter Right Camera URL"
                             value={rightCameraUrl}
                             onChange={(e) => setRightCameraUrl(e.target.value)}
-                            
                           />
                         </div>
                         <div className="col-md-4">
-                          <label
-                            htmlFor="frontCameraUrl"
-                            className="form-label"
-                          >
+                          <label htmlFor="frontCameraUrl" className="form-label">
                             Front Camera URL
-                          
                           </label>
                           <input
                             type="url"
@@ -325,13 +341,11 @@ const CameraMaster = () => {
                             placeholder="Enter Front Camera URL"
                             value={frontCameraUrl}
                             onChange={(e) => setFrontCameraUrl(e.target.value)}
-                            
                           />
                         </div>
                         <div className="col-md-4">
                           <label htmlFor="backCameraUrl" className="form-label">
                             Back Camera URL
-                         
                           </label>
                           <input
                             type="url"
@@ -340,7 +354,6 @@ const CameraMaster = () => {
                             placeholder="Enter Back Camera URL"
                             value={backCameraUrl}
                             onChange={(e) => setBackCameraUrl(e.target.value)}
-                            
                           />
                         </div>
                       </div>

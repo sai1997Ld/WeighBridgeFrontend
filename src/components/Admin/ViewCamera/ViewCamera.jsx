@@ -10,13 +10,18 @@ import {
 import SideBar from "../../SideBar/SideBar";
 import "./ViewCamera.css";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 
 const ViewCamera = () => {
   const [cameras, setCameras] = useState([]);
   const [cameraIdFilter, setCameraIdFilter] = useState("");
+  const navigate = useNavigate();
 
+  const handleEdit = (camera) => {
+    navigate("/CameraMaster", { state: { cameraId: camera.cameraId, editMode: true } });
+  };
 
   const fetchCameraData = async () => {
     try {
@@ -52,11 +57,7 @@ const ViewCamera = () => {
     }
   };
 
-  const handleEdit = (camera) => {
-    // Placeholder for edit functionality
-    console.log("Edit camera:", camera);
-  };
-
+ 
   const handleDelete = async (cameraId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -113,7 +114,7 @@ const ViewCamera = () => {
       key: "companyName",
     },
     {
-      title: "Site Name",
+      title: "Site",
       dataIndex: "siteName",
       key: "siteName",
     },
@@ -122,16 +123,7 @@ const ViewCamera = () => {
       dataIndex: "role",
       key: "role",
     },
-    {
-      title: "Top",
-      dataIndex: "topCamUrl1",
-      key: "topCamUrl1",
-    },
-    {
-        title: "Bottom",
-        dataIndex: "bottomCamUrl2",
-        key: "bottomCamUrl2",
-      },
+    
       {
         title: "Front",
         dataIndex: "frontCamUrl3",
@@ -152,6 +144,16 @@ const ViewCamera = () => {
         dataIndex: "rightCamUrl6",
         key: "rightCamUrl6",
       },
+      {
+        title: "Top",
+        dataIndex: "topCamUrl1",
+        key: "topCamUrl1",
+      },
+      {
+          title: "Bottom",
+          dataIndex: "bottomCamUrl2",
+          key: "bottomCamUrl2",
+        },
     {
       title: "Action",
       key: "action",
