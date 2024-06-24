@@ -686,7 +686,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                 <Option value="ticketNo">Search by Ticket No</Option>
                 <Option value="vehicleNo">Search by Vehicle No</Option>
                 <Option value="supplier">Search by Supplier</Option>
-                <Option value="address">Search by Supplier's Address</Option>
+                {/* <Option value="address">Search by Supplier's Address</Option> */}
               </Select>
               {searchOption && (
                 <Input
@@ -707,11 +707,13 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
           <div>
             <TransactionUpdatesContainer>
               <TransactionUpdateBox bgColor="#BDBDBD">
-                <PendingIcon />
+                {/* <PendingIcon /> */}
+                <FontAwesomeIcon icon={faTruck} flip="horizontal" />
                 <Text >Inbound Pending:<span style={{ fontWeight: 'bold' }}> {inboundPending} </span> </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#9FC0EF">
-                <PendingIcon />
+                {/* <PendingIcon /> */}
+                <FontAwesomeIcon icon={faTruck} />
                 <Text >Outbound Pending:  <span style={{ fontWeight: 'bold' }}> {outboundPending} </span> </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#6FBE88">

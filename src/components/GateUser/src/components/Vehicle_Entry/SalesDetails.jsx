@@ -8,9 +8,14 @@ import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 const SalesDetails = ({ onConfirmTicket = () => { } }) => {
     const [selectedDate, setSelectedDate] = useState('');
     const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [entriesPerPage] = useState(20);
+    const [totalPage, setTotalPage] = useState(0);
+    const [totalEntries, setTotalEntries] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+    const entriesPerPage = 20; // set the correct entries per page
     const navigate = useNavigate();
+
+    // To add session userid in frontend
+    const userId = sessionStorage.getItem("userId");
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -18,7 +23,15 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/v1/sales/getAllVehicleDetails", {
+        fetchData(0);
+    }, []);
+
+    useEffect(() => {
+        fetchData(currentPage);
+    }, [currentPage]);
+
+    const fetchData = (pageNumber) => {
+        fetch(`http://localhost:8080/api/v1/sales/getAllVehicleDetails?page=${pageNumber}&userId=${userId}`, {
             credentials: "include"
         })
             .then(response => {
@@ -28,26 +41,23 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
                 return response.json();
             })
             .then(data => {
-                // Access the nested sales array
-                if (data && Array.isArray(data.sales)) {
-                    setVehicleEntryDetails(data.sales);
-                } else {
-                    console.error('Unexpected data format:', data);
-                }
+                setVehicleEntryDetails(data.sales);
+                setTotalPage(data.totalPage);
+                setTotalEntries(data.totalElement);
+                console.log("Total Pages: " + data.totalPage);
             })
             .catch(error => {
                 console.error('Error fetching vehicle entry details:', error);
             });
-    }, []);
+    };
 
     const handleVehicleClick = (salePassNo) => {
-        // Navigate to VehicleEntry-Outbound page
         navigate(`/VehicleEntry-Outbound/?sales=${salePassNo}`);
     };
 
-    const indexOfLastEntry = currentPage * entriesPerPage;
-    const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-    const currentEntries = vehicleEntryDetails.slice(indexOfFirstEntry, indexOfLastEntry);
+    const handlePageChange = ({ selected }) => {
+        setCurrentPage(selected);
+    };
 
     // Code for Close icon
     const goBack = () => {
@@ -96,8 +106,8 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
                                 </tr>
                             </thead>
                             <tbody className="text-center">
-                                {currentEntries.map((entry) => (
-                                    <tr key={entry.id}>
+                                {vehicleEntryDetails.map((entry, index) => (
+                                    <tr key={`${entry.vehicleNo}${index}`}>
                                         <td className="ant-table-cell">
                                             <button onClick={() => handleVehicleClick(entry.salePassNo)} style={{ background: "#88CCFA", minWidth: "70px", whiteSpace: "nowrap", }}>{entry.vehicleNo}</button>
                                         </td>
@@ -115,6 +125,107 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+            {/* Code for Pagination: */}
+            <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
+               
+
+                <span>
+                    Showing {Math.min((currentPage * entriesPerPage) + 1, totalEntries)} to{" "}
+                    {Math.min((currentPage + 1) * entriesPerPage, totalEntries)} of{" "}
+                    {totalEntries} entries
+                </span>
+                <div className="ml-auto">
+                    <button
+                        className="btn btn-outline-primary btn-sm me-2"
+                        style={{
+                            color: "#0077B6",
+                            borderColor: "#0077B6",
+                            marginRight: "2px",
+                        }}
+                        onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
+                        disabled={currentPage === 0}
+                    >
+                        &lt;&lt;
+                    </button>
+                    <button
+                        className="btn btn-outline-primary btn-sm me-2"
+                        style={{
+                            color: "#0077B6",
+                            borderColor: "#0077B6",
+                            marginRight: "2px",
+                        }}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 0}
+                    >
+                        &lt;
+                    </button>
+
+                    {Array.from({ length: 3 }, (_, index) => {
+                        const pageNumber = currentPage + index;
+                        if (pageNumber >= totalPage) return null;
+                        return (
+                            <button
+                                key={pageNumber}
+                                className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
+                                    }`}
+                                style={{
+                                    color: currentPage === pageNumber ? "#fff" : "#0077B6",
+                                    backgroundColor:
+                                        currentPage === pageNumber ? "#0077B6" : "transparent",
+                                    borderColor: "#0077B6",
+                                    marginRight: "2px",
+                                }}
+                                onClick={() => setCurrentPage(pageNumber)}
+                            >
+                                {pageNumber + 1}
+                            </button>
+                        );
+                    })}
+                    {currentPage + 3 < totalPage && <span>...</span>}
+                    {currentPage + 3 < totalPage && (
+                        <button
+                            className={`btn btn-outline-primary btn-sm me-2 ${currentPage === totalPage - 1 ? "active" : ""
+                                }`}
+                            style={{
+                                color: currentPage === totalPage - 1 ? "#fff" : "#0077B6",
+                                backgroundColor:
+                                    currentPage === totalPage - 1 ? "#0077B6" : "transparent",
+                                borderColor: "#0077B6",
+                                marginRight: "2px",
+                            }}
+                            onClick={() => setCurrentPage(totalPage - 1)}
+                        >
+                            {totalPage}
+                        </button>
+                    )}
+                    <button
+                        className="btn btn-outline-primary btn-sm me-2"
+                        style={{
+                            color: "#0077B6",
+                            borderColor: "#0077B6",
+                            marginRight: "2px",
+                        }}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPage - 1}
+                    >
+                        &gt;
+                    </button>
+                    <button
+                        className="btn btn-outline-primary btn-sm"
+                        style={{
+                            color: "#0077B6",
+                            borderColor: "#0077B6",
+                            marginRight: "2px",
+                        }}
+                        onClick={() =>
+                            setCurrentPage(Math.min(totalPage - 1, currentPage + 5))
+                        }
+                        disabled={currentPage === totalPage - 1}
+                    >
+                        &gt;&gt;
+                    </button>
                 </div>
             </div>
         </SideBar2>
