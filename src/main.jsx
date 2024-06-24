@@ -85,6 +85,10 @@ const CameraMaster = lazy(() =>
   import("./components/Admin/CameraMaster/CameraMaster.jsx")
 );
 
+const ViewCamera = lazy(() =>
+  import("./components/Admin/ViewCamera/ViewCamera.jsx")
+);
+
 import VehicleEntry from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntry.jsx";
 import CompletedTransaction from "./components/GateUser/src/components/Vehicle_Entry/CompletedTransaction.jsx";
 import VehicleEntryDetails from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntryDetails.jsx";
@@ -353,10 +357,22 @@ const router = createBrowserRouter(
         element={<ManagementTransaction />}
       />
       <Route path="/ManagementLocation" element={<ManagementLocation />} />
-      <Route path="/ManagementDailyReport" element={<ManagementDailyReport/>} />
-      <Route path="/ManagementWeeklyReport" element={<ManagementWeeklyReport/>} />
-      <Route path="/ManagementMonthlyReport" element={<ManagementMonthlyReport/>} />
-      <Route path="/ManagementCustomizedReport" element={<ManagementCustomizedReport/>} />
+      <Route
+        path="/ManagementDailyReport"
+        element={<ManagementDailyReport />}
+      />
+      <Route
+        path="/ManagementWeeklyReport"
+        element={<ManagementWeeklyReport />}
+      />
+      <Route
+        path="/ManagementMonthlyReport"
+        element={<ManagementMonthlyReport />}
+      />
+      <Route
+        path="/ManagementCustomizedReport"
+        element={<ManagementCustomizedReport />}
+      />
       <Route path="/OperatorHome" element={<OperatorHome />} />
       <Route path="/OperatorTransaction" element={<OperatorTransaction />} />
       <Route
@@ -384,6 +400,7 @@ const router = createBrowserRouter(
       />
       <Route path="/Spinner" element={<Spinner />} />
       <Route path="/CameraMaster" element={<CameraMaster />} />
+      <Route path = "/view-camera" element={<ViewCamera />} />
     </Route>
   )
 );

@@ -85,22 +85,22 @@ const CameraMaster = () => {
     }
 
     const cameraData = {
-      company,
-      site,
-      user: user.value,
-      topCameraUrl,
-      bottomCameraUrl,
-      leftCameraUrl,
-      rightCameraUrl,
-      frontCameraUrl,
-      backCameraUrl,
+      companyName: company,
+      siteName: site,
+      role: user.value,
+      topCamUrl1: topCameraUrl,
+      bottomCamUrl2: bottomCameraUrl,
+      frontCamUrl3: frontCameraUrl,
+      backCamUrl4: backCameraUrl,
+      leftCamUrl5: leftCameraUrl,
+      RightCamUrl6: rightCameraUrl,
     };
 
     setIsLoading(true);
 
     console.log("Payload sent to the API:", cameraData);
 
-    fetch(``, {
+    fetch(`http://localhost:8080/api/v1/camera/cameraMaster?userId=${sessionStorage.getItem('userId')}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -110,7 +110,7 @@ const CameraMaster = () => {
     })
       .then(async (response) => {
         if (response.ok) {
-          return response.text(); // Assume the success response is text
+          return response.text(); 
         } else {
           const error = await response.json();
           throw new Error(error.message);

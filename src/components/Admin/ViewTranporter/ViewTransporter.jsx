@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Button, Input, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -11,6 +11,7 @@ import {
 import SideBar from "../../SideBar/SideBar";
 import "./ViewTransporter.css";
 import { Link } from "react-router-dom";
+
 
 const { Search } = Input;
 
