@@ -37,7 +37,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const QualityInboundDetails = () => {
+const QualityOutboundDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -148,6 +148,8 @@ const QualityInboundDetails = () => {
       return acc;
     }, {});
   
+    console.log({data});
+    return false
     if (Object.keys(data).length === 0) {
       setIsModalVisible(true);
       return;
@@ -320,7 +322,7 @@ const QualityInboundDetails = () => {
             className="text-center p-2 mb-0"
             style={{ fontFamily: "Arial", fontSize: "clamp(12px, 4vw, 30px)" }}
           >
-            Quality Inbound Transaction Details
+            Quality Outbound Transaction Details
           </h2>
           <MainContent>
             <TransFormMainDiv>
@@ -339,12 +341,12 @@ const QualityInboundDetails = () => {
                           {renderFieldWithBox("Tp No", "tpNo", true)}
                           {renderFieldWithBox("Po No", "poNo", true)}
                           {renderFieldWithBox("Challan No", "challanNo", true)}
-                          {renderFieldWithBox("Material", "materialName", true)}
-                          {renderFieldWithBox("Material Type", "materialType", true)}
-                          {formData.transactionType === "Inbound" && (
+                          {renderFieldWithBox("Product", "materialName", true)}
+                          {renderFieldWithBox("Product Type", "materialType", true)}
+                          {formData.transactionType === "Outbound" && (
                             <>
-                              {renderFieldWithBox("Supplier", "supplierOrCustomerName", true)}
-                              {renderFieldWithBox("Supplier Address", "supplierOrCustomerAddress", true)}
+                              {renderFieldWithBox("Customer", "supplierOrCustomerName", true)}
+                              {renderFieldWithBox("Customer Address", "supplierOrCustomerAddress", true)}
                             </>
                           )}
                           {renderFieldWithBox("Transaction Type", "transactionType", true)}
@@ -407,15 +409,6 @@ const QualityInboundDetails = () => {
         </div>
       </div>
       <Modal
-  title="Success"
-  visible={isSuccessModalVisible}
-  onOk={handleSuccessOk}
-  onCancel={handleSuccessOk}
-  okText="OK"
->
-  <p>Data saved successfully.</p>
-</Modal>
-      <Modal
         title="Error"
         visible={isModalVisible}
         onOk={handleOk}
@@ -424,7 +417,17 @@ const QualityInboundDetails = () => {
       >
         <p>Please provide input for at least one field in order to save.</p>
       </Modal>
+      <Modal
+  title="Success"
+  visible={isSuccessModalVisible}
+  onOk={handleSuccessOk}
+  onCancel={handleSuccessOk}
+  okText="OK"
+>
+  <p>Data saved successfully.</p>
+</Modal>
+      
     </SideBar3>
   );
 };
-export default QualityInboundDetails;
+export default QualityOutboundDetails;
