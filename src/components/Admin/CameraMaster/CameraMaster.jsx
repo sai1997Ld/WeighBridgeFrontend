@@ -128,7 +128,7 @@ const CameraMaster = () => {
       frontCamUrl3: frontCameraUrl,
       backCamUrl4: backCameraUrl,
       leftCamUrl5: leftCameraUrl,
-      RightCamUrl6: rightCameraUrl,
+      rightCamUrl6: rightCameraUrl,
     };
 
 
