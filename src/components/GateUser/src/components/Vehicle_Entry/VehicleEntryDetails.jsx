@@ -400,7 +400,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       // !formData.challanNo ||
       !formData.challanDate ||
       !formData.material ||
-      !formData.materialType ||
+      // !formData.materialType ||
       !formData.vehicleNo ||
       !formData.supplier ||
       !formData.driverDLNo ||

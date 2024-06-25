@@ -442,7 +442,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => { } }) => {
                                 <Option value="ticketNo">Search by Ticket No</Option>
                                 <Option value="vehicleNo">Search by Vehicle No</Option>
                                 <Option value="supplier">Search by Supplier</Option>
-                                <Option value="address">Search by Supplier's Address</Option>
+                                {/* <Option value="address">Search by Supplier's Address</Option> */}
                             </Select>
                             {searchOption && (
                                 <Input

@@ -4,6 +4,7 @@ import { Line, Bar, } from 'react-chartjs-2';
 import axios from 'axios';
 import Swal from "sweetalert2";
 import SideBar4 from '../SideBar/SideBar4';
+import moment from 'moment';
 
 function HomePage5() {
   const [company, setCompany] = useState("");
@@ -215,8 +216,8 @@ function HomePage5() {
     const fetchData = async () => {
       try {
         const payload = {
-          fromDate: startDate,
-          toDate: endDate,
+          fromDate: moment(startDate).format('DD-MM-YYYY'),
+          toDate: moment(endDate).format('DD-MM-YYYY'),
           companyName: company,
           siteName: site,
         };
