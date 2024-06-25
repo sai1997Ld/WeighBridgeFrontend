@@ -234,18 +234,21 @@ const OperatorTransaction2 = () => {
     [searchValue, searchOption]
   );
 
+ 
   useEffect(() => {
+    if(userId){
     if (
-      (searchOption === "vehicleNo" || searchOption === "ticketNo") &&
+      (searchOption === "vehicleNo" ||
+        searchOption === "ticketNo" ||
+        searchOption === "transactionType" ||
+        searchOption === "materialName") &&
       searchValue
     ) {
       debouncedSearch(searchPageNumber);
     }
-  }, [searchValue, searchOption, searchPageNumber, debouncedSearch]);
+  }
+  }, [userId,searchValue, searchOption, searchPageNumber, debouncedSearch]);
 
-  const handlePageChange = (page) => {
-    setSearchPageNumber(page - 1);
-  };
 
   //print
   const handlePrint = async (ticketNo) => {

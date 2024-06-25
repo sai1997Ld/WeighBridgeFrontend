@@ -210,7 +210,7 @@ function TransactionFrom2() {
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={ faRectangleXmark}  />
           </button>
-          <h2 className="text-center mb-2">Outbound Transaction Form</h2>
+          <h2 className="text-center mb-3 mt-1">Outbound Transaction Form</h2>
           <div className="row">
             <div className="col-md-3 mb-3">
               <input
