@@ -123,21 +123,30 @@ function HomePage5() {
       });
   }, []);
 
-  const handleCompanyChange = (e) => {
-    setCompany(e.target.value);
-
-    fetch(`http://localhost:8080/api/v1/sites/company/${e.target.value}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Site List:", data);
+  useEffect(() => {
+    const fetchSites = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/sites/company/${company}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch site list.");
+        }
+        const data = await response.json();
         const formattedSites = data.map((site) => ({
           site: `${site.siteName},${site.siteAddress}`,
         }));
         setSites(formattedSites);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching site list:", error);
-      });
+      }
+    };
+
+    if (company) {
+      fetchSites();
+    }
+  }, [company]);
+
+  const handleCompanyChange = (e) => {
+    setCompany(e.target.value);
   };
 
   const fetchSupplierNames = () => {
