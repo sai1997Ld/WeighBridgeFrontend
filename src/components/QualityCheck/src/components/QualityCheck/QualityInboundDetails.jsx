@@ -148,6 +148,8 @@ const QualityInboundDetails = () => {
       return acc;
     }, {});
   
+    console.log({data});
+    return false
     if (Object.keys(data).length === 0) {
       setIsModalVisible(true);
       return;
