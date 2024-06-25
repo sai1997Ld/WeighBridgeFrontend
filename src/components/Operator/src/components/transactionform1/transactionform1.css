@@ -1,52 +1,17 @@
-/* .VehicleEntryDetailsMainContent{
-  transition: margin-left 0.3s ease; 
-} */
-/* .home-sidebar.expanded + .VehicleEntryDetailsMainContent{
-  margin-left: 150px;
-} */
-
-/* .VehicleEntryDetailsMainContent3 {
-  margin-left: 100px;
-} */
-
-/* .form-label {
-  font-weight: 450;
-} */
-
-/* .icons {
-  font-size: 26px;
-  margin-left: 40px;
-  margin: 19px;
-  cursor: pointer;
-  margin-top: 8px;
-} */
-/* #c1{
-  margin-left: -10px;
-} */
 .icons-group {
   display: flex;
   margin-top: 5px;
 }
 
-/* #z2 {
-   margin-top: -1.5%; 
-} */
-/* #A1 {
-  margin-top: -4%; 
-  margin-left: -1%;
- 
-} */
 .mno {
   display: flex;
   width: 100%;
   margin-top: 1%;
-  /* margin-top: -15px;
-  margin-left: -40px; */
 }
 .mno input,
 .pqr input,
 .stu input {
-  /* margin-top: -5px; */
+  
   margin-left: 15px;
   width: 190px;
   border: 1px solid #ced4da;
@@ -75,14 +40,12 @@
 .pqr {
   display: flex;
   width: 100%;
-  /* margin-top: -15px;
-  margin-left: -40px; */
+  
 }
 .stu {
   display: flex;
   width: 100%;
-  /* margin-top: -15px;
-  margin-left: -40px; */
+
 }
 .sub {
   display: flex;
@@ -101,8 +64,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* filter: blur(2px);
-  -webkit-filter: blur(2px); */
+
 }
 .grid-item span {
   position: absolute;
@@ -145,20 +107,13 @@
   margin-left: 2%;
 }
 
-/* .grid-item-op label {
-  display: block;
-} */
+
 
 .grid-item-op input {
   width: 89%;
 }
 
-/* #E2{
-  font-size: 1.25rem;
-   margin-left: -1.6%;  
-  
-  margin-bottom: 2%;
-} */
+
 #z3 {
   display: grid;
   grid-template-columns: repeat(2, 0fr);

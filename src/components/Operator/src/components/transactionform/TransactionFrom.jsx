@@ -2,17 +2,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useState, useEffect, useRef } from "react";
-import { Chart, ArcElement } from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
-// eslint-disable-next-line no-unused-vars
-
 import SideBar5 from "../../../../SideBar/SideBar5";
-// eslint-disable-next-line no-unused-vars
-import camView from "../../assets/weighbridge.webp";
-import "./transactionform.css";
-// import Swal from 'sweetalert2';
 
-import Camera_Icon from "../../assets/Camera_Icon.png";
+import "./transactionform.css";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,8 +15,7 @@ import {
   faTrash,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
-import { DisabledByDefault } from "@mui/icons-material";
-
+import LiveVideo from "../transactioncomp/LiveVideo";
 
 function TransactionFrom() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -45,9 +37,8 @@ function TransactionFrom() {
 
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  
-  const userId = sessionStorage.getItem('userId');
- 
+  const userId = sessionStorage.getItem("userId");
+
   console.log(ticketNumber);
 
   useEffect(() => {
@@ -61,7 +52,7 @@ function TransactionFrom() {
         setGrossWeight(response.data.grossWeight);
         setTareWeight(response.data.tareWeight);
         setNetWeight(response.data.netWeight);
-        setSaveSuccess(false); 
+        setSaveSuccess(false);
       })
       .catch((error) => {
         console.error("Error fetching weighments:", error);
@@ -109,7 +100,7 @@ function TransactionFrom() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (inputValue <= 0 || isNaN(inputValue)) {
       Swal.fire({
         title: "Invalid weight",
@@ -145,24 +136,34 @@ function TransactionFrom() {
     goBack();
     setInputValue("");
 
+
+    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
     const payload = {
       machineId: "1",
       ticketNo: ticketNumber,
       weight: inputValue,
-
     };
+    const formD = new FormData();
+    formD.append("frontImg1", blobFront);
+    formD.append("frontImg1", blobRear);
+    formD.append("frontImg1", blobSide);
+    formD.append("frontImg1", blobTop);
+    formD.append("weighmentRequest", JSON.stringify(payload));
 
-    axios
-      .post(`http://localhost:8080/api/v1/weighment/measure?userId=${userId}`, payload, {
+    const response = await axios({
+      method: "post",
+      url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${'WEIGHBRIDGE_OPERATOR'}`,
+      data: formD,
+      headers: {
         withCredentials: true,
-      })
-      .then((response) => {
-        setSaveSuccess(true);
-        console.log("Measurement saved:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error saving measurement:", error);
-      });
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log({response})
+  
   };
 
   const [formData, setFormData] = useState({
@@ -194,6 +195,12 @@ function TransactionFrom() {
   }, [port]);
 
   const connectSerial = async () => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.serial) {
+      console.error("Web Serial API is not supported in this environment.");
+      return;
+    }
+
+
     try {
       const port = await navigator.serial.requestPort();
       await port.open({ baudRate: 9600 });
@@ -208,7 +215,6 @@ function TransactionFrom() {
       const decoder = new TextDecoderStream();
       port.readable.pipeTo(decoder.writable);
       const inputStream = decoder.readable;
-
       const reader = inputStream.getReader();
 
       while (true) {
@@ -219,8 +225,6 @@ function TransactionFrom() {
           break;
         }
         const newValue = value.trim();
-        // setInputValue(newValue);
-        // handleChange1({ target: { value: newValue } });
         const extractedWeight = extractWeight(newValue);
         if (extractedWeight) {
           setInputValue(extractedWeight);
@@ -231,6 +235,7 @@ function TransactionFrom() {
       console.error("Error reading serial data:", error);
     }
   };
+
   const extractWeight = (data) => {
     const match = data.match(/(\d+(\.\d+)?)\s*kg/);
     return match ? match[0] : null;
@@ -273,6 +278,15 @@ function TransactionFrom() {
     navigate(-1);
   };
 
+  const canvasTopRef = useRef(null);
+  const canvasRearRef = useRef(null);
+  const canvasFrontRef = useRef(null);
+  const canvasSideRef = useRef(null);
+  const [capturedTopImage, setCapturedTopImage] = useState(null);
+  const [capturedRearImage, setCapturedRearImage] = useState(null);
+  const [capturedFrontImage, setCapturedFrontImage] = useState(null);
+  const [capturedSideImage, setCapturedSideImage] = useState(null);
+
   return (
     <SideBar5>
       <div className="container-fluid">
@@ -294,20 +308,24 @@ function TransactionFrom() {
                 readOnly
               />
             </div>
-            <div className="col-md-6 mb-3" >
-            <button
+            <div className="col-md-6 mb-3">
+              <button
                 type="button"
                 className="btn btn-primary"
                 onClick={connectSerial}
-                style={{float:"right"}}
+                style={{ float: "right" }}
               >
                 Connect Serial
               </button>
-              <button onClick={toggleSimulation} className="btn btn-success"  style={{float:"right",marginRight:"10px"}}>
+              <button
+                onClick={toggleSimulation}
+                className="btn btn-success"
+                style={{ float: "right", marginRight: "10px" }}
+              >
                 <FontAwesomeIcon icon={simulate ? faRectangleXmark : faPlay} />{" "}
                 {simulate ? "Stop Simulation" : "Start Simulation"}
               </button>
-              </div>
+            </div>
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-3 mb-3">
@@ -389,10 +407,10 @@ function TransactionFrom() {
             </div>
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
-            <div className="col-md-7">
+            <div className="col-md-12">
               <h5>Weighment Details:</h5>
-              <div className="row">
-                <div className="col-md-8">
+              <div className="row mb-2">
+                <div className="col-md-5">
                   <div className="sub">
                     <input
                       type="number"
@@ -438,126 +456,114 @@ function TransactionFrom() {
               </div>
 
               <div className="row mb-3">
-                <div className="mno">
-                  <div className="col-2 mt-2">
-                    <label htmlFor="vehicleType" className="form-label">
+                <div className="col-4">
+                  <div className="form-group">
+                    <label htmlFor="grossWeight" className="form-label">
                       Gross Weight:
                     </label>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      value={`${grossWeight} kg`}
-                      className="abcx"
-                      readOnly
-                    />
-                    <input
-                      type="text"
-                      value={ticket.grossWeightTime}
-                      className="abcx"
-                      readOnly
-                    />
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <input
+                        type="text"
+                        id="grossWeight"
+                        autoComplete="off"
+                        value={`${grossWeight} kg`}
+                        className="abcv"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        value={ticket.grossWeightTime}
+                        className="abcv"
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="row mb-3">
-                <div className="pqr">
-                  <div className="col-2 mt-2">
-                    <label htmlFor="vehicleType" className="form-label">
+                <div className="col-4">
+                  <div className="form-group">
+                    <label htmlFor="tareWeight" className="form-label">
                       Tare Weight:
                     </label>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      value={`${tareWeight} kg`}
-                      className="abcx"
-                      readOnly
-                    />
-                    <input
-                      type="text"
-                      value={ticket.tareWeightTime}
-                      className="abcx"
-                      readOnly
-                    />
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <input
+                        type="text"
+                        id="tareWeight"
+                        autoComplete="off"
+                        value={`${tareWeight} kg`}
+                        className="abcv"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        value={ticket.tareWeightTime}
+                        className="abcv"
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="row  mb-3">
-                <div className="stu">
-                  <div className="col-2 mt-2">
-                    <label htmlFor="vehicleType" className="form-label">
+
+                <div className="col-4">
+                  <div className="form-group">
+                    <label htmlFor="netWeight" className="form-label">
                       Net Weight:
                     </label>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      value={`${netWeight} kg`}
-                      className="abcx"
-                      readOnly
-                    />
-
-                    <input
-                      type="text"
-                      value={ticket.tareWeightTime}
-                      className="abcx"
-                      readOnly
-                    />
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <input
+                        type="text"
+                        id="netWeight"
+                        autoComplete="off"
+                        value={`${netWeight} kg`}
+                        className="abcv"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        value={ticket.netWeightTime}
+                        className="abcv"
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-              
             </div>
-            <div className="col-md-5 ">
-              <div className="grid-container" id="z3">
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Top-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+          </div>
+          <div className="row mb-2 p-2 border shadow-lg rounded-lg">
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    imageRef={canvasTopRef}
+                    setCapturedImage={setCapturedTopImage}
+                    capturedImage={capturedTopImage}
+                  />
                 </div>
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Front-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    imageRef={canvasRearRef}
+                    setCapturedImage={setCapturedRearImage}
+                    capturedImage={capturedRearImage}
+                  />
                 </div>
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Rear-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    imageRef={canvasFrontRef}
+                    setCapturedImage={setCapturedFrontImage}
+                    capturedImage={capturedFrontImage}
+                  />
                 </div>
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Side-View</span>
-                      <button className="ct-btn">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    imageRef={canvasSideRef}
+                    setCapturedImage={setCapturedSideImage}
+                    capturedImage={capturedSideImage}
+                  />
                 </div>
               </div>
             </div>
@@ -607,20 +613,6 @@ function TransactionFrom() {
                   readOnly
                 />
               </div>
-              {/* <div className="grid-item-op">
-                <label htmlFor="department" className="form-label">
-                  Department:
-                </label>
-                <input
-                  type="text"
-                  id="department"
-                  name="department"
-                  value={ticket.department}
-                  onChange={handleChange}
-                  className="abcv"
-                  readOnly
-                />
-              </div> */}
               <div className="grid-item-op">
                 <label htmlFor="driverDL" className="form-label">
                   Driver DL No:
