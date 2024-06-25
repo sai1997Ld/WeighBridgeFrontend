@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
 import Select from "react-select";
-import { Line, Bar, } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import Swal from "sweetalert2";
 import SideBar4 from '../SideBar/SideBar4';
-import moment from 'moment';
+import moment from 'moment/moment';
+
 
 function HomePage5() {
-  const [company, setCompany] = useState("");
-  const [site, setSite] = useState(null);
+  const [company, setCompany] = useState(sessionStorage.getItem('company') || "");
+  const [site, setSite] = useState(sessionStorage.getItem('site') || "");
   const [companies, setCompanies] = useState([]);
   const [sites, setSites] = useState([""]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(sessionStorage.getItem('startDate') || "");
+  const [endDate, setEndDate] = useState(sessionStorage.getItem('endDate') || "");
   const [error, setError] = useState("");
-  const [supplierName, setSupplierName] = useState("");
-  const [supplierAddress, setSupplierAddress] = useState("");
+  const [supplierName, setSupplierName] = useState(sessionStorage.getItem('supplierName') || "");
+  const [supplierAddress, setSupplierAddress] = useState(sessionStorage.getItem('supplierAddress') || "");
   const [supplierNames, setSupplierNames] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -54,6 +55,15 @@ function HomePage5() {
     labels: [],
     datasets: [],
   });
+
+  useEffect(() => {
+    sessionStorage.setItem('company', company);
+    sessionStorage.setItem('site', site);
+    sessionStorage.setItem('startDate', startDate);
+    sessionStorage.setItem('endDate', endDate);
+    sessionStorage.setItem('supplierName', supplierName);
+    sessionStorage.setItem('supplierAddress', supplierAddress);
+  }, [company, site, startDate, endDate, supplierName, supplierAddress]);
 
   useEffect(() => {
     fetchSupplierNames("");
@@ -116,9 +126,6 @@ function HomePage5() {
   const handleCompanyChange = (e) => {
     setCompany(e.target.value);
 
-    // Store the selected company in the session storage
-    sessionStorage.setItem('selectedCompany', e.target.value);
-
     fetch(`http://localhost:8080/api/v1/sites/company/${e.target.value}`)
       .then((response) => response.json())
       .then((data) => {
@@ -131,25 +138,6 @@ function HomePage5() {
       .catch((error) => {
         console.error("Error fetching site list:", error);
       });
-  };
-
-  const handleSiteChange = (e) => {
-    const selectedSite = e.target.value;
-
-    if (selectedSite) {
-      const [siteName, siteAddress] = selectedSite.split(',');
-
-      // Store the selected site name and address in the session storage
-      sessionStorage.setItem('selectedSiteName', siteName);
-      sessionStorage.setItem('selectedSiteAddress', siteAddress);
-
-      setSite(`${siteName},${siteAddress}`);
-    } else {
-      // If no site is selected, remove the selected site name and address from the session storage
-      sessionStorage.removeItem('selectedSiteName');
-      sessionStorage.removeItem('selectedSiteAddress');
-      setSite(null);
-    }
   };
 
   const fetchSupplierNames = () => {
@@ -346,52 +334,52 @@ function HomePage5() {
         <div className="main-content container-fluid">
           <h2 className="text-center mx-auto">Management Dashboard</h2>
           <div className="row">
-        <div className="col-md-6 col-sm-12 mb-3">
-          <div className="form-container">
-            <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", width: "100%" }}>
-              <div className="card-body p-4">
-                <form>
-                  <div className="row mb-3">
-                    <div className="col-md-6 col-sm-12">
-                      <label htmlFor="company" className="form-label">
-                        Company Name
-                        <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                      </label>
-                      <select
-                        className="form-select"
-                        id="company"
-                        value={company}
-                        onChange={handleCompanyChange}
-                        required
-                      >
-                        <option value="">Select Company Name</option>
-                        {companies.map((company, index) => (
-                          <option key={index} value={company}>
-                            {company}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-md-6 col-sm-12">
-                      <label htmlFor="site" className="form-label">
-                        Site Name
-                        <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                      </label>
-                      <select
-                        className="form-select"
-                        id="site"
-                        value={site}
-                        onChange={handleSiteChange}
-                        required
-                      >
-                        <option value="">Select Site Name</option>
-                        {sites.map((s, index) => (
-                          <option key={index} value={s.site}>
-                            {s.site}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+            <div className="col-md-6 col-sm-12 mb-3">
+              <div className="form-container">
+                <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", width: "100%" }}>
+                  <div className="card-body p-4">
+                    <form>
+                      <div className="row mb-3">
+                        <div className="col-md-6 col-sm-12">
+                          <label htmlFor="company" className="form-label">
+                            Company Name
+                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
+                          </label>
+                          <select
+                            className="form-select"
+                            id="company"
+                            value={company}
+                            onChange={handleCompanyChange}
+                            required
+                          >
+                            <option value="">Select Company Name</option>
+                            {companies.map((c, index) => (
+                              <option key={index} value={c}>
+                                {c}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-md-6 col-sm-12">
+                          <label htmlFor="site" className="form-label">
+                            Site Name
+                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
+                          </label>
+                          <select
+                            className="form-select"
+                            id="site"
+                            value={site}
+                            onChange={(e) => setSite(e.target.value)}
+                            required
+                          >
+                            <option value="">Select Site Name</option>
+                            {sites.map((s, index) => (
+                              <option key={index} value={s.site}>
+                                {s.site}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                       <div className="row mb-3">
                         <div className="col-md-6 col-sm-12">
@@ -428,53 +416,53 @@ function HomePage5() {
                 </div>
               </div>
             </div>
-
+              
             <div className="col-md-6 col-sm-12 mb-3">
-              <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", width: "100%" }}>
-                <div className="card-body p-4">
-                  <form>
-                    <div className="row mb-3">
-                      <div className="col-md-12 col-sm-12">
-                        <label htmlFor="supplierName" className="form-label">
-                          Supplier Name
-                          <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                        </label>
-                        <Select
-                          id="supplierName"
-                          value={supplierName ? { value: supplierName, label: supplierName } : null}
-                          onChange={(selectedOption) =>
-                            setSupplierName(selectedOption.label)
-                          }
-                          options={supplierNames.map((name) => ({
-                            value: name,
-                            label: name,
-                          }))}
-                          isSearchable
-                          isRequired
-                          placeholder="Select Supplier Name"
-                        />
-                      </div>
-                      <div className="col-md-12 col-sm-12 mt-3">
-                        <label htmlFor="supplierAddressLine1" className="form-label">
-                          Supplier Address
-                          <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="supplierAddressLine1"
-                          value={supplierAddress}
-                          onChange={(e) => setSupplierAddress(e.target.value)}
-                          required
-                        />
-                      </div>
+            <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", width: "100%" }}>
+              <div className="card-body p-4">
+                <form>
+                  <div className="row mb-3">
+                    <div className="col-md-12 col-sm-12">
+                      <label htmlFor="supplierName" className="form-label">
+                        Supplier Name
+                        <span style={{ color: "red", fontWeight: "bold" }}> *</span>
+                      </label>
+                      <Select
+                        id="supplierName"
+                        value={supplierName ? { value: supplierName, label: supplierName } : null}
+                        onChange={(selectedOption) =>
+                          setSupplierName(selectedOption.label)
+                        }
+                        options={supplierNames.map((name) => ({
+                          value: name,
+                          label: name,
+                        }))}
+                        isSearchable
+                        isRequired
+                        placeholder="Select Supplier Name"
+                      />
                     </div>
-                  </form>
-                </div>
+                    <div className="col-md-12 col-sm-12 mt-3">
+                      <label htmlFor="supplierAddressLine1" className="form-label">
+                        Supplier Address
+                        <span style={{ color: "red", fontWeight: "bold" }}> *</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="supplierAddressLine1"
+                        value={supplierAddress}
+                        onChange={(e) => setSupplierAddress(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
-
-
+          </div>
+            
+            
             <div className="col-md-6 col-sm-12 mb-3">
               <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", height: "100%", position: "relative", overflow: "hidden" }}>
                 <div className='card-body' >
@@ -501,11 +489,11 @@ function HomePage5() {
                       }}
                     />
                   )}
-                  <div style={{ textAlign: 'center', marginBottom: "5px", fontWeight: 'bold', fontFamily: 'monospace' }}>Number of Trucks</div>
+                  <div style={{ textAlign: 'center', marginBottom:"5px",  fontWeight: 'bold', fontFamily: 'monospace' }}>Number of Trucks</div>
                 </div>
               </div>
             </div>
-
+            
             <div className="col-md-6 col-sm-12 mb-3">
               <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", height: "100%", position: "relative", overflow: "hidden" }}>
                 <div className="card-body">
@@ -532,7 +520,7 @@ function HomePage5() {
                       }}
                     />
                   )}
-                  <div style={{ textAlign: 'center', marginBottom: "5px", fontWeight: 'bold', fontFamily: 'monospace' }}>Inbound Quantity by Material</div>
+                  <div style={{ textAlign: 'center', marginBottom:"5px",  fontWeight: 'bold', fontFamily: 'monospace' }}>Inbound Quantity by Material</div>
                 </div>
               </div>
             </div>
@@ -563,7 +551,7 @@ function HomePage5() {
                       }}
                     />
                   )}
-                  <div style={{ textAlign: 'center', marginBottom: "5px", fontWeight: 'bold', fontFamily: 'monospace' }}>Outbound Quantity by Product</div>
+                  <div style={{ textAlign: 'center', marginBottom:"5px",  fontWeight: 'bold', fontFamily: 'monospace' }}>Outbound Quantity by Product</div>
                 </div>
               </div>
             </div>
@@ -594,11 +582,11 @@ function HomePage5() {
                       }}
                     />
                   )}
-                  <div style={{ textAlign: 'center', marginBottom: "5px", fontWeight: 'bold', fontFamily: 'monospace' }}>Material-Product Quantity</div>
+                  <div style={{ textAlign: 'center', marginBottom:"5px",  fontWeight: 'bold', fontFamily: 'monospace' }}>Material-Product Quantity</div>
                 </div>
               </div>
             </div>
-
+            
             <div className="col-md-6 col-sm-12 mb-3">
               <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", height: "100%", position: "relative", overflow: "hidden" }}>
                 <div className="card-body">
@@ -626,49 +614,49 @@ function HomePage5() {
                       }}
                     />
                   )}
-                  <div style={{ textAlign: 'center', marginBottom: "5px", fontWeight: 'bold', fontFamily: 'monospace' }}>Material-Product Quality</div>
+                  <div style={{ textAlign: 'center', marginBottom:"5px",  fontWeight: 'bold', fontFamily: 'monospace' }}>Material-Product Quality</div>
                 </div>
               </div>
             </div>
 
+         
 
-
-            <div className="col-md-6 col-sm-12 mb-3">
-              <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", height: "100%", position: "relative", overflow: "hidden" }}>
-                <div className="card-body">
-                  {moisturePercentageData.labels.length > 0 && (
-                    <Bar
-                      data={moisturePercentageData}
-                      options={{
-                        responsive: true,
-                        scales: {
-                          x: {
-                            title: {
-                              display: true,
-                              text: 'Date',
-                            },
-                          },
-                          y: {
-                            title: {
-                              display: true,
-                              text: 'Moisture Percentage (%)',
-                            },
-                            min: 0,
-                            max: 100,
+          <div className="col-md-6 col-sm-12 mb-3">
+            <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", height: "100%", position: "relative", overflow: "hidden" }}>
+              <div className="card-body">
+                {moisturePercentageData.labels.length > 0 && (
+                  <Bar
+                    data={moisturePercentageData}
+                    options={{
+                      responsive: true,
+                      scales: {
+                        x: {
+                          title: {
+                            display: true,
+                            text: 'Date',
                           },
                         },
-                      }}
-                    />
-                  )}
-                  <div style={{ textAlign: 'center', marginBottom: "5px", fontWeight: 'bold', fontFamily: 'monospace' }}>Moisture Percentage (%) of Coal</div>
-                </div>
+                        y: {
+                          title: {
+                            display: true,
+                            text: 'Moisture Percentage (%)',
+                          },
+                          min: 0,
+                          max: 100,
+                        },
+                      },
+                    }}
+                  />
+                )}
+                <div style={{ textAlign: 'center', marginBottom:"5px",  fontWeight: 'bold', fontFamily: 'monospace' }}>Moisture Percentage (%) of Coal</div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      </div>
     </SideBar4>
   );
 }
 
-export default HomePage5;
+export default HomePage5

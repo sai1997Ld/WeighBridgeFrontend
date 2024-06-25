@@ -492,52 +492,6 @@ function ProductManagement() {
                     )}
                   </div>
                 </div>
-                {/* <div className="row mb-2">
-                  
-                  <div className="col-md-6">
-                    <label htmlFor="productTypeName" className="form-label">
-                      product Type{" "}
-                    </label>
-                    {showTypeInput ? (
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="productTypeName"
-                        value={userInputType}
-                        onChange={handleTypeInputChange}
-                        placeholder="Enter product Type"
-                        autoFocus
-                      />
-                    ) : (
-                      <div>
-                        {productTypeNames.length > 0 ? (
-                          <select
-                            className="form-select"
-                            id="productTypeName"
-                            value={productTypeName}
-                            onChange={handleTypeSelectChange}
-                          >
-                            <option value="">Select product Type</option>
-                            {productTypeNames.map((type, index) => (
-                              <option key={index} value={type}>
-                                {type}
-                              </option>
-                            ))}
-                            <option value="add a type">Add Type</option>
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="productTypeName"
-                            value={userInputType}
-                            onChange={handleTypeInputChange}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div> */}
                 {parameters.map((parameter, index) => (
                   <div className="row mb-2" key={index}>
                     <div className="col-md-4">

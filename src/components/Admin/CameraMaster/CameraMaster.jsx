@@ -23,7 +23,7 @@ const CameraMaster = () => {
   const [backCameraUrl, setBackCameraUrl] = useState("");
   const [companies, setCompanies] = useState([]);
   const [sites, setSites] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const userOptions = [
     { value: "GATE_USER", label: "GATE_USER" },
@@ -131,7 +131,7 @@ const CameraMaster = () => {
       RightCamUrl6: rightCameraUrl,
     };
 
-    setIsLoading(true);
+
 
     console.log("Payload sent to the API:", cameraData);
 
@@ -185,20 +185,13 @@ const CameraMaster = () => {
           },
         });
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
   };
 
   return (
     <SideBar>
       <div className="camera-master">
         <div className="create-main-content container-fluid">
-          {isLoading ? (
-            <div className="spinner-container">
-              <div className="spinner"></div>
-            </div>
-          ) : (
+      
             <>
               <div className="d-flex justify-content-between align-items-center">
                 <h2 className="text-center mx-auto">{editMode ? "Update Camera" : "Camera Registration"}</h2>
@@ -392,7 +385,6 @@ const CameraMaster = () => {
                 </div>
               </div>
             </>
-          )}
         </div>
       </div>
     </SideBar>
