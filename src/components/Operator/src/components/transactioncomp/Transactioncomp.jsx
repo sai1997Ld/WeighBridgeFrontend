@@ -202,9 +202,6 @@ const OperatorTransaction2 = () => {
   }
   }, [userId,searchValue, searchOption, searchPageNumber, debouncedSearch]);
 
-  const handlePageChange = (page) => {
-    setSearchPageNumber(page - 1);
-  };
 
   //print
   const handlePrint = async (ticketNo) => {
@@ -258,7 +255,7 @@ const OperatorTransaction2 = () => {
         }}
       >
         <div className="container-fluid mt-0">
-          <div className="mb-3 text-center">
+          <div className="mb-3 mt-1 text-center">
             <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
               Completed Transaction
             </h2>
