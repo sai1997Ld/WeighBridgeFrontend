@@ -245,7 +245,14 @@ const SalesOrder = lazy(() =>
 const ProcessOrder = lazy(() =>
   import("./components/Sales/ProcessOrder/ProcessOrder.jsx")
 );
+
+const SideBar = lazy(() => import("./components/SideBar/SideBar.jsx"));
+const SideBar2 = lazy(() => import("./components/SideBar/SideBar2.jsx"));
+const SideBar3 = lazy(() => import("./components/SideBar/SideBar3.jsx"));
+const SideBar4 = lazy(() => import("./components/SideBar/SideBar4.jsx"));
+const SideBar5 = lazy(() => import("./components/SideBar/SideBar5.jsx"));
 const SideBar6 = lazy(() => import("./components/SideBar/Sidebar6.jsx"));
+
 const SalesDisplay = lazy(() =>
   import("./components/Sales/SalesDisplay/SalesDisplay.jsx")
 );
@@ -295,6 +302,11 @@ const router = createBrowserRouter(
       <Route path="/update-supplier" element={<UpdateSupplier />} />
       <Route path="/SalesOrder" element={<SalesOrder />} />
       <Route path="/ProcessOrder" element={<ProcessOrder />} />
+      <Route path="/Sidebar" element={<SideBar />} />
+      <Route path="/Sidebar2" element={<SideBar2 />} />
+      <Route path="/Sidebar3" element={<SideBar3 />} />
+      <Route path="/Sidebar4" element={<SideBar4 />} />
+      <Route path="/Sidebar5" element={<SideBar5 />} />
       <Route path="/Sidebar6" element={<SideBar6 />} />
       <Route path="/SalesDisplay" element={<SalesDisplay />} />
       <Route path="/SalesCustomer" element={<SalesCustomer />} />
