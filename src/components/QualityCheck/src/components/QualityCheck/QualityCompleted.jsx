@@ -34,7 +34,7 @@ function QualityCompleted() {
   const [ticketData, setTicketData] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
   const [allData, setAllData] = useState([]);
-  const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
+  // const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
   const [printData, setPrintData] = useState(null);
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
@@ -188,7 +188,6 @@ function QualityCompleted() {
       console.error("Error fetching outbound transactions:", error);
     }
   };
-
   const handleMaterialFilter = ({ key }) => {
     if (key.startsWith("material-")) {
       const selectedIndex = parseInt(key.split("-")[1], 10);
@@ -234,21 +233,8 @@ function QualityCompleted() {
     };
   }, []);
 
-  const handlehome = () => {
-    navigate("/home");
-  };
 
-  const handleTicketClick = (ticketNumber, productMaterial) => {
-    const item = allData.find((item) => item.ticketNo === ticketNumber);
-    if (item) {
-      const queryString = new URLSearchParams(item).toString();
-      if (productMaterial === "Coal" || productMaterial === "Iron Ore" || productMaterial === "Dolomite") {
-        navigate("/QualityInboundDetails?" + queryString);
-      } else if (productMaterial === "Sponge Iron" || productMaterial === "Dolochar") {
-        navigate("/QualityOutboundDetails?" + queryString);
-      }
-    }
-  };
+
 
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
   const handleSearch = async () => {
@@ -502,11 +488,7 @@ function QualityCompleted() {
                         : propertyName === "supplieraddress"
                         ? data.supplierOrCustomerAddress
                         : propertyName === "transactiontype"
-  ? transactionType === "inbound"
-    ? "Inbound"
-    : transactionType === "outbound"
-    ? "Outbound"
-    : ""
+  ? (data.transactionType || "N/A")
   : undefined;
                     return `<tr><th>${label}</th><td>${
                       typeof value === "object" ? JSON.stringify(value) : value
@@ -792,11 +774,11 @@ function QualityCompleted() {
                             {item.supplierOrCustomerAddress}
                           </td>
                           <td
-                            className="ant-table-cell"
-                            style={{ whiteSpace: "nowrap" }}
-                          >
-                            {item.transactionType}
-                          </td>
+  className="ant-table-cell"
+  style={{ whiteSpace: "nowrap" }}
+>
+  {item.transactionType || "N/A"}
+</td>
                           <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
                             <button
                               className="btn btn-success btn-sm"

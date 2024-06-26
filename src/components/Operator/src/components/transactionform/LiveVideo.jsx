@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import './LiveVideo.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpand } from "@fortawesome/free-solid-svg-icons";
+import { faExpand, faImage } from "@fortawesome/free-solid-svg-icons";
+// import Lightbox from "yet-another-react-lightbox";
+// import "yet-another-react-lightbox/styles.css";
 
 const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl, label }) => {
   const wsRef = useRef(null);
@@ -94,7 +96,7 @@ const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl, label 
         </button>
         <div className="overlay-cam">
           <button onClick={capturePhoto} className="btn btn-sm btn-outline-primary fw-bold my-2">
-            Capture Photo
+          <FontAwesomeIcon icon={faImage} />
           </button>
         </div>
       </div>

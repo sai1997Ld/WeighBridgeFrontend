@@ -7,7 +7,8 @@ const QPrint = () => {
 
   const userId = sessionStorage.getItem("userId");
 
-
+  const [isOutbound, setIsOutbound] = useState(false);
+  const [transactionType, setTransactionType] = useState('');
   
   const handleSearch = async () => {
     try {
@@ -35,6 +36,19 @@ const QPrint = () => {
 
   const handlePrint = async (ticketNo, data) => {
     const printWindow = window.open("", "_blank");
+    const labels = [
+      "Ticket No",
+      "Company Name",
+      "Company Address",
+      "Date",
+      "Vehicle No",
+      data.transactionType === "outbound" ? "Product" : "Material",
+      data.transactionType === "outbound" ? "Product Type" : "Material Type",
+      data.transactionType === "outbound" ? "Customer Name" : "Supplier",
+      data.transactionType === "outbound" ? "Customer Address" : "Supplier Address",
+      "Transaction Type"
+    ];
+  
     const formattedData = `
       <html>
         <head>
@@ -60,40 +74,76 @@ const QPrint = () => {
           <p>${data.companyAddress}</p>
           <p>Generated on: ${new Date().toLocaleDateString()}</p>
           <table>
-            <tr>
-              <th>Field</th>
-              <th>Value</th>
-            </tr>
-            ${Object.entries(data)
-              .filter(([key, value]) => typeof value !== "object" || value === null)
-              .map(
-                ([key, value]) =>
-                  `<tr><td>${key}</td><td>${
+            <tbody>
+              ${labels
+                .map((label) => {
+                  const propertyName = label.toLowerCase().replace(/ /g, "");
+                  let value;
+                  switch (propertyName) {
+                    case "ticketno":
+                      value = data.ticketNo;
+                      break;
+                    case "companyname":
+                      value = data.companyName;
+                      break;
+                    case "companyaddress":
+                      value = data.companyAddress;
+                      break;
+                    case "date":
+                      value = data.date;
+                      break;
+                    case "vehicleno":
+                      value = data.vehicleNo;
+                      break;
+                    case "product":
+                    case "material":
+                      value = data.materialOrProduct;
+                      break;
+                    case "producttype":
+                    case "materialtype":
+                      value = data.materialTypeOrProductType;
+                      break;
+                    case "customername":
+                    case "supplier":
+                      value = data.supplierOrCustomerName;
+                      break;
+                    case "customeraddress":
+                    case "supplieraddress":
+                      value = data.supplierOrCustomerAddress;
+                      break;
+                    case "transactiontype":
+                      value = data.transactionType.charAt(0).toUpperCase() + data.transactionType.slice(1);
+                      break;
+                    default:
+                      value = undefined;
+                  }
+                  return `<tr><th>${label}</th><td>${
                     typeof value === "object" ? JSON.stringify(value) : value
-                  }</td></tr>`
-              )
-              .join("")}
-            ${
-              data.qualityParameters
-                ? `<tr>
-                    <td>Quality Parameters</td>
-                    <td>
-                      <table>
-                        <tr>
-                          <th>Parameter</th>
-                          <th>Value</th>
-                        </tr>
-                        ${Object.entries(data.qualityParameters)
-                          .map(
-                            ([key, value]) =>
-                              `<tr><td>${key}</td><td>${value}</td></tr>`
-                          )
-                          .join("")}
-                      </table>
-                    </td>
-                  </tr>`
-                : ""
-            }
+                  }</td></tr>`;
+                })
+                .join("")}
+              ${
+                data.qualityParameters
+                  ? `<tr>
+                        <th>Quality Parameters</th>
+                        <td>
+                          <table>
+                            <tr>
+                              <th>Parameter</th>
+                              <th>Value</th>
+                            </tr>
+                            ${Object.entries(data.qualityParameters)
+                              .map(
+                                ([key, value]) =>
+                                  `<tr><td>${key}</td><td>${value}</td></tr>`
+                              )
+                              .join("")}
+                          </table>
+                        </td>
+                      </tr>`
+                  : ""
+              }
+            </tbody>
           </table>
           <script>
             window.print();
