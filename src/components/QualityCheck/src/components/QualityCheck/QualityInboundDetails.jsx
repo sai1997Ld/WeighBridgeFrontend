@@ -37,51 +37,58 @@ const StyledButton = styled.button`
   }
 `;
 
+
+
 const QualityInboundDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAtLeastOneParameterFilled, setIsAtLeastOneParameterFilled] = useState(false);
 
+  const [parameters, setParameters] = useState({});
   const [formData, setFormData] = useState({
-    date: null,
-    in: null,
-    out: null,
-    vehicleNo: null,
-    transporterName: null,
-    transactionType: null,
-    ticketNo: null,
-    tpNo: null,
-    poNo: null,
-    challanNo: null,
-    supplierOrCustomerName: null,
-    supplierOrCustomerAddress: null,
-    materialName: null,
-    materialType: null,
+    date: "",
+    in: "",
+    out: "",
+    vehicleNo: "",
+    transporterName: "",
+    transactionType: "",
+    ticketNo: "",
+    tpNo: "",
+    poNo: "",
+    challanNo: "",
+    supplierOrCustomerName: "",
+    supplierOrCustomerAddress: "",
+    materialName: "",
+    materialType: "",
+    // Initialize all parameter fields with empty strings
+    ...Object.keys(parameters).reduce((acc, paramName) => {
+      acc[paramName] = "";
+      return acc;
+    }, {}),
   });
 
-  const [parameters, setParameters] = useState({});
+  
 
   const [isFormValid, setIsFormValid] = useState(false); // Initialize isFormValid as false
   const userId = sessionStorage.getItem("userId");
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
   const checkFormValidity = () => {
-    const atLeastOneParameterFilled = Object.keys(parameters).some((parameterName) => 
-      formData[parameterName] !== null && formData[parameterName] !== ""
+    const atLeastOneParameterFilled = Object.keys(parameters).some((parameterName) =>
+      formData[parameterName] && formData[parameterName].trim() !== ""
     );
-    console.log("Parameters:", parameters);
-    console.log("Form data:", formData);
-    console.log("At least one parameter filled:", atLeastOneParameterFilled);
     setIsAtLeastOneParameterFilled(atLeastOneParameterFilled);
   };
 
 
 
+  // In the useEffect hook
   useEffect(() => {
-    console.log("Form data or parameters changed");
     checkFormValidity();
   }, [formData, parameters]);
+  
+ 
 
 
   useEffect(() => {
@@ -139,23 +146,21 @@ const QualityInboundDetails = () => {
   }, []);
 
   const handleSave = async () => {
-    checkFormValidity();
-  
+    // Filter the data to only include parameters with non-empty values
     let data = Object.keys(parameters).reduce((acc, parameterName) => {
-      if (formData[parameterName] !== null && formData[parameterName] !== "") {
-        acc[parameterName] = formData[parameterName];
+      if (formData[parameterName] && formData[parameterName].trim() !== "") {
+        acc[parameterName] = formData[parameterName].trim();
       }
       return acc;
     }, {});
   
-    console.log({data});
-    return false
+    console.log("Form data being sent:", data);
+  
+    // Check if at least one parameter has a non-empty value
     if (Object.keys(data).length === 0) {
       setIsModalVisible(true);
       return;
     }
-  
-    console.log("Form data being sent:", data);
   
     try {
       const response = await fetch(`http://localhost:8080/api/v1/qualities/${formData.ticketNo}?userId=${userId}`, {
@@ -207,13 +212,11 @@ const QualityInboundDetails = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    console.log(`Input changed: ${name} = ${value}`);
     setFormData((prevFormData) => {
       const newFormData = {
         ...prevFormData,
         [name]: value,
       };
-      console.log("New form data:", newFormData);
       return newFormData;
     });
     checkFormValidity();
@@ -385,18 +388,19 @@ const QualityInboundDetails = () => {
                               <FontAwesomeIcon icon={faEraser} className="me-1" /> Clear
                             </button>
                             <button
-                              type="button"
-                              className="btn btn-success-1 btn-hover"
-                              style={{
-                                backgroundColor: "white",
-                                color: "#008060",
-                                width: "100px",
-                                border: "1px solid #cccccc",
-                              }}
-                              onClick={handleSave} // Always call handleSave
-                            >
-                              <FontAwesomeIcon icon={faSave} className="me-1" /> Save
-                            </button>
+  type="button"
+  className="btn btn-success-1 btn-hover"
+  style={{
+    backgroundColor: "white",
+    color: "#008060",
+    width: "100px",
+    border: "1px solid #cccccc",
+  }}
+  onClick={handleSave}
+  disabled={!isAtLeastOneParameterFilled}
+>
+  <FontAwesomeIcon icon={faSave} className="me-1" /> Save
+</button>
                           </div>
                         </div>
                       </div>
@@ -409,14 +413,14 @@ const QualityInboundDetails = () => {
         </div>
       </div>
       <Modal
-  title="Success"
-  visible={isSuccessModalVisible}
-  onOk={handleSuccessOk}
-  onCancel={handleSuccessOk}
-  okText="OK"
->
-  <p>Data saved successfully.</p>
-</Modal>
+        title="Success"
+        visible={isSuccessModalVisible}
+        onOk={handleSuccessOk}
+        onCancel={handleSuccessOk}
+        okText="OK"
+      >
+        <p>Data saved successfully.</p>
+      </Modal>
       <Modal
         title="Error"
         visible={isModalVisible}

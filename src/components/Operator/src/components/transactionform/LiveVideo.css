@@ -1,0 +1,56 @@
+.video-container-cam {
+    position: relative;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    display: inline-block;
+  }
+  
+  .video-header-cam {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .video-content-cam {
+    position: relative;
+  }
+  
+  .video-content-cam img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .full-screen-button {
+    position: absolute;
+    top: 1px;
+    right: 10px;
+   color: black;
+   background-color: grey;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .overlay-cam {
+    position: absolute;
+    bottom: 1px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+ 
+
+
+.captured-image img {
+  width: 170px;
+  height: auto;
+  margin: 10px 0px;
+}
