@@ -14,10 +14,8 @@ import Camera_Icon from "../../assets/Camera_Icon.png";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRectangleXmark,
-  faSave,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRectangleXmark, faSave } from "@fortawesome/free-solid-svg-icons";
+import LiveVideo from "../transactionform/LiveVideo";
 
 function TransactionFrom2() {
   const navigate = useNavigate();
@@ -33,12 +31,12 @@ function TransactionFrom2() {
   const [isGrossWeightEnabled, setIsGrossWeightEnabled] = useState(false);
 
   const [ticket, setTicket] = useState([]);
+  const [port, setPort] = useState(null);
 
   const ticketNumber = queryParams.get("ticketNumber");
 
-  
-  const userId = sessionStorage.getItem('userId');
-   
+  const userId = sessionStorage.getItem("userId");
+
   console.log(ticketNumber);
 
   useEffect(() => {
@@ -82,15 +80,13 @@ function TransactionFrom2() {
 
       if (ticket.tareWeight === 0) {
         setTareWeight(newValue);
-      }
-       else {
+      } else {
         setGrossWeight(newValue);
       }
     }
   };
 
-
-  const handleSave = () => {
+  const handleSave = async () => {
     if (grossWeight == 0) {
       Swal.fire({
         title: "Tare weight saved to the database",
@@ -112,7 +108,7 @@ function TransactionFrom2() {
         });
         return;
       }
-  
+
       Swal.fire({
         title: "Gross weight saved to the database",
         icon: "success",
@@ -126,40 +122,51 @@ function TransactionFrom2() {
     const consignment = parseFloat(ticket.consignmentWeight);
     const lowerBound = parseFloat((consignment - 100).toFixed(3));
     const upperBound = parseFloat((consignment + 100).toFixed(3));
-    if(netWeight ){
-    if (netWeight < lowerBound || netWeight > upperBound) {
-      Swal.fire({
-        title: "Net weight is out of the allowed range",
-        icon: "error",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-danger",
-        },
-      });
-      return;
+    if (netWeight) {
+      if (netWeight < lowerBound || netWeight > upperBound) {
+        Swal.fire({
+          title: "Net weight is out of the allowed range",
+          icon: "error",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "btn btn-danger",
+          },
+        });
+        return;
+      }
     }
-  }
     window.location.reload();
     goBack();
     setInputValue("");
-    
+
+    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
     const payload = {
       machineId: "1",
       ticketNo: ticketNumber,
       weight: inputValue,
     };
 
-    axios
-      .post(`http://localhost:8080/api/v1/weighment/measure?userId=${userId}`, payload, {
+    const formD = new FormData();
+    formD.append("frontImg1", blobFront);
+    formD.append("frontImg1", blobRear);
+    formD.append("frontImg1", blobSide);
+    formD.append("frontImg1", blobTop);
+    formD.append("weighmentRequest", JSON.stringify(payload));
+    const response = await axios({
+      method: "post",
+      url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
+      data: formD,
+      headers: {
         withCredentials: true,
-      })
-      .then((response) => {
-        console.log("Measurement saved:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error saving measurement:", error);
-      });
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log({ response });
   };
+
   const [formData, setFormData] = useState({
     date: "",
     inTime: "",
@@ -203,12 +210,75 @@ function TransactionFrom2() {
     navigate(-1);
   };
 
+
+  useEffect(() => {
+    if (port) {
+      readSerialData();
+    }
+  }, [port]);
+
+  const connectSerial = async () => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.serial) {
+      console.error("Web Serial API is not supported in this environment.");
+      return;
+    }
+
+
+    try {
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 9600 });
+      setPort(port);
+    } catch (error) {
+      console.error("There was an error opening the serial port:", error);
+    }
+  };
+
+  const readSerialData = async () => {
+    try {
+      const decoder = new TextDecoderStream();
+      port.readable.pipeTo(decoder.writable);
+      const inputStream = decoder.readable;
+      const reader = inputStream.getReader();
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          console.log("Stream closed");
+          reader.releaseLock();
+          break;
+        }
+        const newValue = value.trim();
+        const extractedWeight = extractWeight(newValue);
+        if (extractedWeight) {
+          setInputValue(extractedWeight);
+          handleChange1({ target: { value: extractedWeight } });
+        }
+      }
+    } catch (error) {
+      console.error("Error reading serial data:", error);
+    }
+  };
+
+  const extractWeight = (data) => {
+    const match = data.match(/(\d+(\.\d+)?)\s*kg/);
+    return match ? match[0] : null;
+  };
+
+  const canvasTopRef = useRef(null);
+  const canvasRearRef = useRef(null);
+  const canvasFrontRef = useRef(null);
+  const canvasSideRef = useRef(null);
+  const [capturedTopImage, setCapturedTopImage] = useState(null);
+  const [capturedRearImage, setCapturedRearImage] = useState(null);
+  const [capturedFrontImage, setCapturedFrontImage] = useState(null);
+  const [capturedSideImage, setCapturedSideImage] = useState(null);
+
   return (
     <SideBar5>
       <div className="container-fluid">
         <div className="container-fluid">
           <button className="close-button" onClick={goBack}>
-            <FontAwesomeIcon icon={ faRectangleXmark}  />
+            <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2 className="text-center mb-3 mt-1">Outbound Transaction Form</h2>
           <div className="row">
@@ -224,6 +294,16 @@ function TransactionFrom2() {
                 readOnly
               />
             </div>
+            {/* <div className="col-md-6 mb-3">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={connectSerial}
+                style={{ float: "right" }}
+              >
+                Connect Serial Port
+              </button>
+            </div> */}
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-3 mb-3">
@@ -278,7 +358,6 @@ function TransactionFrom2() {
                 onChange={handleChange}
                 required
                 disabled
-
                 className="abcv"
                 readOnly
               />
@@ -304,18 +383,17 @@ function TransactionFrom2() {
             </div>
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
-            <div className="col-md-7">
+            <div className="col-md-12">
               {/* Input fields */}
               <h5>Weighment Details:</h5>
-              <div className="row">
-                <div className="col-md-8">
+              <div className="row mb-2">
+                <div className="col-md-5">
                   <div className="sub">
                     <input
                       type="number"
                       className="abcv"
                       placeholder="0"
                       style={{
-                       
                         height: "50px",
                         appearance: "textfield",
                         WebkitAppearance: "none",
@@ -329,106 +407,103 @@ function TransactionFrom2() {
                     <div className="icons-group">
                       <div>
                         {ticket.grossWeight === 0 && ticket.netWeight === 0 ? (
-                               <button
-                               type="button"
-                               className="btn btn-success-1 btn-hover"
-                               style={{
-                                 backgroundColor: "white",
-                                 color: "#008060 ",
-                                 width: "100px",
-                                 border: "1px solid #cccccc",
-                               }}
-                               onClick={handleSave}
-                             >
-                               <FontAwesomeIcon icon={faSave} className="me-3" />
-                               Save
-                             </button>
+                          <button
+                            type="button"
+                            className="btn btn-success-1 btn-hover"
+                            style={{
+                              backgroundColor: "white",
+                              color: "#008060 ",
+                              width: "100px",
+                              border: "1px solid #cccccc",
+                            }}
+                            onClick={handleSave}
+                          >
+                            <FontAwesomeIcon icon={faSave} className="me-3" />
+                            Save
+                          </button>
                         ) : null}
                       </div>
-
-            
                     </div>
                   </div>
                 </div>
               </div>
               <div className="row mb-3">
-                <div className="mno">
-                  <div className="col-2 mt-2">
+                <div className="col-4">
+                  <div className="form-group">
                     <label htmlFor="vehicleType" className="form-label">
                       Gross Weight:
                     </label>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      value={`${grossWeight} kg`}
-                      className="abcx"
-                      readOnly
-                    />
-                    <input
-                      type="text"
-                      value={ticket.grossWeightTime}
-                      className="abcx"
-                      readOnly
-                    />
+
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <input
+                        type="text"
+                        autoComplete="off"
+                        value={`${grossWeight} kg`}
+                        className="abcx"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        value={ticket.grossWeightTime}
+                        className="abcx"
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="row mb-3">
-                <div className="pqr">
-                  <div className="col-2 mt-2">
+                <div className="col-4">
+                  <div className="form-group">
                     <label htmlFor="vehicleType" className="form-label">
                       Tare Weight:
                     </label>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      value={`${tareWeight} kg`}
-                      required={isGrossWeightEnabled}
-                      className="abcx"
-                      readOnly
-                    />
-                    <input
-                      type="text"
-                      value={ticket.tareWeightTime}
-                      className="abcx"
-                      readOnly
-                    />
+
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <input
+                        type="text"
+                        autoComplete="off"
+                        value={`${tareWeight} kg`}
+                        required={isGrossWeightEnabled}
+                        className="abcx"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        value={ticket.tareWeightTime}
+                        className="abcx"
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="row mb-3">
-                <div className="stu">
-                  <div className="col-2 mt-2">
+                <div className="col-4">
+                  <div className="form-group">
                     <label htmlFor="vehicleType" className="form-label">
                       Net Weight:
                     </label>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      value={`${netWeight} kg`}
-                      // required={isGrossWeightEnabled}
-                      className="abcx"
-                      readOnly
-                    />
-                    <input
-                      type="text"
-                      value={ticket.grossWeightTime}
-                      className="abcx"
-                      readOnly
-                    />
+
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <input
+                        type="text"
+                        autoComplete="off"
+                        value={`${netWeight} kg`}
+                        // required={isGrossWeightEnabled}
+                        className="abcx"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        value={ticket.grossWeightTime}
+                        className="abcx"
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
               <div className="row mb-3">
-                <div className="mno">
-                  <div className="col-2 mt-2">
+                <div className="col-4">
+                  <div className="form-group">
                     <label htmlFor="vehicleType" className="form-label">
                       Consignment Weight:
                     </label>
@@ -445,51 +520,45 @@ function TransactionFrom2() {
                 </div>
               </div>
             </div>
-            <div className="col-md-5 ">
-              <div className="grid-container" id="z3">
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Top-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+          </div>
+          <div className="row mb-2 p-2 border shadow-lg rounded-lg">
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    imageRef={canvasTopRef}
+                    setCapturedImage={setCapturedTopImage}
+                    capturedImage={capturedTopImage}
+                    label="Top View"
+                  />
                 </div>
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Front-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    imageRef={canvasRearRef}
+                    setCapturedImage={setCapturedRearImage}
+                    capturedImage={capturedRearImage}
+                    label="Rear View"
+                  />
                 </div>
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Rear-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    imageRef={canvasFrontRef}
+                    setCapturedImage={setCapturedFrontImage}
+                    capturedImage={capturedFrontImage}
+                    label="Front View"
+                  />
                 </div>
-                <div className="grid-item">
-                  <div className="mnc">
-                    <img src={camView} />
-                    <div className="overlay">
-                      <span>Side-View</span>
-                      <button className="ct-btn ">
-                        <img src={Camera_Icon} alt="Captured" />
-                      </button>
-                    </div>
-                  </div>
+                <div className="col-md-3">
+                  <LiveVideo
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    imageRef={canvasSideRef}
+                    setCapturedImage={setCapturedSideImage}
+                    capturedImage={capturedSideImage}
+                    label="Side View"
+                  />
                 </div>
               </div>
             </div>

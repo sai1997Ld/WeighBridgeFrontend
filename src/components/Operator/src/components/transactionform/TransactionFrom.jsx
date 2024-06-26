@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SideBar5 from "../../../../SideBar/SideBar5";
@@ -15,7 +12,7 @@ import {
   faTrash,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
-import LiveVideo from "../transactioncomp/LiveVideo";
+import LiveVideo from "./LiveVideo";
 
 function TransactionFrom() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -38,78 +35,8 @@ function TransactionFrom() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
-  const [hasPermission, setHasPermission] = useState(false);
-
-  useEffect(() => {
-    checkPermissions();
-  }, []);
-
-  const checkPermissions = async () => {
-    if ('serial' in navigator) {
-      try {
-        const ports = await navigator.serial.getPorts();
-        console.log({ports})
-        setHasPermission(ports.length > 0);
-      } catch (error) {
-        console.error('Error checking permissions:', error);
-        setError('Error checking permissions: ' + error.message);
-      }
-    } else {
-      setError('Web Serial API not supported in this browser.');
-    }
-  };
-
-  const requestPermission = async () => {
-    if ('serial' in navigator) {
-      try {
-        await navigator.serial.requestPort();
-        checkPermissions(); // Re-check permissions after requesting
-      } catch (error) {
-        console.error('Error requesting port:', error);
-        setError('Error requesting port: ' + error.message);
-      }
-    } else {
-      setError('Web Serial API not supported in this browser.');
-    }
-  };
-
-  const connectSerial = async () => {
-    try {
-      if ('serial' in navigator) {
-        const newPort = await navigator.serial.requestPort();
-        await newPort.open({ baudRate: 9600 });
-        setPort(newPort);
-
-        const textDecoder = new TextDecoderStream();
-        const readableStreamClosed = newPort.readable.pipeTo(textDecoder.writable);
-        const reader = textDecoder.readable.getReader();
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            break;
-          }
-          setOutput(prevOutput => prevOutput + value);
-        }
-      } else {
-        setError('Web Serial API not supported in this browser.');
-      }
-    } catch (error) {
-      console.error('There was an error opening the serial port:', error);
-      setError('There was an error opening the serial port: ' + error.message);
-    }
-  };
-
-  const disconnectSerial = async () => {
-    if (port) {
-      await port.close();
-      setPort(null);
-    }
-  }
-
+ 
   const userId = sessionStorage.getItem("userId");
-
-  console.log(ticketNumber);
 
   useEffect(() => {
     axios
@@ -258,53 +185,53 @@ function TransactionFrom() {
     rcFitnessUpto: "",
   });
 
-  // useEffect(() => {
-  //   if (port) {
-  //     readSerialData();
-  //   }
-  // }, [port]);
+  useEffect(() => {
+    if (port) {
+      readSerialData();
+    }
+  }, [port]);
 
-  // const connectSerial = async () => {
-  //   if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.serial) {
-  //     console.error("Web Serial API is not supported in this environment.");
-  //     return;
-  //   }
+  const connectSerial = async () => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.serial) {
+      console.error("Web Serial API is not supported in this environment.");
+      return;
+    }
 
 
-  //   try {
-  //     const port = await navigator.serial.requestPort();
-  //     await port.open({ baudRate: 9600 });
-  //     setPort(port);
-  //   } catch (error) {
-  //     console.error("There was an error opening the serial port:", error);
-  //   }
-  // };
+    try {
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 9600 });
+      setPort(port);
+    } catch (error) {
+      console.error("There was an error opening the serial port:", error);
+    }
+  };
 
-  // const readSerialData = async () => {
-  //   try {
-  //     const decoder = new TextDecoderStream();
-  //     port.readable.pipeTo(decoder.writable);
-  //     const inputStream = decoder.readable;
-  //     const reader = inputStream.getReader();
+  const readSerialData = async () => {
+    try {
+      const decoder = new TextDecoderStream();
+      port.readable.pipeTo(decoder.writable);
+      const inputStream = decoder.readable;
+      const reader = inputStream.getReader();
 
-  //     while (true) {
-  //       const { value, done } = await reader.read();
-  //       if (done) {
-  //         console.log("Stream closed");
-  //         reader.releaseLock();
-  //         break;
-  //       }
-  //       const newValue = value.trim();
-  //       const extractedWeight = extractWeight(newValue);
-  //       if (extractedWeight) {
-  //         setInputValue(extractedWeight);
-  //         handleChange1({ target: { value: extractedWeight } });
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error reading serial data:", error);
-  //   }
-  // };
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          console.log("Stream closed");
+          reader.releaseLock();
+          break;
+        }
+        const newValue = value.trim();
+        const extractedWeight = extractWeight(newValue);
+        if (extractedWeight) {
+          setInputValue(extractedWeight);
+          handleChange1({ target: { value: extractedWeight } });
+        }
+      }
+    } catch (error) {
+      console.error("Error reading serial data:", error);
+    }
+  };
 
   const extractWeight = (data) => {
     const match = data.match(/(\d+(\.\d+)?)\s*kg/);
@@ -378,14 +305,16 @@ function TransactionFrom() {
                 readOnly
               />
             </div>
-            <div className="col-md-6 mb-3">
+
+            {/* commented for serial port and simulation */}
+            {/* <div className="col-md-6 mb-3">
               <button
                 type="button"
                 className="btn btn-primary"
                 onClick={connectSerial}
                 style={{ float: "right" }}
               >
-                Connect Serial
+                Connect Serial Port
               </button>
               <button
                 onClick={toggleSimulation}
@@ -396,7 +325,7 @@ function TransactionFrom() {
                 {simulate ? "Stop Simulation" : "Start Simulation"}
               </button>
               {!hasPermission && <button onClick={requestPermission}>Request Serial Port Permission</button>}
-            </div>
+            </div> */}
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-3 mb-3">
@@ -519,10 +448,6 @@ function TransactionFrom() {
                           </button>
                         ) : null}
                       </div>
-
-                      {/* <div>
-                        <FontAwesomeIcon icon={faPrint} className="icons" />
-                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -608,34 +533,38 @@ function TransactionFrom() {
               <div className="row">
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasTopRef}
                     setCapturedImage={setCapturedTopImage}
                     capturedImage={capturedTopImage}
+                    label= "Top View"
                   />
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasRearRef}
                     setCapturedImage={setCapturedRearImage}
                     capturedImage={capturedRearImage}
+                    label = "Rear View"
                   />
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasFrontRef}
                     setCapturedImage={setCapturedFrontImage}
                     capturedImage={capturedFrontImage}
+                    label = "Front View"
                   />
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8081/ws/frame"}
+                    wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasSideRef}
                     setCapturedImage={setCapturedSideImage}
                     capturedImage={capturedSideImage}
+                    label = "Side View"
                   />
                 </div>
               </div>
