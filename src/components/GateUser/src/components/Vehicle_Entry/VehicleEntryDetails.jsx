@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement } from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
@@ -20,11 +21,13 @@ import {
   faRectangleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
+
 import Swal from "sweetalert2";
 import Select from "react-select";
 import axios from "axios";
 import Modal from "antd/es/modal/Modal";
 import NewVehicleRegistration from "./NewVehicleRegistration";
+import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx"
 
 
 function VehicleEntryDetails() {
@@ -77,7 +80,7 @@ function VehicleEntryDetails() {
       setVehicleNo(tempVehicleNo);
       // await handleVehicleNoKeyPress(requiredData?.vehicleNo)
 
-      console.log({ vehicleData: vehicleData.challanNo, requiredData: requiredData, numbers, tempVehicleNo, formData: { ...formData, ...requiredData } });
+      console.log({ vehicleData: vehicleData?.challanNo, requiredData: requiredData, numbers, tempVehicleNo, formData: { ...formData, ...requiredData } });
 
       setFormData({ ...formData, ...requiredData })
 
@@ -391,7 +394,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     handleVehicleNoKeyPress(selectedOption.value);
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log(formData);
     // Check if any mandatory field is missing
     if (
@@ -437,44 +440,126 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       // department: formData.department,
       transactionType: formData.transactionType,
     };
+
     console.log({ gateData })
+
+
     // return false
     // Create JSON payload for saving Inbound details
-    const payload = JSON.stringify(gateData);
-    console.log("payload", payload);
+    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
 
-    // Fetch API
-    fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: payload,
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Show success message
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: `Transaction with id ${data} created Successfully!`,
-        });
+    const formD = new FormData();
+    formD.append("frontImg1", blobFront);
+    formD.append("frontImg1", blobRear);
+    formD.append("frontImg1", blobSide);
+    formD.append("frontImg1", blobTop);
 
-        // Reset form data after 3 seconds and navigate to VehicleEntry page
-        sessionStorage.removeItem("vehicleData");
-        handleClear();
-        navigate("/VehicleEntry");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
+
+    // Append gateData fields to formD
+    formD.append("requestBody", JSON.stringify(gateData));
+    // formD.append("userId", userId); // Ensure userId is defined in your scope
+    // formD.append("role", 'GATE_USER');
+
+    console.log("FormData:", formD);
+    try {
+      const response = await axios.post(`http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${'GATE_USER'}`, formD, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
       });
+      console.log({ response });
+
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: `Transaction with id ${response.data} created Successfully!`,
+      });
+
+      // Reset form data and navigate
+      sessionStorage.removeItem("vehicleData");
+      handleClear();
+      navigate("/VehicleEntry");
+    } catch (error) {
+      console.error("Error:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    }
   };
+  // formD.append("challanDate", formData.challanDate);
+  // formD.append("supplier", formData.supplier);
+  // formD.append("supplierAddressLine1", formData.supplierAddressLine1);
+  // formD.append("transporter", Array.isArray(transporter) ? transporter.toString() : '');
+  // formD.append("material", formData.material);
+  // formD.append("materialType", formData.materialType);
+  // formD.append("vehicle", formData.vehicleNo);
+  // formD.append("dlNo", formData.driverDLNo);
+  // formD.append("driverName", formData.driverName);
+  // formD.append("supplyConsignmentWeight", formData.tpNetWeight);
+  // formD.append("poNo", formData.poNo);
+  // formD.append("tpNo", formData.tpNo);
+  // formD.append("challanNo", formData.challanNo);
+  // formD.append("ewayBillNo", formData.eWayBillNo);
+  // formD.append("transactionType", formData.transactionType);
+
+  // const payload = JSON.stringify(gateData);
+
+  // console.log("payload", payload);
+
+  // Fetch API
+
+  // const response = await axios({
+  //   method: "post",
+  //   url: `http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${'GATE_USER'}`,
+  //   data: formD,
+  //   headers: {
+  //     withCredentials: true,
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
+  // console.log({ response })
+
+  // fetch(`http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${'GATE_USER'}`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  //   body: formD,
+  //   credentials: "include",
+  // })
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     // Show success message
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Success!",
+  //       text: `Transaction with id ${data} created Successfully!`,
+  //     });
+
+  //     // Reset form data after 3 seconds and navigate to VehicleEntry page
+  //     sessionStorage.removeItem("vehicleData");
+  //     handleClear();
+  //     navigate("/VehicleEntry");
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error:", error);
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Oops...",
+  //       text: "Something went wrong!",
+  //     });
+  //   });
+
+
+
+  // };
 
   const handleClear = () => {
     setFormData({
@@ -541,6 +626,15 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     }
 
   }, [formData.material, formData.supplier])
+
+  const canvasTopRef = useRef(null);
+  const canvasRearRef = useRef(null);
+  const canvasFrontRef = useRef(null);
+  const canvasSideRef = useRef(null);
+  const [capturedTopImage, setCapturedTopImage] = useState(null);
+  const [capturedRearImage, setCapturedRearImage] = useState(null);
+  const [capturedFrontImage, setCapturedFrontImage] = useState(null);
+  const [capturedSideImage, setCapturedSideImage] = useState(null);
 
   return (
     <SideBar2>
@@ -722,21 +816,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               }
                               placeholder="Select MaterialType"
                             />
-                            {/* <select
-                              id="materialType"
-                              name="materialType"
-                              value={formData.materialType}
-                              onChange={handleChange}
-                              className="form-select"
-                              required
-                            >
-                              <option value="">Select material Type</option>
-                              {materialType.map((materialType, index) => (
-                                <option key={index} value={materialType}>
-                                  {materialType}
-                                </option>
-                              ))}
-                            </select> */}
+
                           </div>
                           {/* Code Of E-Way Bill No */}
                           <div className="col-md-6 col-sm-12">
@@ -939,110 +1019,54 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               <tbody>
                                 <tr>
                                   <td>
-                                    <div className="camview1">
-                                      <span style={{ marginRight: "5px" }}>
-                                        Front-View
-                                      </span>
-                                      <button
-                                        className="table-btn"
-                                        style={{
-                                          position: "absolute",
-                                          bottom: 0,
-                                          right: 0,
-                                          border: "0px",
-                                        }}
-                                        onClick={handleCapturePicture}
-                                      >
-                                        <img
-                                          src={CameraIcon_IB}
-                                          alt="Captured"
-                                          style={{
-                                            width: "45px",
-                                            height: "36px",
-                                          }}
+                                    <div className="row">
+                                      <div className="col-md-3">
+                                        <CameraLiveVideo
+                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          imageRef={canvasTopRef}
+                                          setCapturedImage={setCapturedTopImage}
+                                          capturedImage={capturedTopImage}
                                         />
-                                      </button>
+                                      </div>
                                     </div>
                                   </td>
                                   <td>
-                                    <div className="camview1">
-                                      <span style={{ marginRight: "5px" }}>
-                                        Back-View
-                                      </span>
-                                      <button
-                                        className="table-btn"
-                                        style={{
-                                          position: "absolute",
-                                          bottom: 0,
-                                          right: 0,
-                                          border: "0px",
-                                        }}
-                                        onClick={handleCapturePicture}
-                                      >
-                                        <img
-                                          src={CameraIcon_IB}
-                                          alt="Captured"
-                                          style={{
-                                            width: "45px",
-                                            height: "36px",
-                                          }}
+                                    <div className="row">
+                                      <div className="col-md-3">
+                                        <CameraLiveVideo
+                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          imageRef={canvasRearRef}
+                                          setCapturedImage={setCapturedRearImage}
+                                          capturedImage={capturedRearImage}
                                         />
-                                      </button>
+                                      </div>
                                     </div>
                                   </td>
                                 </tr>
                                 <tr></tr>
                                 <tr>
                                   <td>
-                                    <div className="camview1">
-                                      <span style={{ marginRight: "5px" }}>
-                                        Top-View
-                                      </span>
-                                      <button
-                                        className="table-btn"
-                                        style={{
-                                          position: "absolute",
-                                          bottom: 0,
-                                          right: 0,
-                                          border: "0px",
-                                        }}
-                                        onClick={handleCapturePicture}
-                                      >
-                                        <img
-                                          src={CameraIcon_IB}
-                                          alt="Captured"
-                                          style={{
-                                            width: "45px",
-                                            height: "36px",
-                                          }}
+                                    <div className="row">
+                                      <div className="col-md-3">
+                                        <CameraLiveVideo
+                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          imageRef={canvasFrontRef}
+                                          setCapturedImage={setCapturedFrontImage}
+                                          capturedImage={capturedFrontImage}
                                         />
-                                      </button>
+                                      </div>
                                     </div>
                                   </td>
                                   <td>
-                                    <div className="camview1">
-                                      <span style={{ marginRight: "5px" }}>
-                                        Side-View
-                                      </span>
-                                      <button
-                                        className="table-btn"
-                                        style={{
-                                          position: "absolute",
-                                          bottom: 0,
-                                          right: 0,
-                                          border: "0px",
-                                        }}
-                                        onClick={handleCapturePicture}
-                                      >
-                                        <img
-                                          src={CameraIcon_IB}
-                                          alt="Captured"
-                                          style={{
-                                            width: "45px",
-                                            height: "36px",
-                                          }}
+                                    <div className="row">
+                                      <div className="col-md-3">
+                                        <CameraLiveVideo
+                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          imageRef={canvasSideRef}
+                                          setCapturedImage={setCapturedSideImage}
+                                          capturedImage={capturedSideImage}
                                         />
-                                      </button>
+                                      </div>
                                     </div>
                                   </td>
                                 </tr>
@@ -1053,40 +1077,6 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                         </div>
                         <div style={{ height: 20 }}></div>
                         <div className="row justify-content-end mt-6 mb-2">
-                          {/* <style>
-                            {`
-                               .btn-primary-hover {
-                                    background-color: white;
-                                   color: #0275d8;
-                                    border: 1px solid #cccccc;
-                                              }
-
-                             .btn-primary-hover:hover {
-                                  background-color: #0275d8 !important; 
-                                  color: white !important;
-                              }
-                              `}
-                          </style> */}
-                          {/* <div className="col-md-6 col-sm-12 d-flex justify-content-center">
-                            <button
-                              type="button"
-                              className="btn btn-primary me-4 btn-hover btn-primary-hover"
-                              style={{
-                                backgroundColor: "white",
-                                color: "#0275d8",
-                                border: "1px solid #cccccc",
-                                width: "150px",
-                                height: "50px",
-                              }}
-                              onClick={hangleNewVehicle}
-                            >
-                              <FontAwesomeIcon
-                                icon={faCar}
-                                className="me-1"
-                              />{" "}
-                              Add New..
-                            </button>
-                          </div> */}
                           <div className="col-md-6 col-sm-12 d-flex justify-content-center">
                             <button
                               type="button"
