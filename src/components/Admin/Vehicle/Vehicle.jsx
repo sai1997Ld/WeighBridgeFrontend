@@ -55,7 +55,6 @@ function Vehicle() {
 
     const vehicleData = {
       vehicleNo,
-      transporter,
       vehicleType,
       vehicleManufacturer,
       vehicleWheelsNo,
