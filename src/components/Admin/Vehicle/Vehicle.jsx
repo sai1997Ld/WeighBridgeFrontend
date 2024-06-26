@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import "./Vehicle.css";
 import SideBar from "../../SideBar/SideBar";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { Link } from "react-router-dom";
@@ -15,6 +15,7 @@ function Vehicle() {
   const [vehicleWheelsNo, setvehicleWheelsNo] = useState("");
   const [vehicleFitnessUpTo, setvehicleFitnessUpTo] = useState("");
   const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState(0);
+  const [loadCapacityUnit, setLoadCapacityUnit] = useState("kg");
   const [transporters, setTransporters] = useState([]);
   const [error, setError] = useState("");
 
@@ -26,6 +27,7 @@ function Vehicle() {
     setvehicleWheelsNo("");
     setvehicleFitnessUpTo("");
     setVehicleLoadCapacity(0);
+    setLoadCapacityUnit("kg");
   };
 
   useEffect(() => {
@@ -59,7 +61,7 @@ function Vehicle() {
       vehicleManufacturer,
       vehicleWheelsNo,
       vehicleFitnessUpTo,
-      vehicleLoadCapacity,
+      vehicleLoadCapacity: loadCapacityUnit === "kg" ? vehicleLoadCapacity : vehicleLoadCapacity * 1000,
     };
 
     fetch(`http://localhost:8080/api/v1/vehicles/${transporter}?userId=${sessionStorage.getItem("userId")}`, {
@@ -106,21 +108,28 @@ function Vehicle() {
       });
   };
 
+  const handleUnitToggle = () => {
+    if (loadCapacityUnit === "kg") {
+      setVehicleLoadCapacity((prevCapacity) => prevCapacity / 1000);
+      setLoadCapacityUnit("t");
+    } else {
+      setVehicleLoadCapacity((prevCapacity) => prevCapacity * 1000);
+      setLoadCapacityUnit("kg");
+    }
+  };
+
   return (
     <SideBar>
       <div className="vehicle-register">
         <div className="vehicle-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Vehicle Registration</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Vehicle Registration</h2>
+            <Link to={"/home1"}>
+              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}} className="mb-3"/>
+            </Link>
+          </div>
           <div className="vehicle-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
-            <div
-              className="card-body p-4"
-              
-            >
+            <div className="card-body p-4">
               <form>
                 <div className="row mb-2">
                   <div className="col-md-6">
@@ -152,7 +161,7 @@ function Vehicle() {
                         value: transporter,
                         label: transporter,
                       }))}
-                      value= {transporter ? { value: transporter, label: transporter } : null}
+                      value={transporter ? { value: transporter, label: transporter } : null}
                       onChange={(selectedOption) =>
                         setTransporter(selectedOption.value)
                       }
@@ -176,7 +185,7 @@ function Vehicle() {
                         { value: "large-truck", label: "Large Truck" },
                         { value: "others", label: "Others" },
                       ]}
-                      value= {vehicleType? { value: vehicleType, label: vehicleType } : null}
+                      value={vehicleType ? { value: vehicleType, label: vehicleType } : null}
                       onChange={(selectedOption) =>
                         setVehicleType(selectedOption.value)
                       }
@@ -212,7 +221,7 @@ function Vehicle() {
                         { value: "Bharat Benz", label: "Bharat Benz" },
                         { value: "others", label: "Others" },
                       ]}
-                      value= {vehicleManufacturer? { value: vehicleManufacturer, label: vehicleManufacturer } : null}
+                      value={vehicleManufacturer ? { value: vehicleManufacturer, label: vehicleManufacturer } : null}
                       onChange={(selectedOption) =>
                         setVehicleManufacturer(selectedOption.value)
                       }
@@ -229,17 +238,26 @@ function Vehicle() {
                         *
                       </span> */}
                     </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="vehicleLoadCapacity"
-                      placeholder="Enter Vehicle Load Capacity"
-                      value={vehicleLoadCapacity}
-                      onChange={(e) => {
-                        const newValue = Math.max(0, parseFloat(e.target.value, 10));
-                        setVehicleLoadCapacity(newValue);
-                      }}
-                    />
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="vehicleLoadCapacity"
+                        placeholder={`Enter Vehicle Load Capacity (${loadCapacityUnit})`}
+                        value={vehicleLoadCapacity}
+                        onChange={(e) => {
+                          const newValue = Math.max(0, parseFloat(e.target.value, 10));
+                          setVehicleLoadCapacity(newValue);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={handleUnitToggle}
+                      >
+                        <FontAwesomeIcon icon={faSyncAlt} /> {loadCapacityUnit === "kg" ? "t" : "kg"}
+                      </button>
+                    </div>
                   </div>
                   <div className="col-md-3">
                     <label htmlFor="vehicleFitnessUpTo" className="form-label">
