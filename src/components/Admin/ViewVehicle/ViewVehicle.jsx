@@ -104,11 +104,11 @@ const ViewVehicle = () => {
   };
 
   const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-    },
+    // {
+    //   title: 'ID',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    // },
     {
       title: 'Vehicle Number',
       dataIndex: 'vehicleNo',
