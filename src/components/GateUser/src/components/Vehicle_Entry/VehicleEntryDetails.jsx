@@ -62,7 +62,7 @@ function VehicleEntryDetails() {
   useEffect(() => {
     setFormData({
       ...formData, tpNo: scannedData[23],
-      challanNo: scannedData[4],
+      challanNo: scannedData[19],
       //challanDate:scannedData[36],
       tpNetWeight: scannedData[33]
     })
@@ -679,11 +679,12 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           <h2 className="text-center mb-4">Vehicle Entry Inbound Details</h2>
           <ScannerDisplay setScannedData={setScannedData} />
 
-          {/* <pre>
+           {/* <pre>
             {
               JSON.stringify(scannedData, 0, 2)
             }
-          </pre> */}
+          </pre>  */}
+          
           <div className="row">
             <div className="row">
               <div className="col-lg-12">
