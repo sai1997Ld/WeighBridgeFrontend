@@ -49,176 +49,6 @@ function UpdateVehicleEntryDetails() {
     }
   }, [location.state]);
 
-  //Code of Add New Vehicle
-
-  // const handleNewVehicle = () => {
-  //   navigate("/vehicle-registration");
-  // };
-
-  // Get API for Fetching  Vehicle No if Registerd:
-  // useEffect(() => {
-  //   // Fetch vehicle numbers
-  //   fetch("http://localhost:8080/api/v1/vehicles?size=20")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       const numbers = data.map((vehicle) => ({
-  //         value: vehicle.vehicleNo,
-  //         label: vehicle.vehicleNo,
-  //       }));
-  //       setVehicleNumbers(numbers);
-  //     })
-  //     .catch((error) =>
-  //       console.error("Error fetching vehicle numbers:", error)
-  //     );
-  // }, []);
-
-  // Get API Vehicle No details if we select from dropdown.
-
-  //   const handleVehicleNoKeyPress = async (selectedVehicleNo) => {
-  //     try {
-  //       fetch(`
-  // http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
-  //         .then((response) => response.json())
-  //         .then((data) => {
-  //           // Set transporter state with the data from the API response
-  //           setTransporter(data.transporter);
-  //           // Update other form data fields with the received data
-  //           setFormData((prevData) => ({
-  //             ...prevData,
-  //             vehicleNo: data.vehicleNo,
-  //             noOfWheels: data.vehicleWheelsNo,
-  //             vehicleType: data.vehicleType,
-  //             transporter: data.transporter,
-  //             rcFitnessUpto: data.vehicleFitnessUpTo,
-  //           }));
-  //         })
-  //         .catch((error) => {
-  //           console.error("Error fetching supplier Address:", error);
-  //         });
-  //     } catch (error) {
-  //       console.error("Error fetching vehicle data:", error);
-  //     }
-  //   };
-
-  // Get API for Supplier
-  // useEffect(() => {
-  //   const fetchSupplierList = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://localhost:8080/api/v1/supplier/get/list",
-  //         {
-  //           method: "GET",
-  //           credentials: "include",
-  //         }
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       const data = await response.json();
-  //       // Assuming data is an array of suppliers, update state or handle data accordingly
-  //       console.log(data); // Log the data to see its structure
-  //       setSuppliers(data);
-  //     } catch (error) {
-  //       console.error("Error fetching supplier list:", error);
-  //     }
-  //   };
-
-  //   fetchSupplierList();
-  // }, []);
-
-  // onChangeSupplier
-  // const handleSupplierChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-
-  //   fetch(`http://localhost:8080/api/v1/supplier/get/${e.target.value}`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       // Check if data is an array and has at least one element
-  //       if (Array.isArray(data) && data.length > 0) {
-  //         // Set the first element of the array as the supplier address
-  //         setFormData((prevData) => ({
-  //           ...prevData,
-  //           supplierAddressLine1: data[0],
-  //         }));
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching supplier Address:", error);
-  //     });
-  // };
-
-
-
-  // Get API for Material:
-
-  // useEffect(() => {
-  //   const fetchMaterialList = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://localhost:8080/api/v1/materials/names",
-  //         {
-  //           method: "GET",
-  //           credentials: "include",
-  //         }
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       const data = await response.json();
-  //       // Assuming data is an array of Materials, update state or handle data accordingly
-  //       console.log(data); // Log the data to see its structure
-  //       setMaterials(data);
-  //     } catch (error) {
-  //       console.error("Error fetching Materials list:", error);
-  //     }
-  //   };
-
-  //   fetchMaterialList();
-  // }, []);
-
-  // Get API for Material Type:
-  // const fetchMaterialType = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  //   //   try {
-  //   //     const response = await fetch(
-  //   //       `http://localhost:8080/api/v1/materials/${e.target.value}/types`,
-  //   //       {
-  //   //         method: "GET",
-  //   //         credentials: "include"
-  //   //       }
-  //   //     );
-  //   //     if (!response.ok) {
-  //   //       throw new Error("Network response was not ok");
-  //   //     }
-  //   //     const data = await response.json();
-  //   //     // Assuming data is an array of Materials, update state or handle data accordingly
-  //   //     console.log(data); // Log the data to see its structure
-  //   //     setMaterialType(data);
-  //   //   } catch (error) {
-  //   //     console.error("Error fetching Material Type:", error);
-  //   //   }
-  //   // };
-  //   fetch(`http://localhost:8080/api/v1/materials/${e.target.value}/types`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       // Assuming data is an array of materialType names
-  //       setMaterialType(data); // Update the state with the fetched material types
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching material types:", error);
-  //     });
-  // };
-
 
   // To add session userid in frontend
 
@@ -522,9 +352,9 @@ function UpdateVehicleEntryDetails() {
                               <input type="text" id="tpNo" name="tpNo" value={formData.tpNo}
                                 onChange={handleChange} required className="form-control tpscanner"
                                 disabled={!!formData.poNo} style={{ flexGrow: 1 }} />
-                              <button className="scanner_button1" style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => alert("Scan TP No")} disabled={!!formData.poNo}>
+                              {/* <button className="scanner_button1" style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => alert("Scan TP No")} disabled={!!formData.poNo}>
                                 <img src={ScannImage_IB} alt="Scanner" />
-                              </button>
+                              </button> */}
                             </div>
                           </div>
                           <div className="col-md-12">
@@ -629,9 +459,9 @@ function UpdateVehicleEntryDetails() {
                             <label htmlFor="driverDLNo" className="user-form-label">Driver DL No:</label>
                             <div className="input-group d-flex align-items-center">
                               <input type="text" id="dlNo" name="dlNo" value={formData.dlNo} onChange={handleChange} required className="form-control tpscanner" style={{ flexGrow: 1 }} />
-                              <button className="scanner_button1" style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => alert("Scan DriverDLNo No")} >
+                              {/* <button className="scanner_button1" style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => alert("Scan DriverDLNo No")} >
                                 <img src={ScannImage_IB} alt="Scanner" />
-                              </button>
+                              </button> */}
                             </div>
                           </div>
                           <div className="col-md-12 ">

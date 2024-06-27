@@ -13,6 +13,7 @@ import AddNewVehicleImg_IB from "../../assets/AddNewVehicleImg_IB.jpg";
 import styled from "styled-components";
 // import frontView from "../../assets/frontView.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ScannerDisplay from "./ScannerDisplay.jsx";
 import {
   faSave,
   faEraser,
@@ -48,6 +49,24 @@ function VehicleEntryDetails() {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
+
+
+
+  const [scannedData, setScannedData] = useState([]);
+
+  const handleScan = (data) => {
+    setScannedData(data);
+    setShowScanner(false); // Hide scanner after scan
+  };
+
+  useEffect(() => {
+    setFormData({
+      ...formData, tpNo: scannedData[23],
+      challanNo: scannedData[4],
+      //challanDate:scannedData[36],
+      tpNetWeight: scannedData[33]
+    })
+  }, [scannedData]);
 
 
   //Code of Add New Vehicle
@@ -658,6 +677,13 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2 className="text-center mb-4">Vehicle Entry Inbound Details</h2>
+          <ScannerDisplay setScannedData={setScannedData} />
+
+          {/* <pre>
+            {
+              JSON.stringify(scannedData, 0, 2)
+            }
+          </pre> */}
           <div className="row">
             <div className="row">
               <div className="col-lg-12">
@@ -836,13 +862,13 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 className="form-control tpscanner"
                                 style={{ flexGrow: 1 }}
                               />
-                              <button
+                              {/* <button
                                 className="scanner_button4"
                                 style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 onClick={() => alert("Scan E-WayBill No")}
                               >
                                 <img src={ScannImage_IB} alt="Scanner" />
-                              </button>
+                              </button> */}
                             </div>
                           </div>
                           {/* Code of TP Net Weight */}
@@ -976,13 +1002,13 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 className="form-control tpscanner"
                                 style={{ flexGrow: 1 }}
                               />
-                              <button
+                              {/* <button
                                 className="scanner_button3"
                                 style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 onClick={() => alert("Scan Driver DL No")}
                               >
                                 <img src={ScannImage_IB} alt="Scanner" />
-                              </button>
+                              </button> */}
                             </div>
                           </div>
                           {/* Code Of Driver Name */}
