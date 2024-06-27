@@ -307,7 +307,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
+    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${company}&siteName=${site},${site}&page=${pageNumber}", {
       credentials: "include"
     })
       .then(response => {
@@ -344,9 +344,9 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   }, [currentPage, selectedDate]);
 
   const fetchData = (pageNumber) => {
-    const selectedCompany = sessionStorage.getItem('selectedCompany');
-    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
-    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+    const selectedCompany = sessionStorage.getItem('company');
+    const selectedSiteName = sessionStorage.getItem('site');
+    // const selectedSiteAddress = sessionStorage.getItem('site');
 
     if (!selectedCompany) {
       console.error('Company not selected');
@@ -361,8 +361,8 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   const day = String(selectedDate.date()).padStart(2, '0');
   const formattedDate = `${day}-${month}-${year}`;
 
-  const apiUrl = selectedSiteName && selectedSiteAddress
-    ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}&startDate=${formattedDate}`
+  const apiUrl = selectedSiteName
+    ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&startDate=${formattedDate}`
     : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
 
     fetch(apiUrl, {

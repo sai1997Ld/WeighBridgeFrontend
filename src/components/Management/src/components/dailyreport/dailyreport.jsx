@@ -32,17 +32,16 @@ const ManagementDailyReport = () => {
 
   
   const fetchData = (startDate) => {
-    const selectedCompany = sessionStorage.getItem('selectedCompany');
-    const selectedSiteName = sessionStorage.getItem('selectedSiteName');
-    const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+    const selectedCompany = sessionStorage.getItem('company');
+    const selectedSiteName = sessionStorage.getItem('site');
 
     if (!selectedCompany) {
       console.error('Company not selected');
       return;
     }
 
-    const apiUrl = selectedSiteName && selectedSiteAddress
-      ? `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}`
+    const apiUrl = selectedSiteName 
+      ? `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}&siteName=${selectedSiteName}`
       : `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&companyName=${selectedCompany}`;
 
       axios

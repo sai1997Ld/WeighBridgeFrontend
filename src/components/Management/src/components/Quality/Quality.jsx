@@ -41,8 +41,8 @@ function ManagementQuality() {
   const [apiData, setApiData] = useState([]);
   const [searchOption, setSearchOption] = useState('');
 
-  const selectedCompany = sessionStorage.getItem('selectedCompany');
-  const selectedSiteName = sessionStorage.getItem('selectedSiteName');
+  const selectedCompany = sessionStorage.getItem('company');
+  const selectedSiteName = sessionStorage.getItem('site');
   
 [
 
@@ -258,6 +258,8 @@ function ManagementQuality() {
   const fetchGoodQualities = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/management/goodQualities?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
+
+
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -301,11 +303,11 @@ function ManagementQuality() {
 
   const fetchApiData = async () => {
     try {
-      const selectedCompany = sessionStorage.getItem('selectedCompany');
-      const selectedSiteName = sessionStorage.getItem('selectedSiteName');
-      const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+      const selectedCompany = sessionStorage.getItem('company');
+      const selectedSiteName = sessionStorage.getItem('site');
+      // const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
   
-      if (!selectedCompany || !selectedSiteName || !selectedSiteAddress) {
+      if (!selectedCompany || !selectedSiteName ) {
         console.error('Company, site name, or site address not selected');
         return;
       }
@@ -320,8 +322,8 @@ function ManagementQuality() {
   
       const requestPayload = {
         fromDate: formattedDate,
-        companyName: selectedCompany,
-        siteName: `${selectedSiteName},${selectedSiteAddress}`,
+        companyName: `${selectedCompany}`,
+        siteName: `${selectedSiteName}`,
       };
   
       const response = await fetch(apiUrl, {

@@ -191,7 +191,7 @@ const fetchMaterialOptions = async () => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${siteName},${siteAddress}&page=${pageNumber}", {
+        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${siteName}&page=${pageNumber}", {
             credentials: "include"
         })
             .then(response => {
@@ -223,9 +223,9 @@ const fetchMaterialOptions = async () => {
       }, [currentPage, selectedDate]);
 
     const fetchData = (pageNumber) => {
-        const selectedCompany = sessionStorage.getItem('selectedCompany');
-        const selectedSiteName = sessionStorage.getItem('selectedSiteName');
-        const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
+        const selectedCompany = sessionStorage.getItem('company');
+        const selectedSiteName = sessionStorage.getItem('site');
+        // const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
 
         if (!selectedCompany) {
             console.error('Company not selected');
@@ -236,8 +236,8 @@ const fetchMaterialOptions = async () => {
          const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
 
          // Construct the API URL with the selected date
-  const apiUrl = selectedSiteName && selectedSiteAddress
-  ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${selectedSiteName},${selectedSiteAddress}&page=${pageNumber}&startDate=${formattedDate}`
+  const apiUrl = selectedSiteName
+  ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&startDate=${formattedDate}`
   : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
 
         fetch(apiUrl, {
