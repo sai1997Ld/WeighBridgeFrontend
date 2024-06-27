@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Table, Input } from 'antd'; // Import Input and Tooltip
+import { Table, Input, Button, Tooltip, Tag } from 'antd'; // Import Tooltip
 import SideBar from "../../SideBar/SideBar";
 import './ViewVehicle.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faUserCheck, faUserXmark } from "@fortawesome/free-solid-svg-icons";
 import { Link } from 'react-router-dom';
 import Swal from "sweetalert2";
 
@@ -19,7 +19,7 @@ const ViewVehicle = () => {
 
   const fetchVehicles = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/vehicles?page=0&size=10&sortField=vehicleModifiedDate&sortOrder=desc');
+      const response = await fetch('http://localhost:8080/api/v1/vehicles');
       const data = await response.json();
       setVehicles(data);
     } catch (error) {
@@ -45,7 +45,70 @@ const ViewVehicle = () => {
     }
   };
 
+  const handleActivate = async (vehicleId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to activate this vehicle.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, activate it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/v1/vehicles/${vehicleId}/activate`, {
+            method: "PUT",
+          });
+          if (response.ok) {
+            Swal.fire("Activated!", "The vehicle is active now.", "success");
+            fetchVehicles();
+          } else {
+            Swal.fire("Failed", "Failed to activate vehicle", "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", "An error occurred while activating the vehicle.", "error");
+          console.error("Error activating vehicle:", error);
+        }
+      }
+    });
+  };
+
+  const handleDeactivate = async (vehicleId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to deactivate this vehicle.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, deactivate it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/v1/vehicles/${vehicleId}/deactivate`, {
+            method: "DELETE",
+          });
+          if (response.ok) {
+            Swal.fire("Deactivated!", "The vehicle is inactive now.", "success");
+            fetchVehicles();
+          } else {
+            Swal.fire("Failed", "Failed to deactivate vehicle", "error");
+          }
+        } catch (error) {
+          Swal.fire("Error", "An error occurred while deactivating the vehicle.", "error");
+          console.error("Error deactivating vehicle:", error);
+        }
+      }
+    });
+  };
+
   const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
     {
       title: 'Vehicle Number',
       dataIndex: 'vehicleNo',
@@ -82,6 +145,34 @@ const ViewVehicle = () => {
       title: 'Vehicle Status',
       dataIndex: 'vehicleStatus',
       key: 'vehicleStatus',
+      render: (text) => (
+        <Tag color={text === "ACTIVE" ? "green" : "red"}>
+          {text}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <div className="action-buttons">
+          {record.vehicleStatus === "ACTIVE" ? (
+            <>
+              <Tooltip title="Deactivate">
+                <Button onClick={() => handleDeactivate(record.id)} style={{ marginRight: "8px" }}>
+                  <FontAwesomeIcon icon={faUserXmark} style={{ color: "red" }} className="action-icon delete-icon" />
+                </Button>
+              </Tooltip>
+            </>
+          ) : (
+            <Tooltip title="Activate">
+              <Button onClick={() => handleActivate(record.id)}>
+                <FontAwesomeIcon icon={faUserCheck} style={{ color: "green" }} className="action-icon activate-icon" />
+              </Button>
+            </Tooltip>
+          )}
+        </div>
+      ),
     }
   ];
 
