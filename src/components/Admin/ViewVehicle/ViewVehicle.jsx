@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Input, Button, Tooltip, Tag } from 'antd'; // Import Tooltip
+import { Table, Input, Button, Tooltip, Tag, Pagination } from 'antd';
 import SideBar from "../../SideBar/SideBar";
 import './ViewVehicle.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,16 +12,22 @@ const { Search } = Input;
 const ViewVehicle = () => {
   const [vehicles, setVehicles] = useState([]);
   const [vehicleNoFilter, setVehicleNoFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
     fetchVehicles();
-  }, []);
+  }, [currentPage, pageSize]);
 
   const fetchVehicles = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/vehicles');
+      const response = await fetch(`http://localhost:8080/api/v1/vehicles?page=${currentPage - 1}&size=${pageSize}`);
       const data = await response.json();
       setVehicles(data);
+      // Assuming the API returns the total count of vehicles
+      // If it doesn't, you may need to adjust this or use a fixed number
+      setTotalElements(data.length * 10); // This is a placeholder, adjust as needed
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     }
@@ -103,12 +109,12 @@ const ViewVehicle = () => {
     });
   };
 
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
   const columns = [
-    // {
-    //   title: 'ID',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    // },
     {
       title: 'Vehicle Number',
       dataIndex: 'vehicleNo',
@@ -195,8 +201,24 @@ const ViewVehicle = () => {
           />
         </div>
         <div className="table-responsive">
-          <Table dataSource={vehicles} columns={columns} rowKey="vehicleNo" 
-          className="user-table mt-3 custom-table"/>
+          <Table 
+            dataSource={vehicles} 
+            columns={columns} 
+            rowKey="vehicleNo" 
+            className="user-table mt-3 custom-table"
+            pagination={false}
+          />
+        </div>
+        <div className="pagination-container d-flex justify-content-center mt-3 flex-wrap">
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={totalElements}
+            showSizeChanger
+            showQuickJumper
+            onChange={handlePageChange}
+            showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
+          />
         </div>
       </div>
     </SideBar>
