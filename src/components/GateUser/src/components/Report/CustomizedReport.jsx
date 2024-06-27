@@ -1,67 +1,63 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SideBar2 from "../../../../SideBar/SideBar2";
 import { Row, Col, Button } from "antd";
 import { Typography } from "antd";
+import { useNavigate } from "react-router-dom";
+import SideBar2 from "../../../../SideBar/SideBar2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleXmark, faDownload } from "@fortawesome/free-solid-svg-icons";
-import * as XLSX from 'xlsx';
+import {
+  faRectangleXmark,
+  faDownload
+} from "@fortawesome/free-solid-svg-icons";
+import * as XLSX from "xlsx";
  
-const DailyReport = () => {
-  const [selectedDate, setSelectedDate] = useState("");
+const CustomizedReport = () => {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [weighments, setWeighments] = useState([]);
-  const { Text } = Typography;
   const navigate = useNavigate();
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+  const { Text } = Typography;
  
-  useEffect(() => {
-    // Set the default date to today's date
-    const today = new Date().toISOString().split("T")[0];
-    setSelectedDate(today);
-  }, []);
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
  
   const [userId, setUserId] = useState('');
- 
   useEffect(() => {
     const userId = sessionStorage.getItem('userId');
     setUserId(userId);
- 
   }, []);
+  const fetchData = (start, end) => {
+    if (start && end) {
+      axios
+        .get(
+          `http://localhost:8080/api/v1/weighment/report?startDate=${start}&endDate=${end}&userId=${userId}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          setWeighments(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
+  };
  
   useEffect(() => {
     if (userId) {
-      if (selectedDate) {
-        fetchData(selectedDate);
-      }
+      fetchData(startDate, endDate);
     }
-  }, [userId, selectedDate]);
- 
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
- 
-  const fetchData = (startDate) => {
-    axios
-      .get(
-        `http://localhost:8080/api/v1/weighment/report?startDate=${startDate}&userId=${userId}`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        setWeighments(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
- 
+  }, [userId, startDate, endDate]);
   const goBack = () => {
     navigate(-1);
   };
- 
   const downloadExcel = () => {
-    const fileName = "Daily_Report.xlsx";
+    const fileName = "Customized_Report.xlsx";
  
     // Prepare data for Excel export
     const data = weighments.flatMap((material) =>
@@ -80,7 +76,7 @@ const DailyReport = () => {
  
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Daily Report");
+    XLSX.utils.book_append_sheet(wb, ws, "Customized Report");
  
     // Save the file
     XLSX.writeFile(wb, fileName);
@@ -94,9 +90,8 @@ const DailyReport = () => {
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-            Daily Transaction Report
+            Customized Transaction Report
           </h2>
- 
           <Row gutter={[16, 16]} justify="start" align="top">
             <Col
               xs={24}
@@ -108,15 +103,36 @@ const DailyReport = () => {
                 alignItems: "center",
               }}
             >
-              <label htmlFor="datePicker">Select Date:</label>
+              <label htmlFor="startDate">Start Date: </label>
               <input
                 type="date"
-                id="date"
-                name="date"
+                id="startDate"
+                name="startDate"
                 className="form-control form-control-sm"
                 style={{ width: "120px" }}
-                value={selectedDate}
-                onChange={handleDateChange}
+                value={startDate}
+                onChange={handleStartDateChange}
+              />
+            </Col>
+            <Col
+              xs={24}
+              sm={12}
+              md={6}
+              style={{
+                display: "flex",
+                justifyContent: "start",
+                alignItems: "center",
+              }}
+            >
+              <label htmlFor="endDate">End Date:</label>
+              <input
+                type="date"
+                id="endDate"
+                name="endDate"
+                className="form-control form-control-sm"
+                style={{ width: "120px" }}
+                value={endDate}
+                onChange={handleEndDateChange}
               />
             </Col>
             <Button style={{ backgroundColor: "#0077b6", color: "white" }} icon={<FontAwesomeIcon icon={faDownload} />} onClick={downloadExcel}>
@@ -124,8 +140,6 @@ const DailyReport = () => {
             </Button>
           </Row>
         </div>
- 
- 
  
         {weighments.map((material, index) => (
           <div key={index} className="table-responsive">
@@ -224,30 +238,50 @@ const DailyReport = () => {
               <tbody>
                 {material.weighbridgeResponse2List.map((response, idx) => (
                   <tr key={idx}>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.transactionDate}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.vehicleNo}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.tpNo}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.challanDate}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.supplyConsignmentWeight}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.weighQuantity}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.excessQty}
                     </td>
                   </tr>
                 ))}
-                {/* Summary row */}
                 <tr>
                   <td colSpan="4" className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}></td>
                   <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.ch_SumQty}</td>
@@ -263,5 +297,5 @@ const DailyReport = () => {
   );
 };
  
-export default DailyReport;
+export default CustomizedReport;
  

@@ -18,7 +18,7 @@ import { Modal, Typography } from "antd";
 import styled from "styled-components";
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import PendingIcon from '@mui/icons-material/Pending';
-
+import QRious from 'qrious';
 
 
 
@@ -648,6 +648,73 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   };
 
 
+  const handlePrint = (entry) => {
+    // Prepare data for the QR code
+    const qrData = JSON.stringify({
+      ticketNo: entry.ticketNo,
+
+    });
+
+    // Open a new window
+    const printWindow = window.open('', '_blank');
+
+    if (printWindow) {
+      // Write HTML content to the new window
+      printWindow.document.write(`
+      <html>
+      <head>
+        <title>Print QR Code</title>
+        <style>
+          body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+          }
+          .qr-container {
+            text-align: center;
+          }
+          canvas {
+            display: block;
+            margin: 0 auto;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="qr-container">
+          <h1>QR Code</h1>
+        <h1>Ticket No. ${entry.ticketNo}</h1>
+          <canvas id="qr-code"></canvas>
+        </div>
+        <script>
+          function generateQRCode(data) {
+            const canvas = document.getElementById('qr-code');
+            const qr = new QRious({
+              element: canvas,
+              value: data,
+              size: 200,
+              level: 'H'
+            });
+          }
+          window.onload = function() {
+            generateQRCode(${JSON.stringify(qrData)});
+            setTimeout(() => window.print(), 500); // Ensure QR code is rendered before printing
+          };
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+      </body>
+      </html>
+    `);
+
+      printWindow.document.close();
+    } else {
+      console.error("Print window could not be opened. Please check your browser settings for pop-up blockers.");
+    }
+  };
+
+
 
   return (
     <SideBar2>
@@ -755,7 +822,15 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
                     return (
                       <tr key={entry.id}>
-                        <td className="ant-table-cell" style={{ textAlign: "center" }}>{entry.ticketNo}</td>
+                        <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
+                            onClick={() => { handlePrint(entry) }}
+                          >
+                            <FontAwesomeIcon icon={faPrint} />
+                          </button>
+
+                          {entry.ticketNo}</td>
+
                         <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleNo}</td>
                         <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleIn}</td>
                         <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleOut}</td>
