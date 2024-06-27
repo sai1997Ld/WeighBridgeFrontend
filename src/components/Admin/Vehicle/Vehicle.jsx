@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import "./Vehicle.css";
 import SideBar from "../../SideBar/SideBar";
-import { faSave, faEraser, faHome, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { Link } from "react-router-dom";
@@ -40,9 +40,7 @@ function Vehicle() {
   const handleSave = () => {
     if (
       vehicleNo.trim() === "" ||
-      transporter.trim() === "" 
-      // vehicleFitnessUpTo.trim() === "" ||
-      // vehicleLoadCapacity.toString().trim() === ""
+      transporter.trim() === ""
     ) {
       Swal.fire({
         title: "Please fill in all required fields.",
@@ -108,14 +106,25 @@ function Vehicle() {
       });
   };
 
-  const handleUnitToggle = () => {
+  const toggleLoadCapacityUnit = () => {
     if (loadCapacityUnit === "kg") {
-      setVehicleLoadCapacity((prevCapacity) => prevCapacity / 1000);
-      setLoadCapacityUnit("t");
+      setVehicleLoadCapacity(vehicleLoadCapacity / 1000);
+      setLoadCapacityUnit("ton");
     } else {
-      setVehicleLoadCapacity((prevCapacity) => prevCapacity * 1000);
+      setVehicleLoadCapacity(vehicleLoadCapacity * 1000);
       setLoadCapacityUnit("kg");
     }
+  };
+
+  const selectStyles = {
+    control: (provided) => ({
+      ...provided,
+      marginBottom: '20px',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
   };
 
   return (
@@ -134,10 +143,7 @@ function Vehicle() {
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleNo" className="form-label">
-                      Vehicle Number{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Vehicle Number <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
                     <input
                       type="text"
@@ -151,10 +157,7 @@ function Vehicle() {
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="transporter" className="form-label">
-                      Transporter{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Transporter <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
                     <Select
                       options={transporters.map((transporter) => ({
@@ -162,22 +165,18 @@ function Vehicle() {
                         label: transporter,
                       }))}
                       value={transporter ? { value: transporter, label: transporter } : null}
-                      onChange={(selectedOption) =>
-                        setTransporter(selectedOption.value)
-                      }
+                      onChange={(selectedOption) => setTransporter(selectedOption.value)}
                       placeholder="Select Transporter"
                       isSearchable
                       required
+                      styles={selectStyles}
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleType" className="form-label">
-                      Vehicle Type{" "}
-                      {/* <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span> */}
+                      Vehicle Type
                     </label>
                     <Select
                       options={[
@@ -186,11 +185,10 @@ function Vehicle() {
                         { value: "others", label: "Others" },
                       ]}
                       value={vehicleType ? { value: vehicleType, label: vehicleType } : null}
-                      onChange={(selectedOption) =>
-                        setVehicleType(selectedOption.value)
-                      }
+                      onChange={(selectedOption) => setVehicleType(selectedOption.value)}
                       placeholder="Select Vehicle Type"
                       isSearchable
+                      styles={selectStyles}
                     />
                   </div>
                   <div className="col-md-6">
@@ -200,50 +198,34 @@ function Vehicle() {
                     <Select
                       options={[
                         { value: "Tata Motors", label: "Tata Motors" },
-                        {
-                          value: "Ashok Leyland Limited",
-                          label: "Ashok Leyland Limited",
-                        },
-                        {
-                          value: "VE Commercial Vehicles Limited",
-                          label: "VE Commercial Vehicles Limited",
-                        },
-                        {
-                          value: "Mahindra & Mahindra Limited",
-                          label: "Mahindra & Mahindra Limited",
-                        },
+                        { value: "Ashok Leyland Limited", label: "Ashok Leyland Limited" },
+                        { value: "VE Commercial Vehicles Limited", label: "VE Commercial Vehicles Limited" },
+                        { value: "Mahindra & Mahindra Limited", label: "Mahindra & Mahindra Limited" },
                         { value: "Piaggio India", label: "Piaggio India" },
-                        {
-                          value: "Scania Commercial Vehicle India Pvt Ltd",
-                          label: "Scania Commercial Vehicle India Pvt Ltd",
-                        },
+                        { value: "Scania Commercial Vehicle India Pvt Ltd", label: "Scania Commercial Vehicle India Pvt Ltd" },
                         { value: "Force Motors", label: "Force Motors" },
                         { value: "Bharat Benz", label: "Bharat Benz" },
                         { value: "others", label: "Others" },
                       ]}
                       value={vehicleManufacturer ? { value: vehicleManufacturer, label: vehicleManufacturer } : null}
-                      onChange={(selectedOption) =>
-                        setVehicleManufacturer(selectedOption.value)
-                      }
+                      onChange={(selectedOption) => setVehicleManufacturer(selectedOption.value)}
                       placeholder="Select Manufacturer"
                       isSearchable
+                      styles={selectStyles}
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleLoadCapacity" className="form-label">
-                      Vehicle Load Capacity{" "}
-                      {/* <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span> */}
+                      Vehicle Load Capacity ({loadCapacityUnit})
                     </label>
                     <div className="input-group">
                       <input
                         type="number"
                         className="form-control"
                         id="vehicleLoadCapacity"
-                        placeholder={`Enter Vehicle Load Capacity (${loadCapacityUnit})`}
+                        placeholder={`Enter Vehicle Load Capacity in ${loadCapacityUnit}`}
                         value={vehicleLoadCapacity}
                         onChange={(e) => {
                           const newValue = Math.max(0, parseFloat(e.target.value, 10));
@@ -253,15 +235,15 @@ function Vehicle() {
                       <button
                         type="button"
                         className="btn btn-outline-secondary"
-                        onClick={handleUnitToggle}
+                        onClick={toggleLoadCapacityUnit}
                       >
-                        <FontAwesomeIcon icon={faSyncAlt} /> {loadCapacityUnit === "kg" ? "t" : "kg"}
+                        <FontAwesomeIcon icon={faExchangeAlt} />
                       </button>
                     </div>
                   </div>
                   <div className="col-md-3">
                     <label htmlFor="vehicleFitnessUpTo" className="form-label">
-                      Fitness Upto{" "}
+                      Fitness Upto
                     </label>
                     <input
                       type="date"
