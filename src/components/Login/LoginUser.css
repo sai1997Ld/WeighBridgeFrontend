@@ -2,10 +2,10 @@
   display: flex;
   height: 100vh;
   position: relative;
-  background-image: url("https://t3.ftcdn.net/jpg/02/18/36/62/360_F_218366238_HhmF2SMiYsunnRUsa3lgodlkkV3NBx7I.jpg");
-  background-repeat: no-repeat;
+  background-image: url("./src/assets/truck-1.jpg");
+  background-position: 30% 30%;
   background-size: cover;
-  background-position: center;
+
 }
 
 .login-container {
