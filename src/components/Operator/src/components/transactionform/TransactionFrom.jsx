@@ -144,10 +144,10 @@ function TransactionFrom() {
       weight: inputValue,
     };
     const formD = new FormData();
-    formD.append("frontImg1", blobFront);
-    formD.append("frontImg1", blobRear);
-    formD.append("frontImg1", blobSide);
-    formD.append("frontImg1", blobTop);
+    formD.append("frontImg1", blobFront , Date.now());
+    formD.append("backImg2", blobRear ,  Date.now());
+    formD.append("leftImg5", blobSide ,  Date.now());
+    formD.append("topImg3", blobTop ,  Date.now());
     formD.append("weighmentRequest", JSON.stringify(payload));
 
     const response = await axios({
