@@ -50,26 +50,33 @@ function VehicleEntryDetails() {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
 
+  const [scannedDataArray, setScannedDataArray] = useState([]);
+  const [isScanning, setIsScanning] = useState(false);
 
 
-  const [scannedData, setScannedData] = useState([]);
-
-  const handleScan = (data) => {
-    setScannedData(data);
-    setShowScanner(false); // Hide scanner after scan
-  };
 
   useEffect(() => {
-    if (scannedData.length > 0) {
-      setFormData({
-        ...formData, tpNo: scannedData[23],
-        challanNo: scannedData[19],
-        //challanDate:scannedData[36],
-        tpNetWeight: scannedData[33]
-      })
-    }
+console.log({scannedDataArray})
+    if (scannedDataArray.length > 36) {
 
-  }, [scannedData]);
+      setFormData({
+        ...formData,
+        tpNo: scannedDataArray[23],
+        challanNo: scannedDataArray[19],
+        //challanDate:scannedData[36],
+        tpNetWeight: scannedDataArray[33]
+      })
+      setIsScanning(false);
+    }
+  }, [scannedDataArray]);
+
+
+
+
+  const handleScanButtonClick = () => {
+    alert("Scanner enabled");
+    setIsScanning(true); // Enable scanning mode
+  };
 
 
   //Code of Add New Vehicle
@@ -488,6 +495,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     // formD.append("role", 'GATE_USER');
 
     console.log("FormData:", formD);
+    // return false;
     try {
       const response = await axios.post(`http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${'GATE_USER'}`, formD, {
         headers: {
@@ -682,13 +690,17 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2 className="text-center mb-4">Vehicle Entry Inbound Details</h2>
-          <ScannerDisplay setScannedData={setScannedData} />
+          {isScanning && (
+            <ScannerDisplay setScannedDataArray={setScannedDataArray} />
+          )}
 
-          {/* <pre>
+
+          {/* 
+          <pre>
             {
-              JSON.stringify(scannedData, 0, 2)
+              JSON.stringify(scannedDataArray, 0, 2)
             }
-          </pre>  */}
+          </pre> */}
 
           <div className="row">
             <div className="row">
@@ -754,7 +766,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               <button
                                 className="scanner_button1"
                                 style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                onClick={() => alert("Scan TP No")}
+                                onClick={handleScanButtonClick}
                               // disabled={!!formData.poNo}
                               >
                                 <img src={ScannImage_IB} alt="Scanner" />
@@ -1272,6 +1284,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           </div>
         </div>
       </div>
+
     </SideBar2 >
   );
 }
