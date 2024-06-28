@@ -566,13 +566,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       }
       const data = await response.json();
       console.log(data);
-
-      // if (!data.qualityParameters || typeof data.qualityParameters !== 'object') {
-      //   alert("Quality parameters are not available. Report generation is disabled.");
-      //   return;
-      // }
-
-
+      
       const doc = new jsPDF();
 
       const text = data.companyName;
@@ -823,13 +817,14 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                     return (
                       <tr key={entry.id}>
                         <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
+                          <button className="btn btn-info btn-md" style={{ padding: "3px 6px" }}
                             onClick={() => { handlePrint(entry) }}
                           >
                             <FontAwesomeIcon icon={faPrint} />
                           </button>
-
-                          {entry.ticketNo}</td>
+                          &nbsp;&nbsp;
+                          {entry.ticketNo}
+                        </td>
 
                         <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleNo}</td>
                         <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleIn}</td>
