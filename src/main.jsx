@@ -117,12 +117,7 @@ const MonthlyReport = lazy(() =>
 const CustomizedReport = lazy(() =>
   import("./components/GateUser/src/components/Report/CustomizedReport.jsx")
 );
-const Print = lazy(() =>
-  import("./components/GateUser/src/components/Print/Print.jsx")
-);
-const Camera = lazy(() =>
-  import("./components/GateUser/src/components/Camera/Camera.jsx")
-);
+
 const Capture = lazy(() =>
   import("./components/GateUser/src/components/Camera/Capture.jsx")
 );
