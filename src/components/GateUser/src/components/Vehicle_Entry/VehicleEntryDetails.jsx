@@ -60,12 +60,15 @@ function VehicleEntryDetails() {
   };
 
   useEffect(() => {
-    setFormData({
-      ...formData, tpNo: scannedData[23],
-      challanNo: scannedData[4],
-      //challanDate:scannedData[36],
-      tpNetWeight: scannedData[33]
-    })
+    if (scannedData.length > 0) {
+      setFormData({
+        ...formData, tpNo: scannedData[23],
+        challanNo: scannedData[19],
+        //challanDate:scannedData[36],
+        tpNetWeight: scannedData[33]
+      })
+    }
+
   }, [scannedData]);
 
 
@@ -232,7 +235,8 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   };
 
   const handleMaterialChange = (selectedOption) => {
-    setFormData({ ...formData, material: selectedOption.value });
+    const newData = { ...formData }
+    setFormData({ ...newData, material: selectedOption.value });
     setSelectedMaterial(selectedOption);
   };
 
@@ -387,6 +391,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   const handleChange = async (e) => {
     const { name, value } = e.target;
     const newData = { ...formData, [name]: value, };
+    console.log({ newData })
     await sessionStorage.setItem('vehicleData', JSON.stringify(newData));
     setFormData(newData);
 
@@ -460,7 +465,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       transactionType: formData.transactionType,
     };
 
-    console.log({ gateData })
+    console.log({ gateData, formData })
 
 
     // return false
@@ -609,20 +614,20 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     setVehicleNo(null);
   };
 
-  const handleCapturePicture = () => {
-    // Make a request to the backend to capture the picture
-    // Display a Swal modal indicating that the picture will be coming from the backend
-    Swal.fire({
-      icon: "info",
-      title: "Picture will be coming from backend",
-      text: "Please wait...",
-      customClass: {
-        popup: "my-popup-class",
-        title: "my-title-class",
-        content: "my-content-class",
-      },
-    });
-  };
+  // const handleCapturePicture = () => {
+  //   // Make a request to the backend to capture the picture
+  //   // Display a Swal modal indicating that the picture will be coming from the backend
+  //   Swal.fire({
+  //     icon: "info",
+  //     title: "Picture will be coming from backend",
+  //     text: "Please wait...",
+  //     customClass: {
+  //       popup: "my-popup-class",
+  //       title: "my-title-class",
+  //       content: "my-content-class",
+  //     },
+  //   });
+  // };
 
   //Code for close icon
   const goBack = () => {
@@ -683,7 +688,8 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
             {
               JSON.stringify(scannedData, 0, 2)
             }
-          </pre> */}
+          </pre>  */}
+
           <div className="row">
             <div className="row">
               <div className="col-lg-12">

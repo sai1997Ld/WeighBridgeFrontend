@@ -104,7 +104,8 @@ function QualityCheck() {
     return current && current > moment().endOf("day");
   };
 
-  const fetchAllTransactions = async () => {
+  
+  const fetchData = async () => {
     try {
       const response = await fetch(
         `http://localhost:8080/api/v1/qualities/getAllTransaction?userId=${userId}`,
@@ -115,21 +116,31 @@ function QualityCheck() {
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {
-          return data;
+          setAllData(data);
+          setFilteredData(data);
         } else {
           console.error("Unexpected data format:", data);
-          return [];
         }
       } else {
         console.error("Failed to fetch all transactions:", response.status);
-        return [];
       }
     } catch (error) {
       console.error("Error fetching all transactions:", error);
-      return [];
     }
   };
 
+  useEffect(() => {
+    // Fetch data immediately when the component mounts
+    fetchData();
+  
+    // Set up an interval to fetch data every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 30000); // 30000 milliseconds = 30 seconds
+  
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, [userId]); // Add userId to the dependency array if it can change
 
 
   const fetchPendingCounts = async () => {
@@ -233,15 +244,15 @@ function QualityCheck() {
 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchAllTransactions();
-      setAllData(data);
-      setFilteredData(data);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await fetchAllTransactions();
+  //     setAllData(data);
+  //     setFilteredData(data);
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     if (searchQuery === "") {

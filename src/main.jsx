@@ -105,6 +105,18 @@ const SalesDetails = lazy(() =>
 const Report = lazy(() =>
   import("./components/GateUser/src/components/Report/Report.jsx")
 );
+const DailyReport = lazy(() =>
+  import("./components/GateUser/src/components/Report/DailyReport.jsx")
+);
+const WeeklyReport = lazy(() =>
+  import("./components/GateUser/src/components/Report/WeeklyReport.jsx")
+);
+const MonthlyReport = lazy(() =>
+  import("./components/GateUser/src/components/Report/MonthlyReport.jsx")
+);
+const CustomizedReport = lazy(() =>
+  import("./components/GateUser/src/components/Report/CustomizedReport.jsx")
+);
 const Print = lazy(() =>
   import("./components/GateUser/src/components/Print/Print.jsx")
 );
@@ -329,8 +341,12 @@ const router = createBrowserRouter(
       <Route path="/new-transporter" element={<NewTransporter />} />
       <Route path="/Sales-Details" element={<SalesDetails />} />
       <Route path="/reports" element={<Report />} />
-      <Route path="/Print" element={<Print />} />
-      <Route path="/camera" element={<Camera />} />
+      {/* <Route path="/Print" element={<Print />} /> */}
+      {/* <Route path="/camera" element={<Camera />} /> */}
+      <Route path="/DailyReport" element={<DailyReport />} />
+      <Route path="/WeeklyReport" element={<WeeklyReport />} />
+      <Route path="/MonthlyReport" element={<MonthlyReport />} />
+      <Route path="/CustomizedReport" element={<CustomizedReport />} />
       <Route path="/Capture" element={<Capture />} />
       <Route path="/QualityHomePage" element={<QualityHomePage />} />
       <Route path="/QualityCheck" element={<QualityCheck />} />

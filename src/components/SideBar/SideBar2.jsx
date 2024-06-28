@@ -381,7 +381,7 @@ const SideBar2 = ({ children }) => {
             <ListItemText primary="Reports" />
           </ListItemButton>
 
-          <ListItemButton
+          {/* <ListItemButton
             component={Link}
             to="/print"
             onClick={() => handleItemClick("print")}
@@ -401,9 +401,9 @@ const SideBar2 = ({ children }) => {
               <Print />
             </ListItemIcon>
             <ListItemText primary="Print" />
-          </ListItemButton>
+          </ListItemButton> */}
 
-          <ListItemButton
+          {/* <ListItemButton
             component={Link}
             to="/camera"
             onClick={() => handleItemClick("camera")}
@@ -423,7 +423,7 @@ const SideBar2 = ({ children }) => {
               <Camera />
             </ListItemIcon>
             <ListItemText primary="Camera" />
-          </ListItemButton>
+          </ListItemButton> */}
 
           <ListItemButton
             onClick={handleSignOut2}

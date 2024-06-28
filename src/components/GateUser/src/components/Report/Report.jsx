@@ -11,39 +11,35 @@ import {
 import { Chart, ArcElement } from "chart.js/auto";
 import "./Report.css";
 import { useNavigate } from "react-router-dom";
-
+ 
 import SideBar2 from "../../../../SideBar/SideBar2";
-
+ 
 function GateUserReport() {
   const navigate = useNavigate();
-
-  const closeForm = () => {
-    navigate("");
-  };
-
+ 
   const handleDailyReport = () => {
-    navigate("");
+    navigate('/DailyReport');
   };
-
+ 
   const handleWeeklyReport = () => {
-    navigate("");
+    navigate("/WeeklyReport");
   };
-
+ 
   const handleMonthlyReport = () => {
-    navigate("");
+    navigate("/MonthlyReport");
   };
-
+ 
   const handleCustomizedReport = () => {
-    navigate("");
+    navigate("/CustomizedReport");
   };
-
+ 
   const chartRef = useRef(null);
   const chartRef2 = useRef(null);
   const homeMainContentRef = useRef(null);
-
+ 
   useEffect(() => {
     Chart.register(ArcElement);
-
+ 
     const resizeObserver = new ResizeObserver(() => {
       if (
         homeMainContentRef.current &&
@@ -54,57 +50,39 @@ function GateUserReport() {
         chartRef2.current.chartInstance.resize();
       }
     });
-
+ 
     if (homeMainContentRef.current) {
       resizeObserver.observe(homeMainContentRef.current);
     }
-
+ 
     return () => {
       resizeObserver.disconnect();
     };
   }, []);
-
-  //Code for close icon
-  const goBack = () => {
+ 
+  const closeForm = () => {
     navigate("/VehicleEntry");
-  }
-
+  };
+ 
   return (
-
+ 
     <SideBar2>
-      <div
-      // className="close" onClick={closeForm}
-      >
-        <button
-          className="close-button"
-          onClick={goBack}
-          style={{
-            position: 'absolute',
-            marginRight: 10,
-            backgroundColor: 'transparent',
-            color: '#f11212',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 30,
-            outline: 'none',
-          }}
-        >
-          <FontAwesomeIcon icon={faRectangleXmark} />
-        </button>
+      <div className="close" onClick={closeForm}>
+        <FontAwesomeIcon icon={faRectangleXmark} />
       </div>
-
+ 
       <div className="report-wrapper-op box-shadow-lg">
         <div className="report-container-op">
           <div className="report-content-op">
             <div className="report-item-op" onClick={handleDailyReport}>
               <div
                 className="report-item-icon-op d-flex justify-content-center align-items-center"
-
+ 
               >
                 <FontAwesomeIcon
                   icon={faFileAlt}
                   size="1x"
-
+ 
                 />
               </div>
               <span >Daily Report</span>
@@ -112,12 +90,12 @@ function GateUserReport() {
             <div className="report-item-op" onClick={handleWeeklyReport}>
               <div
                 className="report-item-icon-op"
-
+ 
               >
                 <FontAwesomeIcon
                   icon={faChartBar}
                   size="1x"
-
+ 
                 />
               </div>
               <span >Weekly Report</span>
@@ -125,12 +103,12 @@ function GateUserReport() {
             <div className="report-item-op" onClick={handleMonthlyReport}>
               <div
                 className="report-item-icon-op"
-
+ 
               >
                 <FontAwesomeIcon
                   icon={faCalendar}
                   size="1x"
-
+ 
                 />
               </div>
               <span >Monthly Report</span>
@@ -138,12 +116,12 @@ function GateUserReport() {
             <div className="report-item-op" onClick={handleCustomizedReport}>
               <div
                 className="report-item-icon-op"
-
+ 
               >
                 <FontAwesomeIcon
                   icon={faUsers}
                   size="1x"
-
+ 
                 />
               </div>
               <span >Customized Report</span>
@@ -154,5 +132,6 @@ function GateUserReport() {
     </SideBar2>
   );
 }
-
+ 
 export default GateUserReport;
+ 
