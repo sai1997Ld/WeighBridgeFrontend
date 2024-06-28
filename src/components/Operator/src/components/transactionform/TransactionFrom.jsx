@@ -301,6 +301,7 @@ function TransactionFrom() {
                 value={`Ticket No: ${ticketNumber}`}
                 onChange={handleChange}
                 required
+                disabled
                 className="abcv"
                 readOnly
               />
@@ -341,6 +342,7 @@ function TransactionFrom() {
                   value={ticket.poNo}
                   onChange={handleChange}
                   required
+                  disabled
                   className="abcv"
                   readOnly
                 />
@@ -360,6 +362,7 @@ function TransactionFrom() {
                   value={ticket.tpNo}
                   onChange={handleChange}
                   required
+                  disabled
                   className="abcv"
                   readOnly
                 />
@@ -400,6 +403,7 @@ function TransactionFrom() {
                   value={ticket.vehicleNo}
                   onChange={handleChange}
                   required
+                  disabled
                   className="abcv"
                   readOnly
                 />

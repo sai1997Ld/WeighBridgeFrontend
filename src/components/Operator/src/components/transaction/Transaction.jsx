@@ -3,7 +3,7 @@ import "./transaction.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { faPrint,faTruck } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faTruck } from "@fortawesome/free-solid-svg-icons";
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button } from "antd";
 import { Typography } from "antd";
@@ -135,8 +135,6 @@ const OperatorTransaction2 = () => {
     }
   }, [userId, pageNumber]);
 
- 
-
   const api = axios.create({
     baseURL: "http://localhost:8080/search/v1/Api",
     headers: {
@@ -149,7 +147,7 @@ const OperatorTransaction2 = () => {
     setSearchOption(value);
     setSearchValue("");
     setSearchPageNumber(0);
-     // Reset the search value when the option changes
+    // Reset the search value when the option changes
   };
 
   const handleInputChange = (e) => {
@@ -185,7 +183,6 @@ const OperatorTransaction2 = () => {
 
       case "materialName":
         apiUrl += `?materialName=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
-
 
       default:
         break;
@@ -234,21 +231,19 @@ const OperatorTransaction2 = () => {
     [searchValue, searchOption]
   );
 
- 
   useEffect(() => {
-    if(userId){
-    if (
-      (searchOption === "vehicleNo" ||
-        searchOption === "ticketNo" ||
-        searchOption === "transactionType" ||
-        searchOption === "materialName") &&
-      searchValue
-    ) {
-      debouncedSearch(searchPageNumber);
+    if (userId) {
+      if (
+        (searchOption === "vehicleNo" ||
+          searchOption === "ticketNo" ||
+          searchOption === "transactionType" ||
+          searchOption === "materialName") &&
+        searchValue
+      ) {
+        debouncedSearch(searchPageNumber);
+      }
     }
-  }
-  }, [userId,searchValue, searchOption, searchPageNumber, debouncedSearch]);
-
+  }, [userId, searchValue, searchOption, searchPageNumber, debouncedSearch]);
 
   //print
   const handlePrint = async (ticketNo) => {
@@ -338,7 +333,7 @@ const OperatorTransaction2 = () => {
   return (
     <SideBar5>
       <div
-      className="container-fluid "
+        className="container-fluid "
         style={{
           fontFamily: "Arial",
           color: "#333",
@@ -382,14 +377,14 @@ const OperatorTransaction2 = () => {
                   alignItems: "center",
                 }}
               >
-               <div  style={{ display:"flex" ,float:"right"}}>
+                <div style={{ display: "flex", float: "right" }}>
                   <div>
                     <Select
                       value={searchOption}
                       onChange={handleSearchOptionChange}
                       style={{ width: "100%" }}
                     >
-                      <Select.Option value="">Select Option  </Select.Option>
+                      <Select.Option value="">Select Option </Select.Option>
                       <Select.Option value="ticketNo">Ticket No</Select.Option>
                       <Select.Option value="vehicleNo">
                         Vehicle No
@@ -406,7 +401,10 @@ const OperatorTransaction2 = () => {
                     {searchOption === "transactionType" ? (
                       <Select
                         value={searchValue}
-                        onChange={(value) => {setSearchValue(value);setSearchPageNumber(0); }}
+                        onChange={(value) => {
+                          setSearchValue(value);
+                          setSearchPageNumber(0);
+                        }}
                         style={{ width: "100%" }}
                       >
                         <Select.Option value="">
@@ -433,25 +431,39 @@ const OperatorTransaction2 = () => {
           <TransactionUpdatesContainer>
             <TransactionUpdateBox bgColor="#BDBDBD">
               <Text>
-              <FontAwesomeIcon icon={faTruck}  style={{paddingRight:"5px"}}/>
+                <FontAwesomeIcon
+                  icon={faTruck}
+                  style={{ paddingRight: "5px" }}
+                />
                 Inbound Pending Tare Weight: <b>{pendingTareInbound}</b>
               </Text>
             </TransactionUpdateBox>
             <TransactionUpdateBox bgColor="#88CCFA">
               <Text>
-              <FontAwesomeIcon icon={faTruck}  style={{paddingRight:"5px"}}/>
+                <FontAwesomeIcon
+                  icon={faTruck}
+                  style={{ paddingRight: "5px" }}
+                />
                 Inbound Pending Gross Weight: <b>{pendingGrossInbound}</b>
               </Text>
             </TransactionUpdateBox>
             <TransactionUpdateBox bgColor="#BDBDBD">
               <Text>
-              <FontAwesomeIcon icon={faTruck} flip="horizontal" style={{paddingLeft:"5px"}} />
+                <FontAwesomeIcon
+                  icon={faTruck}
+                  flip="horizontal"
+                  style={{ paddingLeft: "5px" }}
+                />
                 Outbound Pending Tare Weight: <b>{pendingTareOutbound}</b>
               </Text>
             </TransactionUpdateBox>
             <TransactionUpdateBox bgColor="#88CCFA">
               <Text>
-              <FontAwesomeIcon icon={faTruck} style={{paddingLeft:"5px"}} flip="horizontal" />
+                <FontAwesomeIcon
+                  icon={faTruck}
+                  style={{ paddingLeft: "5px" }}
+                  flip="horizontal"
+                />
                 Outbound Pending Gross Weight: <b>{pendingGrossOutbound}</b>
               </Text>
             </TransactionUpdateBox>
