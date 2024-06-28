@@ -181,11 +181,11 @@ function UpdateVehicleEntryDetails() {
       material: formData.material,
       materialType: formData.materialType,
       vehicle: formData.vehicle,
-      vehicleWheelsNo: formData.vehicleWheelsNo,
+      // vehicleWheelsNo: formData.vehicleWheelsNo,
       dlNo: formData.dlNo,
       driverName: formData.driverName,
       supplyConsignmentWeight: formData.supplyConsignmentWeight,
-      vehicleFitnessUpTo: formData.vehicleFitnessUpTo,
+      // vehicleFitnessUpTo: formData.vehicleFitnessUpTo,
       poNo: formData.poNo,
       tpNo: formData.tpNo,
       challanNo: formData.challanNo,
@@ -198,7 +198,7 @@ function UpdateVehicleEntryDetails() {
     console.log("payload", payload);
 
     // Fetch API
-    fetch("http://localhost:8080/api/v1/gate/update?userId=${userId}", {
+    fetch(`http://localhost:8080/api/v1/gate/update?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
