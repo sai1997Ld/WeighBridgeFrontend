@@ -1,14 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import './LiveVideo.css';
+import "./LiveVideo.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpand, faImage } from "@fortawesome/free-solid-svg-icons";
-// import Lightbox from "yet-another-react-lightbox";
-// import "yet-another-react-lightbox/styles.css";
+import { CircularProgress } from "@mui/material";
 
-const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl, label }) => {
+const CaptureFrame = ({
+  imageRef,
+  capturedImage,
+  setCapturedImage,
+  wsUrl,
+  label,
+}) => {
   const wsRef = useRef(null);
   const containerRef = useRef(null);
+  const imageContainerRef = useRef(null); // Ref for the image container
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isImageFullScreen, setIsImageFullScreen] = useState(false); // State for image full-screen mode
 
   useEffect(() => {
     wsRef.current = new WebSocket(wsUrl);
@@ -45,18 +52,32 @@ const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl, label 
     const blob = await fetch(base64Image).then((res) => res.blob());
 
     setCapturedImage(base64Image);
-    
+
     const formData = new FormData();
     formData.append("file", blob, "capture.jpg");
-    console.log({base64Image, blob, formData});
+    console.log({ base64Image, blob, formData });
 
     // Optional: Post formData to your server if needed.
   };
-  
+
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      containerRef.current.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  const toggleImageFullScreen = () => {
+    if (!document.fullscreenElement) {
+      imageContainerRef.current.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
       });
     } else {
       document.exitFullscreen();
@@ -73,41 +94,66 @@ const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl, label 
       }
     };
 
+    const handleImageFullScreenChange = () => {
+      setIsImageFullScreen(!!document.fullscreenElement);
+      if (document.fullscreenElement) {
+        imageContainerRef.current.classList.add("fullscreen");
+      } else {
+        imageContainerRef.current.classList.remove("fullscreen");
+      }
+    };
+
     document.addEventListener("fullscreenchange", handleFullScreenChange);
+    document.addEventListener("fullscreenchange", handleImageFullScreenChange);
+
     return () => {
       document.removeEventListener("fullscreenchange", handleFullScreenChange);
+      document.removeEventListener("fullscreenchange", handleImageFullScreenChange);
     };
   }, []);
 
   return (
-    <div ref={containerRef} className="video-container-cam">
-      <div className="video-header-cam">
-        <span>{label}</span>
-      </div>
+    <div ref={containerRef} className="">
       <div className="video-content-cam">
+        <div className="video-header-cam">
+          <span>{label}</span>
+        </div>
         <img
           ref={imageRef}
           alt="Live Stream"
-          className="rounded"
-          style={{ width: "auto", height: "150px" }}
+          className="rounded img-fluid"
         />
         <button onClick={toggleFullScreen} className="full-screen-button">
-          {isFullScreen ? "Exit Full Screen" : <FontAwesomeIcon icon={faExpand} />}
+          {isFullScreen ? (
+            "Exit Full Screen"
+          ) : (
+            <FontAwesomeIcon icon={faExpand} />
+          )}
         </button>
         <div className="overlay-cam">
-          <button onClick={capturePhoto} className="btn btn-sm btn-outline-primary fw-bold my-2">
-          <FontAwesomeIcon icon={faImage} />
+          <button
+            onClick={capturePhoto}
+            className="btn btn-sm btn-outline-primary fw-bold mb-2"
+          >
+            <FontAwesomeIcon icon={faImage} />
           </button>
         </div>
       </div>
       {capturedImage && (
-        <div className="captured-image">
+        <div ref={imageContainerRef} className="captured-image">
           <img
             src={capturedImage}
             alt="Captured"
             className="rounded"
             style={{ width: "170px", height: "auto", margin: "10px 0px" }}
           />
+          <button onClick={toggleImageFullScreen} className="full-screen-button">
+            {isImageFullScreen ? (
+              "Exit Full Screen"
+            ) : (
+              <FontAwesomeIcon icon={faExpand} />
+            )}
+          </button>
         </div>
       )}
     </div>

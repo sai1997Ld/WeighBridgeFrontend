@@ -143,6 +143,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     Date
@@ -155,6 +156,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     Vehicle
@@ -167,6 +169,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     CH.No
@@ -179,6 +182,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     CH_Date
@@ -191,6 +195,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     CH_Qty
@@ -203,6 +208,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     Weigh_Qty
@@ -215,6 +221,7 @@ const DailyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign: "center",
+                      borderRadius:"3px"
                     }}
                   >
                     Differences

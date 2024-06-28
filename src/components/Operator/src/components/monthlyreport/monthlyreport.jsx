@@ -96,7 +96,7 @@ const MonthlyReport = () => {
   };
   return (
     <SideBar5>
-      <div className="container-fluid mt-0">
+      <div className="container-fluid">
         <div className="mb-3 mt-1 text-center">
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={faRectangleXmark} />
@@ -148,6 +148,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     Date
@@ -160,6 +161,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     Vehicle
@@ -172,6 +174,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     CH.No
@@ -184,6 +187,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     CH_Date
@@ -196,6 +200,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     CH_Qty
@@ -208,6 +213,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     Weigh_Qty
@@ -220,6 +226,7 @@ const MonthlyReport = () => {
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
                       textAlign:"center",
+                      borderRadius:"3px"
                     }}
                   >
                     Differences
