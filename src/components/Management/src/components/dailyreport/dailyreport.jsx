@@ -34,6 +34,7 @@ const ManagementDailyReport = () => {
   const fetchData = (startDate) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
+    // const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
 
     if (!selectedCompany) {
       console.error('Company not selected');
