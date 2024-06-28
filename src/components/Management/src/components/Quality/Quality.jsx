@@ -257,15 +257,37 @@ function ManagementQuality() {
 
   const fetchGoodQualities = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/management/goodQualities?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
-
-
-        method: 'GET',
+      const selectedCompany = sessionStorage.getItem('company');
+      const selectedSiteName = sessionStorage.getItem('site');
+  
+      if (!selectedCompany || !selectedSiteName) {
+        console.error('Company or site name not selected');
+        return;
+      }
+  
+      const apiUrl = `http://localhost:8080/api/v1/management/goodQualities`;
+  
+      // Format the selected date as "DD-MM-YYYY"
+      const year = selectedDate.year();
+      const month = String(selectedDate.month() + 1).padStart(2, '0');
+      const day = String(selectedDate.date()).padStart(2, '0');
+      const formattedDate = `${day}-${month}-${year}`;
+  
+      const requestPayload = {
+        fromDate: formattedDate,
+        companyName: selectedCompany,
+        siteName: selectedSiteName,
+      };
+  
+      const response = await fetch(apiUrl, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(requestPayload),
         credentials: 'include',
       });
+  
       if (response.ok) {
         const data = await response.json();
         return data;
@@ -278,16 +300,44 @@ function ManagementQuality() {
       return [];
     }
   };
+  
+  
+  
+  
 
   const fetchBadQualities = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/management/badQualities?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
-        method: 'GET',
+      const selectedCompany = sessionStorage.getItem('company');
+      const selectedSiteName = sessionStorage.getItem('site');
+  
+      if (!selectedCompany || !selectedSiteName) {
+        console.error('Company or site name not selected');
+        return;
+      }
+  
+      const apiUrl = `http://localhost:8080/api/v1/management/badQualities`;
+  
+      // Format the selected date as "DD-MM-YYYY"
+      const year = selectedDate.year();
+      const month = String(selectedDate.month() + 1).padStart(2, '0');
+      const day = String(selectedDate.date()).padStart(2, '0');
+      const formattedDate = `${day}-${month}-${year}`;
+  
+      const requestPayload = {
+        fromDate: formattedDate,
+        companyName: selectedCompany,
+        siteName: selectedSiteName,
+      };
+  
+      const response = await fetch(apiUrl, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(requestPayload),
         credentials: 'include',
       });
+  
       if (response.ok) {
         const data = await response.json();
         return data;
@@ -300,6 +350,7 @@ function ManagementQuality() {
       return [];
     }
   };
+  
 
   const fetchApiData = async () => {
     try {
