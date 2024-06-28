@@ -192,6 +192,7 @@ function ManageUser() {
               <Table
                 dataSource={users}
                 pagination={false}
+                rowKey={(user) => user.userId}
                 className="user-table mt-3 custom-table"
               >
                 <Column title="User ID" dataIndex="userId" key="userId" />
