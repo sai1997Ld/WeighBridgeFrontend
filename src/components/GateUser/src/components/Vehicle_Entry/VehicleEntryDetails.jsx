@@ -1066,7 +1066,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame3"}
                                           imageRef={canvasTopRef}
                                           setCapturedImage={setCapturedTopImage}
                                           capturedImage={capturedTopImage}
@@ -1078,7 +1078,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame4"}
                                           imageRef={canvasRearRef}
                                           setCapturedImage={setCapturedRearImage}
                                           capturedImage={capturedRearImage}
@@ -1093,7 +1093,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame11"}
                                           imageRef={canvasFrontRef}
                                           setCapturedImage={setCapturedFrontImage}
                                           capturedImage={capturedFrontImage}
@@ -1105,7 +1105,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame12"}
                                           imageRef={canvasSideRef}
                                           setCapturedImage={setCapturedSideImage}
                                           capturedImage={capturedSideImage}
