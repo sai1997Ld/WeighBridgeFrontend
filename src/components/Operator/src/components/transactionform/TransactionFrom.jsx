@@ -134,22 +134,36 @@ function TransactionFrom() {
     setInputValue("");
 
 
-    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+    // const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    // const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    // const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    // const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+    // const payload = {
+    //   machineId: "1",
+    //   ticketNo: ticketNumber,
+    //   weight: inputValue,
+    // };
+    const fetchAndAppendBlob = async (capturedImage, name) => {
+      if (capturedImage) {
+        const blob = await fetch(capturedImage).then((res) => res.blob());
+        return formD.append(name, blob, `${name}_${ticketNumber}_${Date.now()}.jpg`);
+      }
+    };
+
+    const formD = new FormData();
+    await Promise.all([
+      fetchAndAppendBlob(capturedFrontImage, "frontImg1"),
+      fetchAndAppendBlob(capturedRearImage, "backImg2"),
+      fetchAndAppendBlob(capturedSideImage, "leftImg5"),
+      fetchAndAppendBlob(capturedTopImage, "topImg3"),
+    ]);
     const payload = {
       machineId: "1",
       ticketNo: ticketNumber,
       weight: inputValue,
     };
-    const formD = new FormData();
-    formD.append("frontImg1", blobFront , Date.now());
-    formD.append("backImg2", blobRear ,  Date.now());
-    formD.append("leftImg5", blobSide ,  Date.now());
-    formD.append("topImg3", blobTop ,  Date.now());
-    formD.append("weighmentRequest", JSON.stringify(payload));
 
+    formD.append("weighmentRequest", JSON.stringify(payload));
     const response = await axios({
       method: "post",
       url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${'WEIGHBRIDGE_OPERATOR'}`,
@@ -535,7 +549,7 @@ function TransactionFrom() {
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-12">
               <div className="row">
-                <div className="col-md-3">
+              <div className="col-md-3">
                   <LiveVideo
                     wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasTopRef}
@@ -546,7 +560,7 @@ function TransactionFrom() {
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    wsUrl={"ws://localhost:8080/ws/frame2"}
                     imageRef={canvasRearRef}
                     setCapturedImage={setCapturedRearImage}
                     capturedImage={capturedRearImage}
@@ -555,7 +569,7 @@ function TransactionFrom() {
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    wsUrl={"ws://localhost:8080/ws/frame14"}
                     imageRef={canvasFrontRef}
                     setCapturedImage={setCapturedFrontImage}
                     capturedImage={capturedFrontImage}
@@ -564,7 +578,7 @@ function TransactionFrom() {
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    wsUrl={"ws://localhost:8080/ws/frame5"}
                     imageRef={canvasSideRef}
                     setCapturedImage={setCapturedSideImage}
                     capturedImage={capturedSideImage}
