@@ -80,7 +80,7 @@ const LoginUser = () => {
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home3", { state: { userId: data.userId } });
+              navigate("/gate-dashboard", { state: { userId: data.userId } });
             });
           } else if (data.roles.includes("WEIGHBRIDGE_OPERATOR")) {
             Swal.fire({
