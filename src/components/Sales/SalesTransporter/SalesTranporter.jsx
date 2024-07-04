@@ -14,6 +14,7 @@ function SalesTransporter() {
   const [phoneError, setPhoneError] = useState("");
   const [error, setError] = useState("");
 
+  const userId = sessionStorage.getItem("userId");
   const handleClear = () => {
     setTransporterName("");
     setTransporterContactNo("");
@@ -71,7 +72,7 @@ function SalesTransporter() {
       transporterAddress,
     };
 
-    fetch("http://localhost:8080/api/v1/transporter", {
+    fetch(`http://localhost:8080/api/v1/transporter?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -477,17 +477,31 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
 
     // return false
     // Create JSON payload for saving Inbound details
-    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+    // const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    // const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    // const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    // const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+
+    // const formD = new FormData();
+    // formD.append("frontImg1", blobFront);
+    // formD.append("frontImg1", blobRear);
+    // formD.append("frontImg1", blobSide);
+    // formD.append("frontImg1", blobTop);
+
+    const fetchAndAppendBlob = async (capturedImage, name) => {
+      if (capturedImage) {
+        const blob = await fetch(capturedImage).then((res) => res.blob());
+        return formD.append(name, blob, `${name}_GATE_USER_${userId}_${Date.now()}.jpg`);
+      }
+    };
 
     const formD = new FormData();
-    formD.append("frontImg1", blobFront);
-    formD.append("frontImg1", blobRear);
-    formD.append("frontImg1", blobSide);
-    formD.append("frontImg1", blobTop);
-
+    await Promise.all([
+      fetchAndAppendBlob(capturedFrontImage, "frontImg1"),
+      fetchAndAppendBlob(capturedRearImage, "backImg2"),
+      fetchAndAppendBlob(capturedSideImage, "leftImg5"),
+      fetchAndAppendBlob(capturedTopImage, "topImg3"),
+    ]);
 
     // Append gateData fields to formD
     formD.append("requestBody", JSON.stringify(gateData));
