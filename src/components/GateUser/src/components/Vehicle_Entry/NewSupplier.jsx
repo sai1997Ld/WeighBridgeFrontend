@@ -25,7 +25,7 @@ function NewSupplier() {
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
-
+    const userId = sessionStorage.getItem("userId");
     useEffect(() => {
         fetchCountries();
     }, []);
@@ -128,7 +128,7 @@ function NewSupplier() {
             zip,
         };
 
-        fetch("http://localhost:8080/api/v1/supplier", {
+        fetch(`http://localhost:8080/api/v1/supplier?userId=${userId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -65,7 +65,6 @@ function NewVehicleRegistration() {
 
         const vehicleData = {
             vehicleNo,
-            transporter,
             vehicleType,
             vehicleManufacturer,
             vehicleWheelsNo,

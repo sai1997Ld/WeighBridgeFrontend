@@ -134,22 +134,36 @@ function TransactionFrom() {
     setInputValue("");
 
 
-    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+    // const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    // const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    // const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    // const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+    // const payload = {
+    //   machineId: "1",
+    //   ticketNo: ticketNumber,
+    //   weight: inputValue,
+    // };
+    const fetchAndAppendBlob = async (capturedImage, name) => {
+      if (capturedImage) {
+        const blob = await fetch(capturedImage).then((res) => res.blob());
+        return formD.append(name, blob, `${name}_${ticketNumber}_${Date.now()}.jpg`);
+      }
+    };
+
+    const formD = new FormData();
+    await Promise.all([
+      fetchAndAppendBlob(capturedFrontImage, "frontImg1"),
+      fetchAndAppendBlob(capturedRearImage, "backImg2"),
+      fetchAndAppendBlob(capturedSideImage, "leftImg5"),
+      fetchAndAppendBlob(capturedTopImage, "topImg3"),
+    ]);
     const payload = {
       machineId: "1",
       ticketNo: ticketNumber,
       weight: inputValue,
     };
-    const formD = new FormData();
-    formD.append("frontImg1", blobFront);
-    formD.append("frontImg1", blobRear);
-    formD.append("frontImg1", blobSide);
-    formD.append("frontImg1", blobTop);
-    formD.append("weighmentRequest", JSON.stringify(payload));
 
+    formD.append("weighmentRequest", JSON.stringify(payload));
     const response = await axios({
       method: "post",
       url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${'WEIGHBRIDGE_OPERATOR'}`,
@@ -284,6 +298,63 @@ function TransactionFrom() {
   const [capturedFrontImage, setCapturedFrontImage] = useState(null);
   const [capturedSideImage, setCapturedSideImage] = useState(null);
 
+  const [weight, setWeight] = useState('Connecting...');
+  const [trimmedWeight, setTrimmedWeight] = useState('');
+  const [socket, setSocket] = useState(null);
+ 
+  useEffect(() => {
+    const createWebSocket = () => {
+      const ws = new WebSocket('ws://localhost:8080/ws/weight');
+ 
+      ws.onopen = () => {
+        console.log('Connected to WebSocket server');
+        setWeight('Waiting for data...');
+      };
+ 
+      ws.onmessage = (event) => {
+        const receivedData = event.data.trim();
+        console.log('Received data:', receivedData);
+        setWeight(receivedData);
+      
+        // Extract and trim the weight
+        const match = receivedData.match(/(\d+(\.\d+)?)/);
+        if (match) {
+          setTrimmedWeight(match[0]);
+          setInputValue(match[0]); // Update the input value
+        }
+      };
+
+ 
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        setWeight('Error receiving data');
+      };
+ 
+      ws.onclose = (event) => {
+        console.log('WebSocket connection closed', event);
+        if (event.wasClean) {
+          setWeight('Connection closed');
+        } else {
+          setWeight('Connection lost, attempting to reconnect...');
+          setTimeout(createWebSocket, 5000); // Attempt to reconnect after 5 seconds
+        }
+      };
+ 
+      setSocket(ws);
+    };
+ 
+    createWebSocket();
+
+     // Cleanup on component unmount
+  return () => {
+    if (socket) {
+      socket.close();
+    }
+  };
+}, []); // Empty dependency array ensures useEffect runs only on mount
+
+console.log(trimmedWeight );
+
   return (
     <SideBar5>
       <div className="container-fluid">
@@ -414,25 +485,27 @@ function TransactionFrom() {
             <div className="col-md-12">
               <h5>Weighment Details:</h5>
               <div className="row mb-2">
-
-                <div className="col-md-5">
-
-                  <div className="sub">
-                    <input
-                      type="number"
-                      className="abcv"
-                      placeholder="0"
-                      style={{
-                        height: "50px",
-                        appearance: "textfield",
-                        WebkitAppearance: "none",
-                        MozAppearance: "textfield",
-                      }}
-                      min="0"
-                      value={inputValue}
-                      onChange={(e) => handleChange1(e, ticket.grossWeight)}
-                      inputMode="numeric"
-                    />
+  <div className="col-md-5">
+    <div className="sub">
+      <input
+        type="number"
+        className="abcv"
+        placeholder="0"
+        style={{
+          height: "50px",
+          appearance: "textfield",
+          WebkitAppearance: "none",
+          MozAppearance: "textfield",
+        }}
+        min="0"
+        
+        value={trimmedWeight} // Use trimmedWeight here
+        onChange={(e) => {
+          setTrimmedWeight(e.target.value);
+          handleChange1(e);
+        }}
+        inputMode="numeric"
+      />
                     <div className="icons-group">
                       <div>
                         {ticket.tareWeight === 0 && ticket.netWeight === 0 ? (
@@ -535,7 +608,7 @@ function TransactionFrom() {
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-12">
               <div className="row">
-                <div className="col-md-3">
+              <div className="col-md-3">
                   <LiveVideo
                     wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasTopRef}
@@ -546,7 +619,7 @@ function TransactionFrom() {
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    wsUrl={"ws://localhost:8080/ws/frame2"}
                     imageRef={canvasRearRef}
                     setCapturedImage={setCapturedRearImage}
                     capturedImage={capturedRearImage}
@@ -555,7 +628,7 @@ function TransactionFrom() {
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    wsUrl={"ws://localhost:8080/ws/frame14"}
                     imageRef={canvasFrontRef}
                     setCapturedImage={setCapturedFrontImage}
                     capturedImage={capturedFrontImage}
@@ -564,7 +637,7 @@ function TransactionFrom() {
                 </div>
                 <div className="col-md-3">
                   <LiveVideo
-                    wsUrl={"ws://localhost:8080/ws/frame1"}
+                    wsUrl={"ws://localhost:8080/ws/frame5"}
                     imageRef={canvasSideRef}
                     setCapturedImage={setCapturedSideImage}
                     capturedImage={capturedSideImage}

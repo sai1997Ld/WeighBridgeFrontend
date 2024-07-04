@@ -9,7 +9,7 @@ import { faSave, faEraser, faRectangleXmark, } from "@fortawesome/free-solid-svg
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Select from "react-select";
-
+const userId = sessionStorage.getItem("userId");
 function NewMaterial() {
     const navigate = useNavigate();
     const [supplierName, setSupplierName] = useState("");
@@ -134,7 +134,7 @@ function NewMaterial() {
             materialTypeName: finalMaterialTypeName,
         };
 
-        fetch("http://localhost:8080/api/v1/materials/withType", {
+        fetch(`http://localhost:8080/api/v1/materials/withType?userId=${userId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

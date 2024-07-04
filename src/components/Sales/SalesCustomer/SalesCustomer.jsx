@@ -26,6 +26,8 @@ function SalesCustomer() {
   const [cities, setCities] = useState([]);
   const navigate = useNavigate();
 
+  const userId = sessionStorage.getItem("userId");
+
   useEffect(() => {
     fetchCountries();
   }, []);
@@ -130,7 +132,7 @@ function SalesCustomer() {
       zip,
     };
 
-    fetch("http://localhost:8080/api/v1/customers", {
+    fetch(`http://localhost:8080/api/v1/customers?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -294,6 +296,9 @@ function SalesCustomer() {
                     >
                       Address Line 2
                     </label>
+                    <span style={{ color: "red", fontWeight: "bold" }}>
+                    {" "}*
+                      </span>
                     <input
                       type="text"
                       className="form-control"

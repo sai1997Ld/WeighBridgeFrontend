@@ -191,7 +191,7 @@ const fetchMaterialOptions = async () => {
 
     useEffect(() => {
         // Initial fetch
-        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${siteName}&page=${pageNumber}", {
+        fetch("http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&vehicleStatus=completed&companyName=${selectedCompany}&siteName=${siteName}&page=${pageNumber}", {
             credentials: "include"
         })
             .then(response => {
@@ -237,8 +237,8 @@ const fetchMaterialOptions = async () => {
 
          // Construct the API URL with the selected date
   const apiUrl = selectedSiteName
-  ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&startDate=${formattedDate}`
-  : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
+  ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&startDate=${formattedDate}`
+  : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
 
         fetch(apiUrl, {
             credentials: "include"

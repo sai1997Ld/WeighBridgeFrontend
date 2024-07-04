@@ -9,7 +9,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 function SalesVehicle() {
   const [vehicleNo, setVehicleNo] = useState("");
-  const [transporter, setTransporter] = useState("");
+  const [transporterName, setTransporter] = useState("");
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleManufacturer, setVehicleManufacturer] = useState("");
   const [vehicleWheelsNo, setvehicleWheelsNo] = useState("");
@@ -29,6 +29,7 @@ function SalesVehicle() {
     setvehicleFitnessUpTo("");
     setVehicleLoadCapacity(0);
   };
+  const userId = sessionStorage.getItem("userId");
 
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/transporter")
@@ -44,7 +45,7 @@ function SalesVehicle() {
   const handleSave = () => {
     if (
       vehicleNo.trim() === "" ||
-      transporter.trim() === "" 
+      transporterName.trim() === "" 
       // vehicleFitnessUpTo.trim() === "" ||
       // vehicleLoadCapacity.toString().trim() === ""
     ) {
@@ -61,7 +62,6 @@ function SalesVehicle() {
 
     const vehicleData = {
       vehicleNo,
-      transporter,
       vehicleType,
       vehicleManufacturer,
       vehicleWheelsNo,
@@ -69,7 +69,7 @@ function SalesVehicle() {
       vehicleLoadCapacity,
     };
 
-    fetch(`http://localhost:8080/api/v1/vehicles/${transporter}`, {
+    fetch(`http://localhost:8080/api/v1/vehicles/${transporterName}?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -149,7 +149,7 @@ function SalesVehicle() {
                     />
                   </div>
                   <div className="col-md-6">
-                    <label htmlFor="transporter" className="form-label">
+                    <label htmlFor="transporterName" className="form-label">
                       Transporter{" "}
                       <span style={{ color: "red", fontWeight: "bold" }}>
                         *
@@ -177,11 +177,11 @@ function SalesVehicle() {
                       </div>
                     </button>
                     <Select
-                      options={transporters.map((transporter) => ({
-                        value: transporter,
-                        label: transporter,
+                      options={transporters.map((transporterName) => ({
+                        value: transporterName,
+                        label: transporterName,
                       }))}
-                      value={{ value: transporter, label: transporter }}
+                      value={{ value: transporterName, label: transporterName }}
                       onChange={(selectedOption) =>
                         setTransporter(selectedOption.value)
                       }
