@@ -16,12 +16,27 @@ function UpdateCustomer() {
   const [customerId, setCustomerId] = useState(customer.customerId);
   const [customerName, setCustomerName] = useState(customer.customerName);
   const [customerEmail, setCustomerEmail] = useState(customer.customerEmail);
-  const [customerContactNo, setCustomerContactNo] = useState(customer.customerContactNo);
-  const [customerAddressLine1, setCustomerAddressLine1] = useState(customer.customerAddressLine1);
-  const [customerAddressLine2, setCustomerAddressLine2] = useState(customer.customerAddressLine2);
-  const [selectedCountry, setSelectedCountry] = useState({ label: customer.country, value: customer.country });
-  const [selectedState, setSelectedState] = useState({ label: customer.state, value: customer.state });
-  const [selectedCity, setSelectedCity] = useState({ label: customer.city, value: customer.city });
+  const [customerContactNo, setCustomerContactNo] = useState(
+    customer.customerContactNo
+  );
+  const [customerAddressLine1, setCustomerAddressLine1] = useState(
+    customer.customerAddressLine1
+  );
+  const [customerAddressLine2, setCustomerAddressLine2] = useState(
+    customer.customerAddressLine2
+  );
+  const [selectedCountry, setSelectedCountry] = useState({
+    label: customer.country,
+    value: customer.country,
+  });
+  const [selectedState, setSelectedState] = useState({
+    label: customer.state,
+    value: customer.state,
+  });
+  const [selectedCity, setSelectedCity] = useState({
+    label: customer.city,
+    value: customer.city,
+  });
   const [zip, setZip] = useState(customer.zip);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -84,9 +99,6 @@ function UpdateCustomer() {
       customerContactNo.trim() === "" ||
       customerAddressLine1.trim() === "" ||
       customerAddressLine2.trim() === "" ||
-
-
-      
       customerEmail.trim() === "" ||
       !selectedCountry ||
       !selectedState ||
@@ -137,58 +149,67 @@ function UpdateCustomer() {
       zip,
     };
 
-    fetch(`http://localhost:8080/api/v1/customers/update/${customerId}?userId=${sessionStorage.getItem('userId')}`, {
+    fetch(
+      `http://localhost:8080/api/v1/customers/update/${customerId}?userId=${sessionStorage.getItem(
+        "userId"
+      )}`,
+      {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(customerData),
         credentials: "include",
+      }
+    )
+      .then(async (response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          const error = await response.json();
+          throw new Error(error.message);
+        }
       })
-        .then(async (response) => {
-          if (response.ok) {
-            return response.text();
-          } else {
-            const error = await response.json();
-            throw new Error(error.message);
-          }
-        })
-        .then((data) => {
-          console.log("Response from the API:", data);
-          Swal.fire({
-            title: data,
-            icon: "success",
-            confirmButtonText: "OK",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
-          });
-          navigate("/view-customer");
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          Swal.fire({
-            title: "Error",
-            text: error.message,
-            icon: "error",
-            confirmButtonText: "OK",
-            customClass: {
-              confirmButton: "btn btn-danger",
-            },
-          });
+      .then((data) => {
+        console.log("Response from the API:", data);
+        Swal.fire({
+          title: data,
+          icon: "success",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "btn btn-success",
+          },
         });
-    };
+        navigate("/view-customer");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire({
+          title: "Error",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "btn btn-danger",
+          },
+        });
+      });
+  };
 
   return (
     <SideBar>
       <div className="customer-management">
         <div className="customer-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Update Customer</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Update Customer</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
           <div
             className="customer-card-container card"
             style={{

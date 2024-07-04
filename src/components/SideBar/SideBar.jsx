@@ -334,7 +334,7 @@ const SideBar = ({ children }) => {
         <List sx={{ marginTop: "65px;" }}>
           <ListItemButton
             component={Link}
-            to="/home1"
+            to="/admin-dashboard"
             onClick={() => handleItemClick("dashboard")}
             selected={selectedItem === "dashboard"}
             sx={{
@@ -994,47 +994,47 @@ const SideBar = ({ children }) => {
             {openCamera ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           <Collapse in={openCamera} timeout="auto" unmountOnExit>
-  <List
-    component="div"
-    disablePadding
-    sx={{ paddingLeft: "55px", listStyleType: "disc" }}
-  >
-    <ListItemButton
-      component={Link}
-      to="/CameraMaster"
-      onClick={() => handleCameraClick()}
-      selected={selectedItem === "addCamera"}
-      sx={{
-        "&.Mui-selected, &:hover": {
-          color: "#3e8ee6",
-        },
-        "&.Mui-selected:hover": {
-          color: "#2c74d1",
-        },
-        display: "list-item",
-      }}
-    >
-      <ListItemText primary="Add Camera" />
-    </ListItemButton>
-    <ListItemButton
-      component={Link}
-      to="/view-camera"
-      onClick={() => handleCameraClick()}
-      selected={selectedItem === "manageCamera"}
-      sx={{
-        "&.Mui-selected, &:hover": {
-          color: "#3e8ee6",
-        },
-        "&.Mui-selected:hover": {
-          color: "#2c74d1",
-        },
-        display: "list-item",
-      }}
-    >
-      <ListItemText primary="Manage Camera" />
-    </ListItemButton>
-  </List>
-</Collapse>
+            <List
+              component="div"
+              disablePadding
+              sx={{ paddingLeft: "55px", listStyleType: "disc" }}
+            >
+              <ListItemButton
+                component={Link}
+                to="/CameraMaster"
+                onClick={() => handleCameraClick()}
+                selected={selectedItem === "addCamera"}
+                sx={{
+                  "&.Mui-selected, &:hover": {
+                    color: "#3e8ee6",
+                  },
+                  "&.Mui-selected:hover": {
+                    color: "#2c74d1",
+                  },
+                  display: "list-item",
+                }}
+              >
+                <ListItemText primary="Add Camera" />
+              </ListItemButton>
+              <ListItemButton
+                component={Link}
+                to="/view-camera"
+                onClick={() => handleCameraClick()}
+                selected={selectedItem === "manageCamera"}
+                sx={{
+                  "&.Mui-selected, &:hover": {
+                    color: "#3e8ee6",
+                  },
+                  "&.Mui-selected:hover": {
+                    color: "#2c74d1",
+                  },
+                  display: "list-item",
+                }}
+              >
+                <ListItemText primary="Manage Camera" />
+              </ListItemButton>
+            </List>
+          </Collapse>
 
           <ListItemButton
             onClick={handleSignOut2}
@@ -1048,7 +1048,7 @@ const SideBar = ({ children }) => {
                 color: "white",
               },
               "&.Mui-selected:hover": {
-                backgroundColor: "#2c74d1", 
+                backgroundColor: "#2c74d1",
                 color: "white",
               },
             }}

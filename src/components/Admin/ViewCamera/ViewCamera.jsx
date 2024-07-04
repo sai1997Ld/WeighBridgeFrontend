@@ -20,7 +20,9 @@ const ViewCamera = () => {
   const navigate = useNavigate();
 
   const handleEdit = (camera) => {
-    navigate("/CameraMaster", { state: { cameraId: camera.cameraId, editMode: true } });
+    navigate("/CameraMaster", {
+      state: { cameraId: camera.cameraId, editMode: true },
+    });
   };
 
   const fetchCameraData = async () => {
@@ -46,9 +48,7 @@ const ViewCamera = () => {
       );
       if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(
-          errorResponse.message || "Failed to fetch camera data"
-        );
+        throw new Error(errorResponse.message || "Failed to fetch camera data");
       }
       const cameraData = await response.json();
       setCameras([cameraData]); // Update cameras state with fetched camera data
@@ -57,7 +57,6 @@ const ViewCamera = () => {
     }
   };
 
- 
   const handleDelete = async (cameraId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -71,17 +70,15 @@ const ViewCamera = () => {
       if (result.isConfirmed) {
         try {
           const response = await fetch(
-            `http://localhost:8080/api/v1/camera/deleteById/${cameraId}?userId=${sessionStorage.getItem('userId')}`,
+            `http://localhost:8080/api/v1/camera/deleteById/${cameraId}?userId=${sessionStorage.getItem(
+              "userId"
+            )}`,
             {
               method: "DELETE",
             }
           );
           if (response.ok) {
-            Swal.fire(
-              "Deleted!",
-              "The camera has been deleted.",
-              "success"
-            );
+            Swal.fire("Deleted!", "The camera has been deleted.", "success");
             fetchCameraData();
           } else {
             Swal.fire("Failed", "Failed to delete camera", "error");
@@ -123,44 +120,47 @@ const ViewCamera = () => {
       dataIndex: "role",
       key: "role",
     },
-    
-      {
-        title: "Front",
-        dataIndex: "frontCamUrl3",
-        key: "frontCamUrl3",
-      },
-      {
-        title: "Back",
-        dataIndex: "backCamUrl4",
-        key: "backCamUrl4",
-      },
-      {
-        title: "Left",
-        dataIndex: "leftCamUrl5",
-        key: "leftCamUrl5",
-      },
-      {
-        title: "Right",
-        dataIndex: "rightCamUrl6",
-        key: "rightCamUrl6",
-      },
-      {
-        title: "Top",
-        dataIndex: "topCamUrl1",
-        key: "topCamUrl1",
-      },
-      {
-          title: "Bottom",
-          dataIndex: "bottomCamUrl2",
-          key: "bottomCamUrl2",
-        },
+
+    {
+      title: "Front",
+      dataIndex: "frontCamUrl3",
+      key: "frontCamUrl3",
+    },
+    {
+      title: "Back",
+      dataIndex: "backCamUrl4",
+      key: "backCamUrl4",
+    },
+    {
+      title: "Left",
+      dataIndex: "leftCamUrl5",
+      key: "leftCamUrl5",
+    },
+    {
+      title: "Right",
+      dataIndex: "rightCamUrl6",
+      key: "rightCamUrl6",
+    },
+    {
+      title: "Top",
+      dataIndex: "topCamUrl1",
+      key: "topCamUrl1",
+    },
+    {
+      title: "Bottom",
+      dataIndex: "bottomCamUrl2",
+      key: "bottomCamUrl2",
+    },
     {
       title: "Action",
       key: "action",
       render: (text, record) => (
         <div className="action-buttons">
           <Tooltip title="Edit">
-            <Button onClick={() => handleEdit(record)} style={{ marginRight: "8px" }}>
+            <Button
+              onClick={() => handleEdit(record)}
+              style={{ marginRight: "8px" }}
+            >
               <FontAwesomeIcon
                 icon={faPencilAlt}
                 style={{ color: "orange" }}
@@ -187,11 +187,11 @@ const ViewCamera = () => {
       <div className="view-camera-page container-fluid">
         <div className="d-flex justify-content-between align-items-center">
           <h2 className="text-center mx-auto">Manage Cameras</h2>
-          <Link to={"/home1"}>
+          <Link to={"/admin-dashboard"}>
             <FontAwesomeIcon
               icon={faHome}
               style={{ float: "right", fontSize: "1.5em" }}
-               className="mb-2"
+              className="mb-2"
             />
           </Link>
         </div>

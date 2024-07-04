@@ -149,14 +149,19 @@ function UpdateSupplier() {
       zip,
     };
 
-    fetch(`http://localhost:8080/api/v1/supplier/update/${supplierId}?userId=${sessionStorage.getItem('userId')}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(supplierData),
-      credentials: "include",
-    })
+    fetch(
+      `http://localhost:8080/api/v1/supplier/update/${supplierId}?userId=${sessionStorage.getItem(
+        "userId"
+      )}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(supplierData),
+        credentials: "include",
+      }
+    )
       .then(async (response) => {
         if (response.ok) {
           return response.text();
@@ -195,12 +200,16 @@ function UpdateSupplier() {
     <SideBar>
       <div className="supplier-management">
         <div className="supplier-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Update Supplier</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Update Supplier</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
           <div
             className="supplier-card-container card"
             style={{

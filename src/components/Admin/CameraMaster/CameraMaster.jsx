@@ -24,7 +24,6 @@ const CameraMaster = () => {
   const [companies, setCompanies] = useState([]);
   const [sites, setSites] = useState([]);
 
-
   const userOptions = [
     { value: "GATE_USER", label: "GATE_USER" },
     { value: "WEIGHBRIDGE_OPERATOR", label: "WEIGHBRIDGE_OPERATOR" },
@@ -53,7 +52,9 @@ const CameraMaster = () => {
 
   const fetchCameraDetails = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/camera/getById/${id}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/camera/getById/${id}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch camera details");
       }
@@ -131,13 +132,15 @@ const CameraMaster = () => {
       rightCamUrl6: rightCameraUrl,
     };
 
-
-
     console.log("Payload sent to the API:", cameraData);
 
     const url = editMode
-      ? `http://localhost:8080/api/v1/camera/updateByCamId/${cameraId}?userId=${sessionStorage.getItem('userId')}`
-      : `http://localhost:8080/api/v1/camera/cameraMaster?userId=${sessionStorage.getItem('userId')}`;
+      ? `http://localhost:8080/api/v1/camera/updateByCamId/${cameraId}?userId=${sessionStorage.getItem(
+          "userId"
+        )}`
+      : `http://localhost:8080/api/v1/camera/cameraMaster?userId=${sessionStorage.getItem(
+          "userId"
+        )}`;
 
     const method = editMode ? "PUT" : "POST";
 
@@ -184,207 +187,217 @@ const CameraMaster = () => {
             confirmButton: "btn btn-danger",
           },
         });
-      })
+      });
   };
 
   return (
     <SideBar>
       <div className="camera-master">
         <div className="create-main-content container-fluid">
-      
-            <>
-              <div className="d-flex justify-content-between align-items-center">
-                <h2 className="text-center mx-auto">{editMode ? "Update Camera" : "Camera Registration"}</h2>
-                <Link to={"/home1"}>
-                  <FontAwesomeIcon
-                    icon={faHome}
-                    style={{ float: "right", fontSize: "1.5em" }}
-                     className="mb-2"
-                  />
-                </Link>
-              </div>
-              <div className="camera-master-container">
-                <div
-                  className="card camera-master-form"
-                  style={{
-                    boxShadow:
-                      "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
-                  }}
-                >
-                  <div className="card-body p-4">
-                    <form>
-                      <div className="row mb-3">
-                        <div className="col-md-4">
-                          <label htmlFor="company" className="form-label">
-                            Company Name
-                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                          </label>
-                          <select
-                            className="form-select"
-                            id="company"
-                            value={company}
-                            onChange={handleCompanyChange}
-                            required
-                          >
-                            <option value="">Select Company Name</option>
-                            {companies.map((c, index) => (
-                              <option key={index} value={c}>
-                                {c}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="col-md-4">
-                          <label htmlFor="site" className="form-label">
-                            Site Name
-                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                          </label>
-                          <select
-                            className="form-select"
-                            id="site"
-                            value={site}
-                            onChange={(e) => setSite(e.target.value)}
-                            required
-                          >
-                            <option value="">Select Site Name</option>
-                            {sites.map((s, index) => (
-                              <option key={index} value={s.site}>
-                                {s.site}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="col-md-4">
-                          <label htmlFor="user" className="form-label">
-                            User
-                            <span style={{ color: "red", fontWeight: "bold" }}> *</span>
-                          </label>
-                          <Select
-                            value={user}
-                            onChange={(selectedOption) => setUser(selectedOption)}
-                            options={userOptions}
-                            isSearchable
-                            placeholder="Select User"
-                          />
-                        </div>
-                      </div>
-                      <div className="row mb-3">
-                        <div className="col-md-4">
-                          <label htmlFor="topCameraUrl" className="form-label">
-                            Top Camera URL
-                          </label>
-                          <input
-                            type="url"
-                            className="form-control"
-                            id="topCameraUrl"
-                            placeholder="Enter Top Camera URL"
-                            value={topCameraUrl}
-                            onChange={(e) => setTopCameraUrl(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-4">
-                          <label htmlFor="bottomCameraUrl" className="form-label">
-                            Bottom Camera URL
-                          </label>
-                          <input
-                            type="url"
-                            className="form-control"
-                            id="bottomCameraUrl"
-                            placeholder="Enter Bottom Camera URL"
-                            value={bottomCameraUrl}
-                            onChange={(e) => setBottomCameraUrl(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-4">
-                          <label htmlFor="leftCameraUrl" className="form-label">
-                            Left Camera URL
-                          </label>
-                          <input
-                            type="url"
-                            className="form-control"
-                            id="leftCameraUrl"
-                            placeholder="Enter Left Camera URL"
-                            value={leftCameraUrl}
-                            onChange={(e) => setLeftCameraUrl(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="row mb-3">
-                        <div className="col-md-4">
-                          <label htmlFor="rightCameraUrl" className="form-label">
-                            Right Camera URL
-                          </label>
-                          <input
-                            type="url"
-                            className="form-control"
-                            id="rightCameraUrl"
-                            placeholder="Enter Right Camera URL"
-                            value={rightCameraUrl}
-                            onChange={(e) => setRightCameraUrl(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-4">
-                          <label htmlFor="frontCameraUrl" className="form-label">
-                            Front Camera URL
-                          </label>
-                          <input
-                            type="url"
-                            className="form-control"
-                            id="frontCameraUrl"
-                            placeholder="Enter Front Camera URL"
-                            value={frontCameraUrl}
-                            onChange={(e) => setFrontCameraUrl(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-4">
-                          <label htmlFor="backCameraUrl" className="form-label">
-                            Back Camera URL
-                          </label>
-                          <input
-                            type="url"
-                            className="form-control"
-                            id="backCameraUrl"
-                            placeholder="Enter Back Camera URL"
-                            value={backCameraUrl}
-                            onChange={(e) => setBackCameraUrl(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="d-flex justify-content-end mt-3">
-                        <button
-                          type="button"
-                          className="btn btn-danger me-4 btn-hover"
-                          style={{
-                            backgroundColor: "white",
-                            color: "black",
-                            border: "1px solid #cccccc",
-                            width: "100px",
-                          }}
-                          onClick={handleClear}
+          <>
+            <div className="d-flex justify-content-between align-items-center">
+              <h2 className="text-center mx-auto">
+                {editMode ? "Update Camera" : "Camera Registration"}
+              </h2>
+              <Link to={"/admin-dashboard"}>
+                <FontAwesomeIcon
+                  icon={faHome}
+                  style={{ float: "right", fontSize: "1.5em" }}
+                  className="mb-2"
+                />
+              </Link>
+            </div>
+            <div className="camera-master-container">
+              <div
+                className="card camera-master-form"
+                style={{
+                  boxShadow:
+                    "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+                }}
+              >
+                <div className="card-body p-4">
+                  <form>
+                    <div className="row mb-3">
+                      <div className="col-md-4">
+                        <label htmlFor="company" className="form-label">
+                          Company Name
+                          <span style={{ color: "red", fontWeight: "bold" }}>
+                            {" "}
+                            *
+                          </span>
+                        </label>
+                        <select
+                          className="form-select"
+                          id="company"
+                          value={company}
+                          onChange={handleCompanyChange}
+                          required
                         >
-                          <FontAwesomeIcon icon={faEraser} className="me-1" />
-                          Clear
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-success-1 btn-hover"
-                          style={{
-                            backgroundColor: "white",
-                            color: "black",
-                            border: "1px solid #cccccc",
-                            width: "100px",
-                          }}
-                          onClick={handleSave}
-                        >
-                          <FontAwesomeIcon icon={faSave} className="me-1" />
-                          Save
-                        </button>
+                          <option value="">Select Company Name</option>
+                          {companies.map((c, index) => (
+                            <option key={index} value={c}>
+                              {c}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                    </form>
-                  </div>
+                      <div className="col-md-4">
+                        <label htmlFor="site" className="form-label">
+                          Site Name
+                          <span style={{ color: "red", fontWeight: "bold" }}>
+                            {" "}
+                            *
+                          </span>
+                        </label>
+                        <select
+                          className="form-select"
+                          id="site"
+                          value={site}
+                          onChange={(e) => setSite(e.target.value)}
+                          required
+                        >
+                          <option value="">Select Site Name</option>
+                          {sites.map((s, index) => (
+                            <option key={index} value={s.site}>
+                              {s.site}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-md-4">
+                        <label htmlFor="user" className="form-label">
+                          User
+                          <span style={{ color: "red", fontWeight: "bold" }}>
+                            {" "}
+                            *
+                          </span>
+                        </label>
+                        <Select
+                          value={user}
+                          onChange={(selectedOption) => setUser(selectedOption)}
+                          options={userOptions}
+                          isSearchable
+                          placeholder="Select User"
+                        />
+                      </div>
+                    </div>
+                    <div className="row mb-3">
+                      <div className="col-md-4">
+                        <label htmlFor="topCameraUrl" className="form-label">
+                          Top Camera URL
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="topCameraUrl"
+                          placeholder="Enter Top Camera URL"
+                          value={topCameraUrl}
+                          onChange={(e) => setTopCameraUrl(e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-4">
+                        <label htmlFor="bottomCameraUrl" className="form-label">
+                          Bottom Camera URL
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="bottomCameraUrl"
+                          placeholder="Enter Bottom Camera URL"
+                          value={bottomCameraUrl}
+                          onChange={(e) => setBottomCameraUrl(e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-4">
+                        <label htmlFor="leftCameraUrl" className="form-label">
+                          Left Camera URL
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="leftCameraUrl"
+                          placeholder="Enter Left Camera URL"
+                          value={leftCameraUrl}
+                          onChange={(e) => setLeftCameraUrl(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="row mb-3">
+                      <div className="col-md-4">
+                        <label htmlFor="rightCameraUrl" className="form-label">
+                          Right Camera URL
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="rightCameraUrl"
+                          placeholder="Enter Right Camera URL"
+                          value={rightCameraUrl}
+                          onChange={(e) => setRightCameraUrl(e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-4">
+                        <label htmlFor="frontCameraUrl" className="form-label">
+                          Front Camera URL
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="frontCameraUrl"
+                          placeholder="Enter Front Camera URL"
+                          value={frontCameraUrl}
+                          onChange={(e) => setFrontCameraUrl(e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-4">
+                        <label htmlFor="backCameraUrl" className="form-label">
+                          Back Camera URL
+                        </label>
+                        <input
+                          type="url"
+                          className="form-control"
+                          id="backCameraUrl"
+                          placeholder="Enter Back Camera URL"
+                          value={backCameraUrl}
+                          onChange={(e) => setBackCameraUrl(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-end mt-3">
+                      <button
+                        type="button"
+                        className="btn btn-danger me-4 btn-hover"
+                        style={{
+                          backgroundColor: "white",
+                          color: "black",
+                          border: "1px solid #cccccc",
+                          width: "100px",
+                        }}
+                        onClick={handleClear}
+                      >
+                        <FontAwesomeIcon icon={faEraser} className="me-1" />
+                        Clear
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-success-1 btn-hover"
+                        style={{
+                          backgroundColor: "white",
+                          color: "black",
+                          border: "1px solid #cccccc",
+                          width: "100px",
+                        }}
+                        onClick={handleSave}
+                      >
+                        <FontAwesomeIcon icon={faSave} className="me-1" />
+                        Save
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
-            </>
+            </div>
+          </>
         </div>
       </div>
     </SideBar>

@@ -1,4 +1,4 @@
-import{ useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
@@ -16,13 +16,12 @@ function CreateUser() {
   const [emailError, setEmailError] = useState("");
   const [contactNo, setContactNo] = useState("");
   const [contactNoError, setContactNoError] = useState("");
-  const [company, setCompany] = useState("");
-  const [site, setSite] = useState("");
+  const [company, setCompany] = useState(null);
+  const [site, setSite] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [sites, setSites] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [roles, setRoles] = useState([]);
-
 
   const userId = sessionStorage.getItem("userId");
 
@@ -31,7 +30,11 @@ function CreateUser() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Company List:", data);
-        setCompanies(data);
+        const formattedCompanies = data.map((company) => ({
+          value: company,
+          label: company,
+        }));
+        setCompanies(formattedCompanies);
       })
       .catch((error) => {
         console.error("Error fetching company list:", error);
@@ -50,15 +53,16 @@ function CreateUser() {
       });
   }, []);
 
-  const handleCompanyChange = (e) => {
-    setCompany(e.target.value);
+  const handleCompanyChange = (selectedOption) => {
+    setCompany(selectedOption);
 
-    fetch(`http://localhost:8080/api/v1/sites/company/${e.target.value}`)
+    fetch(`http://localhost:8080/api/v1/sites/company/${selectedOption.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Site List:", data);
         const formattedSites = data.map((site) => ({
-          site: `${site.siteName}, ${site.siteAddress}`,
+          value: `${site.siteName}, ${site.siteAddress}`,
+          label: `${site.siteName}, ${site.siteAddress}`,
         }));
         setSites(formattedSites);
       })
@@ -74,8 +78,8 @@ function CreateUser() {
     setRole([]);
     setEmailId("");
     setContactNo("");
-    setCompany("");
-    setSite("");
+    setCompany(null);
+    setSite(null);
     setEmailError("");
     setContactNoError("");
   };
@@ -86,8 +90,8 @@ function CreateUser() {
 
     if (
       role.length === 0 ||
-      company.trim() === "" ||
-      site.trim() === "" ||
+      !company ||
+      !site ||
       contactNo.trim() === "" ||
       firstName.trim() === "" ||
       lastName.trim() === "" ||
@@ -128,8 +132,8 @@ function CreateUser() {
       firstName,
       middleName,
       lastName,
-      site,
-      company,
+      site: site.value,
+      company: company.value,
       emailId,
       contactNo,
       role: role.map((r) => r.value),
@@ -194,18 +198,25 @@ function CreateUser() {
             </div>
           ) : (
             <>
-            <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Create User</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
-              </Link>
-            </div>
+              <div className="d-flex justify-content-between align-items-center">
+                <h2 className="text-center mx-auto">Create User</h2>
+                <Link to={"/admin-dashboard"}>
+                  <FontAwesomeIcon
+                    icon={faHome}
+                    style={{ float: "right", fontSize: "1.5em" }}
+                    className="mb-2"
+                  />
+                </Link>
+              </div>
               <div className="create-user-container">
-                <div className="card create-user-form" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
-                  <div
-                    className="card-body p-4"
-                    //
-                  >
+                <div
+                  className="card create-user-form"
+                  style={{
+                    boxShadow:
+                      "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+                  }}
+                >
+                  <div className="card-body p-4">
                     <form>
                       <div className="row mb-3">
                         <div className="col-md-4">
@@ -331,20 +342,14 @@ function CreateUser() {
                               *
                             </span>
                           </label>
-                          <select
-                            className="form-select"
+                          <Select
                             id="company"
                             value={company}
                             onChange={handleCompanyChange}
-                            required
-                          >
-                            <option value="">Select Company Name</option>
-                            {companies.map((c, index) => (
-                              <option key={index} value={c}>
-                                {c}
-                              </option>
-                            ))}
-                          </select>
+                            options={companies}
+                            isSearchable
+                            placeholder="Select Company Name"
+                          />
                         </div>
                         <div className="col-md-6">
                           <label htmlFor="site" className="form-label">
@@ -354,20 +359,16 @@ function CreateUser() {
                               *
                             </span>
                           </label>
-                          <select
-                            className="form-select"
+                          <Select
                             id="site"
                             value={site}
-                            onChange={(e) => setSite(e.target.value)}
-                            required
-                          >
-                            <option value="">Select Site Name</option>
-                            {sites.map((s, index) => (
-                              <option key={index} value={s.site}>
-                                {s.site}
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(selectedOption) =>
+                              setSite(selectedOption)
+                            }
+                            options={sites}
+                            isSearchable
+                            placeholder="Select Site Name"
+                          />
                         </div>
                       </div>
                       <div className="row mb-3">
@@ -379,7 +380,6 @@ function CreateUser() {
                               *
                             </span>
                           </label>
-
                           <Select
                             isMulti
                             value={role}

@@ -25,7 +25,6 @@ import {
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-
 const SideBar6 = ({ children }) => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -54,8 +53,6 @@ const SideBar6 = ({ children }) => {
   const userId = sessionStorage.getItem("userId");
 
   const open = Boolean(anchorEl);
-
-
 
   const handleSignOut = () => {
     // Clear session storage
@@ -88,23 +85,23 @@ const SideBar6 = ({ children }) => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, sign out",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         // Clear session storage
         sessionStorage.clear();
- 
+
         // Clear browser history and redirect
         window.location.href = "/";
- 
+
         // Additional history manipulation to prevent users from navigating back
         if (window.history && window.history.pushState) {
           // Use replaceState to clear the existing history
           window.history.replaceState(null, null, "/");
- 
+
           // Add a dummy entry to the history to replace current entry
           window.history.pushState(null, null, "/");
- 
+
           // Prevent users from navigating back to the previous state
           window.onpopstate = function (event) {
             window.history.go(1);
@@ -268,7 +265,7 @@ const SideBar6 = ({ children }) => {
         <List sx={{ marginTop: "65px;" }}>
           <ListItemButton
             component={Link}
-            to="/home6"
+            to="/sales-dashboard"
             onClick={() => handleItemClick("dashboard")}
             selected={selectedItem === "dashboard"}
             sx={{

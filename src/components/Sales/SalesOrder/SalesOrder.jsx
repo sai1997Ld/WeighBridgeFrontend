@@ -36,37 +36,40 @@ function SalesOrder() {
       .catch((error) => console.error("Error fetching product names:", error));
 
     // Load saved form data from sessionStorage
-    const savedFormData = sessionStorage.getItem('salesOrderFormData');
+    const savedFormData = sessionStorage.getItem("salesOrderFormData");
     if (savedFormData) {
       const parsedData = JSON.parse(savedFormData);
-      setPurchaseOrderedDate(parsedData.purchaseOrderedDate || '');
-      setSaleOrderNo(parsedData.saleOrderNo || '');
-      setPurchaseOrderNo(parsedData.purchaseOrderNo || '');
-      setCustomerName(parsedData.customerName || '');
-      setCustomerAddress(parsedData.customerAddress || '');
-      setProductName(parsedData.productName || '');
+      setPurchaseOrderedDate(parsedData.purchaseOrderedDate || "");
+      setSaleOrderNo(parsedData.saleOrderNo || "");
+      setPurchaseOrderNo(parsedData.purchaseOrderNo || "");
+      setCustomerName(parsedData.customerName || "");
+      setCustomerAddress(parsedData.customerAddress || "");
+      setProductName(parsedData.productName || "");
       setOrderedQuantity(parsedData.orderedQuantity || 0);
-      setBrokerName(parsedData.brokerName || '');
-      setBrokerAddress(parsedData.brokerAddress || '');
-      
+      setBrokerName(parsedData.brokerName || "");
+      setBrokerAddress(parsedData.brokerAddress || "");
+
       // Clear the saved form data after loading
-      sessionStorage.removeItem('salesOrderFormData');
+      sessionStorage.removeItem("salesOrderFormData");
     }
   }, []);
 
   const handleAddCustomer = () => {
     // Save current form state to sessionStorage
-    sessionStorage.setItem('salesOrderFormData', JSON.stringify({
-      purchaseOrderedDate,
-      saleOrderNo,
-      purchaseOrderNo,
-      customerName,
-      customerAddress,
-      productName,
-      orderedQuantity,
-      brokerName,
-      brokerAddress
-    }));
+    sessionStorage.setItem(
+      "salesOrderFormData",
+      JSON.stringify({
+        purchaseOrderedDate,
+        saleOrderNo,
+        purchaseOrderNo,
+        customerName,
+        customerAddress,
+        productName,
+        orderedQuantity,
+        brokerName,
+        brokerAddress,
+      })
+    );
     navigate("/SalesCustomer");
   };
 
@@ -161,8 +164,8 @@ function SalesOrder() {
         });
         handleClear();
         // Clear saved form data
-        sessionStorage.removeItem('salesOrderFormData');
-        navigate("/home6");
+        sessionStorage.removeItem("salesOrderFormData");
+        navigate("/sales-dashboard");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -184,11 +187,11 @@ function SalesOrder() {
         <div className="sales-order-main-content">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Create Sales Order</h2>
-            <Link to={"/home6"}>
+            <Link to={"/sales-dashboard"}>
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                 className="mb-2"
+                className="mb-2"
               />
             </Link>
           </div>
@@ -267,7 +270,7 @@ function SalesOrder() {
                           </span>
                         </label>
                         <button
-                         className="btn btn-sm border btn-success-1 btn-hover"
+                          className="btn btn-sm border btn-success-1 btn-hover"
                           style={{
                             borderRadius: "5px",
                             marginLeft: "5px",

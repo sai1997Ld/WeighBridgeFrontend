@@ -170,11 +170,11 @@ function ManageUser() {
         <div className="view-user-content">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Manage User</h2>
-            <Link to={"/home1"}>
+            <Link to={"/admin-dashboard"}>
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                 className="mb-2"
+                className="mb-2"
               />
             </Link>
           </div>

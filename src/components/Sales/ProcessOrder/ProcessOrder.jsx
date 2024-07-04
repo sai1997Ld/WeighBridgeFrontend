@@ -42,19 +42,19 @@ function ProcessOrder() {
       );
 
     // Load saved form data from sessionStorage
-    const savedFormData = sessionStorage.getItem('processOrderFormData');
+    const savedFormData = sessionStorage.getItem("processOrderFormData");
     if (savedFormData) {
       const parsedData = JSON.parse(savedFormData);
-      setFormsaleOrderNo(parsedData.formsaleOrderNo || '');
-      setFormProductName(parsedData.formProductName || '');
-      setProductType(parsedData.productType || '');
-      setVehicleNo(parsedData.vehicleNo || '');
-      setTransporterName(parsedData.transporterName || '');
-      setPurchaseProcessDate(parsedData.purchaseProcessDate || '');
+      setFormsaleOrderNo(parsedData.formsaleOrderNo || "");
+      setFormProductName(parsedData.formProductName || "");
+      setProductType(parsedData.productType || "");
+      setVehicleNo(parsedData.vehicleNo || "");
+      setTransporterName(parsedData.transporterName || "");
+      setPurchaseProcessDate(parsedData.purchaseProcessDate || "");
       setConsignmentWeight(parsedData.consignmentWeight || 0);
-      
+
       // Clear the saved form data after loading
-      sessionStorage.removeItem('processOrderFormData');
+      sessionStorage.removeItem("processOrderFormData");
     }
   }, []);
 
@@ -96,7 +96,9 @@ function ProcessOrder() {
     if (formsaleOrderNo) {
       // Fetch balance weight for the sales order
       fetch(
-        `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(formsaleOrderNo)}`
+        `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(
+          formsaleOrderNo
+        )}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -120,15 +122,18 @@ function ProcessOrder() {
 
   const handleAddVehicle = () => {
     // Save current form state to sessionStorage
-    sessionStorage.setItem('processOrderFormData', JSON.stringify({
-      formsaleOrderNo,
-      formProductName,
-      productType,
-      vehicleNo,
-      transporterName,
-      purchaseProcessDate,
-      consignmentWeight
-    }));
+    sessionStorage.setItem(
+      "processOrderFormData",
+      JSON.stringify({
+        formsaleOrderNo,
+        formProductName,
+        productType,
+        vehicleNo,
+        transporterName,
+        purchaseProcessDate,
+        consignmentWeight,
+      })
+    );
     navigate("/SalesVehicle");
   };
 
@@ -189,8 +194,8 @@ function ProcessOrder() {
         });
         handleClear();
         // Clear saved form data
-        sessionStorage.removeItem('processOrderFormData');
-        navigate("/home6");
+        sessionStorage.removeItem("processOrderFormData");
+        navigate("/sales-dashboard");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -212,7 +217,7 @@ function ProcessOrder() {
         <div className="sales-process-main-content">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Create Sales Pass</h2>
-            <Link to={"/home6"}>
+            <Link to={"/sales-dashboard"}>
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}

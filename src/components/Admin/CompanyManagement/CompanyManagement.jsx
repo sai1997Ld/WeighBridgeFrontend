@@ -2,7 +2,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import "./CompanyManagement.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faEraser,faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
 import SideBar from "../../SideBar/SideBar";
 import { Link } from "react-router-dom";
 
@@ -13,8 +13,6 @@ function CompanyManagement() {
   const [companyAddress, setCompanyAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-
-
 
   const userId = sessionStorage.getItem("userId");
 
@@ -120,12 +118,16 @@ function CompanyManagement() {
     <SideBar>
       <div className="company-management">
         <div className="company-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Company Registration</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Company Registration</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
           <div
             className="company-card-container card"
             style={{

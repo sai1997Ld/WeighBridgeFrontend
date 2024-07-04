@@ -248,11 +248,11 @@ const ViewCustomer = () => {
       <div className="view-customer-page container-fluid">
         <div className="d-flex justify-content-between align-items-center">
           <h2 className="text-center mx-auto">Manage Customer</h2>
-          <Link to={"/home1"}>
+          <Link to={"/admin-dashboard"}>
             <FontAwesomeIcon
               icon={faHome}
               style={{ float: "right", fontSize: "1.5em" }}
-               className="mb-2"
+              className="mb-2"
             />
           </Link>
         </div>

@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import login from '../../assets/login.jpg';
+import login from "../../assets/login.jpg";
 
 const LoginUser = () => {
   const [userId, setUserId] = useState("");
@@ -49,7 +49,7 @@ const LoginUser = () => {
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home1", { state: { userId: data.userId } });
+              navigate("/admin-dashboard", { state: { userId: data.userId } });
             });
           } else if (data.roles.includes("QUALITY_USER")) {
             Swal.fire({
@@ -58,7 +58,9 @@ const LoginUser = () => {
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home2", { state: { userId: data.userId } });
+              navigate("/qualtity-dashboard", {
+                state: { userId: data.userId },
+              });
             });
           } else if (data.roles.includes("MANAGEMENT")) {
             Swal.fire({
@@ -94,7 +96,7 @@ const LoginUser = () => {
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home6", { state: { userId: data.userId } });
+              navigate("/sales-dashboard", { state: { userId: data.userId } });
             });
           } else {
             Swal.fire({
@@ -139,11 +141,7 @@ const LoginUser = () => {
           <h1 className="login-title" style={{ backgroundColor: "white" }}>
             Weighbridge Management System
           </h1>
-          <img
-            src={login}
-            alt="Truck"
-            className="login-truck-image"
-          />
+          <img src={login} alt="Truck" className="login-truck-image" />
           <form
             onSubmit={handleSubmit}
             className="login-form"
