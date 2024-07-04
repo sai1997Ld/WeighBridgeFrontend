@@ -281,8 +281,8 @@ const router = createBrowserRouter(
       <Route path="/admin-dashboard" element={<HomePage1 />} />
       <Route path="/qualtity-dashboard" element={<HomePage2 />} />
       <Route path="/home3" element={<HomePage3 />} />
-      <Route path="/home4" element={<HomePage4 />} />
-      <Route path="/home5" element={<HomePage5 />} />
+      <Route path="/weighbridge-dashboard" element={<HomePage4 />} />
+      <Route path="/management-dashboard" element={<HomePage5 />} />
       <Route path="/sales-dashboard" element={<HomePage6 />} />
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/manage-user" element={<ManageUser />} />

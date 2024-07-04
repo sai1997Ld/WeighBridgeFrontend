@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
-import { InputNumber,Select, DatePicker, } from "antd";
+import { InputNumber, Select, DatePicker } from "antd";
 import moment from "moment";
 import { Button, Dropdown, Menu } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
@@ -13,7 +13,7 @@ import Sidebar4 from "../../../../SideBar/SideBar4";
 
 const handleSearchOptionChange = (value) => {
   setSearchOption(value);
-  setSearchValue(''); // Reset the search value when the option changes
+  setSearchValue(""); // Reset the search value when the option changes
 };
 
 // Styled component for the table
@@ -22,8 +22,6 @@ const StyledTable = styled.table`
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
-
-
 
 function ManagementQuality() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,14 +37,12 @@ function ManagementQuality() {
   const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiData, setApiData] = useState([]);
-  const [searchOption, setSearchOption] = useState('');
+  const [searchOption, setSearchOption] = useState("");
 
-  const selectedCompany = sessionStorage.getItem('company');
-  const selectedSiteName = sessionStorage.getItem('site');
-  
-[
+  const selectedCompany = sessionStorage.getItem("company");
+  const selectedSiteName = sessionStorage.getItem("site");
 
-]
+  [];
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -63,16 +59,11 @@ function ManagementQuality() {
     setIsModalOpen(false);
   };
 
-
-
-
-
   useEffect(() => {
     if (searchQuery === "") {
       setFilteredData(allData);
     }
   }, [searchQuery, allData]);
-
 
   const homeMainContentRef = useRef(null);
 
@@ -87,12 +78,12 @@ function ManagementQuality() {
 
       if (materialResponse.ok) {
         const materialData = await materialResponse.json();
-        const combinedOptions = [...materialData,];
+        const combinedOptions = [...materialData];
         setMaterialOptions(combinedOptions);
       } else {
         console.error(
           "Failed to fetch material or product options:",
-          materialResponse.status,
+          materialResponse.status
         );
       }
     } catch (error) {
@@ -108,9 +99,12 @@ function ManagementQuality() {
 
   const fetchInboundTransactions = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/fetch-InboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/fetch-InboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`,
+        {
+          credentials: "include",
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         return data;
@@ -123,18 +117,23 @@ function ManagementQuality() {
       return [];
     }
   };
-  
 
   const fetchOutboundTransactions = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/fetch-OutboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`,
+        {
+          credentials: "include",
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         return data;
       } else {
-        console.error("Failed to fetch outbound transactions:", response.status);
+        console.error(
+          "Failed to fetch outbound transactions:",
+          response.status
+        );
         return [];
       }
     } catch (error) {
@@ -162,7 +161,6 @@ function ManagementQuality() {
       setApiData(badQualities);
     }
   };
-
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
@@ -192,7 +190,6 @@ function ManagementQuality() {
     return current && current > moment().endOf("day");
   };
 
-
   const handleTicketClick = (ticketNumber, transactionType) => {
     const item = allData.find((item) => item.ticketNo === ticketNumber);
     if (item) {
@@ -205,26 +202,33 @@ function ManagementQuality() {
     }
   };
 
-
-
   const pageCount = Math.ceil(apiData.length / itemsPerPage);
 
   const removeTransaction = async (ticketNumber) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/${ticketNumber}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/${ticketNumber}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
-        console.log(`Transaction with ticket number ${ticketNumber} removed successfully`);
+        console.log(
+          `Transaction with ticket number ${ticketNumber} removed successfully`
+        );
 
         // Update state to remove the transaction from the list
-        setAllData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
-        setFilteredData((prevData) => prevData.filter((item) => item.ticketNo !== ticketNumber));
+        setAllData((prevData) =>
+          prevData.filter((item) => item.ticketNo !== ticketNumber)
+        );
+        setFilteredData((prevData) =>
+          prevData.filter((item) => item.ticketNo !== ticketNumber)
+        );
       } else {
         console.error("Failed to remove transaction:", response.status);
       }
@@ -247,7 +251,6 @@ function ManagementQuality() {
     fetchCompletedCounts();
   };
 
-
   const handleSearch = async () => {
     if (searchQuery === "") {
       setFilteredData(allData);
@@ -257,143 +260,138 @@ function ManagementQuality() {
 
   const fetchGoodQualities = async () => {
     try {
-      const selectedCompany = sessionStorage.getItem('company');
-      const selectedSiteName = sessionStorage.getItem('site');
-  
+      const selectedCompany = sessionStorage.getItem("company");
+      const selectedSiteName = sessionStorage.getItem("site");
+
       if (!selectedCompany || !selectedSiteName) {
-        console.error('Company or site name not selected');
+        console.error("Company or site name not selected");
         return;
       }
-  
+
       const apiUrl = `http://localhost:8080/api/v1/management/goodQualities`;
-  
+
       // Format the selected date as "DD-MM-YYYY"
       const year = selectedDate.year();
-      const month = String(selectedDate.month() + 1).padStart(2, '0');
-      const day = String(selectedDate.date()).padStart(2, '0');
+      const month = String(selectedDate.month() + 1).padStart(2, "0");
+      const day = String(selectedDate.date()).padStart(2, "0");
       const formattedDate = `${day}-${month}-${year}`;
-  
+
       const requestPayload = {
         fromDate: formattedDate,
         companyName: selectedCompany,
         siteName: selectedSiteName,
       };
-  
+
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestPayload),
-        credentials: 'include',
+        credentials: "include",
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         return data;
       } else {
-        console.error('Failed to fetch good qualities:', response.status);
+        console.error("Failed to fetch good qualities:", response.status);
         return [];
       }
     } catch (error) {
-      console.error('Error fetching good qualities:', error);
+      console.error("Error fetching good qualities:", error);
       return [];
     }
   };
-  
-  
-  
-  
 
   const fetchBadQualities = async () => {
     try {
-      const selectedCompany = sessionStorage.getItem('company');
-      const selectedSiteName = sessionStorage.getItem('site');
-  
+      const selectedCompany = sessionStorage.getItem("company");
+      const selectedSiteName = sessionStorage.getItem("site");
+
       if (!selectedCompany || !selectedSiteName) {
-        console.error('Company or site name not selected');
+        console.error("Company or site name not selected");
         return;
       }
-  
+
       const apiUrl = `http://localhost:8080/api/v1/management/badQualities`;
-  
+
       // Format the selected date as "DD-MM-YYYY"
       const year = selectedDate.year();
-      const month = String(selectedDate.month() + 1).padStart(2, '0');
-      const day = String(selectedDate.date()).padStart(2, '0');
+      const month = String(selectedDate.month() + 1).padStart(2, "0");
+      const day = String(selectedDate.date()).padStart(2, "0");
       const formattedDate = `${day}-${month}-${year}`;
-  
+
       const requestPayload = {
         fromDate: formattedDate,
         companyName: selectedCompany,
         siteName: selectedSiteName,
       };
-  
+
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestPayload),
-        credentials: 'include',
+        credentials: "include",
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         return data;
       } else {
-        console.error('Failed to fetch bad qualities:', response.status);
+        console.error("Failed to fetch bad qualities:", response.status);
         return [];
       }
     } catch (error) {
-      console.error('Error fetching bad qualities:', error);
+      console.error("Error fetching bad qualities:", error);
       return [];
     }
   };
-  
 
   const fetchApiData = async () => {
     try {
-      const selectedCompany = sessionStorage.getItem('company');
-      const selectedSiteName = sessionStorage.getItem('site');
+      const selectedCompany = sessionStorage.getItem("company");
+      const selectedSiteName = sessionStorage.getItem("site");
       // const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
-  
-      if (!selectedCompany || !selectedSiteName ) {
-        console.error('Company, site name, or site address not selected');
+
+      if (!selectedCompany || !selectedSiteName) {
+        console.error("Company, site name, or site address not selected");
         return;
       }
-  
+
       // Format the selected date as "DD-MM-YYYY"
       const year = selectedDate.year();
-      const month = String(selectedDate.month() + 1).padStart(2, '0');
-      const day = String(selectedDate.date()).padStart(2, '0');
+      const month = String(selectedDate.month() + 1).padStart(2, "0");
+      const day = String(selectedDate.date()).padStart(2, "0");
       const formattedDate = `${day}-${month}-${year}`;
-  
+
       const apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
-  
+
       const requestPayload = {
         fromDate: formattedDate,
         companyName: `${selectedCompany}`,
         siteName: `${selectedSiteName}`,
       };
-  
+
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestPayload),
-        credentials: 'include',
+        credentials: "include",
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setApiData(data);
       } else {
-        console.error('Failed to fetch API data:', response.status);
+        console.error("Failed to fetch API data:", response.status);
       }
     } catch (error) {
-      console.error('Error fetching API data:', error);
+      console.error("Error fetching API data:", error);
     }
   };
   useEffect(() => {
@@ -409,7 +407,11 @@ function ManagementQuality() {
   return (
     <Sidebar4>
       <div
-        style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
+        style={{
+          fontFamily: "Arial",
+          color: "#333",
+          "--table-border-radius": "30px",
+        }}
       >
         <div className="container-fluid mt-0">
           <div
@@ -418,15 +420,15 @@ function ManagementQuality() {
           >
             <div style={{ flex: "1" }}>
               <DatePicker
-  value={selectedDate}
-  onChange={handleDateChange}
-  disabledDate={disabledFutureDate}
-  format="DD-MM-YYYY"
-  style={{
-    borderRadius: "5px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  }}
-/>
+                value={selectedDate}
+                onChange={handleDateChange}
+                disabledDate={disabledFutureDate}
+                format="DD-MM-YYYY"
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+              />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -440,12 +442,11 @@ function ManagementQuality() {
               </h2>
             </div>
             <div style={{ flex: "1", textAlign: "right" }}>
-              <Link to="/home5">
-                <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
+              <Link to="/management-dashboard">
+                <FontAwesomeIcon icon={faHome} style={{ fontSize: "1.5em" }} />
               </Link>
             </div>
           </div>
-
 
           <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-5 d-flex align-items-center mb-2 mb-md-0">
@@ -464,30 +465,31 @@ function ManagementQuality() {
                 />
                 &nbsp;entries
               </>
-
             </div>
             <div className="col-12 col-md-4 mb-2 mb-md-0">
-            <div className="d-flex align-items-center" style={{ marginLeft: "auto", marginRight: "auto" }}>
-              <Select
-                placeholder="Select a search option"
-                style={{ width: "200px" }}
-                onChange={handleSearchOptionChange}
-              // suffixIcon={<SearchOutlined />}
+              <div
+                className="d-flex align-items-center"
+                style={{ marginLeft: "auto", marginRight: "auto" }}
               >
-
-                <Option value="ticketNo">Search by Ticket No</Option>
-                <Option value="vehicleNo">Search by Vehicle No</Option>
-              </Select>
-              {searchOption && (
-                <Input
-                  placeholder={`Enter ${searchOption}`}
-                  style={{ width: "200px", }}
-                  value={searchValue}
-                  onChange={handleInputChange}
-                  onPressEnter={handleSearch} // Optionally allow search on Enter key press
-                />
-              )}
-            </div>
+                <Select
+                  placeholder="Select a search option"
+                  style={{ width: "200px" }}
+                  onChange={handleSearchOptionChange}
+                  // suffixIcon={<SearchOutlined />}
+                >
+                  <Option value="ticketNo">Search by Ticket No</Option>
+                  <Option value="vehicleNo">Search by Vehicle No</Option>
+                </Select>
+                {searchOption && (
+                  <Input
+                    placeholder={`Enter ${searchOption}`}
+                    style={{ width: "200px" }}
+                    value={searchValue}
+                    onChange={handleInputChange}
+                    onPressEnter={handleSearch} // Optionally allow search on Enter key press
+                  />
+                )}
+              </div>
             </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
               <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
@@ -495,10 +497,6 @@ function ManagementQuality() {
               </Dropdown>
             </div>
           </div>
-
-
-
-
 
           <div
             className="table-responsive"
@@ -620,10 +618,16 @@ function ManagementQuality() {
                 <tbody>
                   {Array.isArray(apiData) &&
                     apiData
-                      .slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
+                      .slice(
+                        currentPage * itemsPerPage,
+                        (currentPage + 1) * itemsPerPage
+                      )
                       .map((item, index) => (
                         <tr key={index}>
-                          <td className="ant-table-cell" style={{ whiteSpace: 'nowrap' }}>
+                          <td
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
                             {item.ticketNo}
                           </td>
                           <td
@@ -726,11 +730,13 @@ function ManagementQuality() {
                 return (
                   <button
                     key={pageNumber}
-                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
-                      }`}
+                    className={`btn btn-outline-primary btn-sm me-2 ${
+                      currentPage === pageNumber ? "active" : ""
+                    }`}
                     style={{
                       color: currentPage === pageNumber ? "#fff" : "#0077B6",
-                      backgroundColor: currentPage === pageNumber ? "#0077B6" : "transparent",
+                      backgroundColor:
+                        currentPage === pageNumber ? "#0077B6" : "transparent",
                       borderColor: "#0077B6",
                       marginRight: "2px",
                     }}
@@ -760,7 +766,9 @@ function ManagementQuality() {
                   borderColor: "#0077B6",
                   marginRight: "2px",
                 }}
-                onClick={() => setCurrentPage(Math.min(pageCount - 1, currentPage + 5))}
+                onClick={() =>
+                  setCurrentPage(Math.min(pageCount - 1, currentPage + 5))
+                }
                 disabled={currentPage === pageCount - 1}
               >
                 &gt;&gt;

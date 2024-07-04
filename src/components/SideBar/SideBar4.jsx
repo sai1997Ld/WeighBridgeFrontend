@@ -23,25 +23,23 @@ import {
   CameraAlt,
   Home,
 } from "@mui/icons-material";
-import FireTruckIcon from '@mui/icons-material/FireTruck';
-import SummarizeIcon from '@mui/icons-material/Summarize';
-import { styled } from '@mui/material/styles';
+import FireTruckIcon from "@mui/icons-material/FireTruck";
+import SummarizeIcon from "@mui/icons-material/Summarize";
+import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-
 const drawerWidth = 240; // define drawer width as a constant
 
-const Sidebar4 = ({ children }) => {  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const Sidebar4 = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const isLargeScreen = useMediaQuery("(min-width:600px)");
 
-
-
   const ReversedFireTruckIcon = styled(FireTruckIcon)({
-    transform: 'scaleX(-1)',
+    transform: "scaleX(-1)",
   });
 
   const handleItemClick = (item) => {
@@ -98,23 +96,23 @@ const Sidebar4 = ({ children }) => {  const [isSidebarOpen, setIsSidebarOpen] = 
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, sign out",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         // Clear session storage
         sessionStorage.clear();
- 
+
         // Clear browser history and redirect
         window.location.href = "/";
- 
+
         // Additional history manipulation to prevent users from navigating back
         if (window.history && window.history.pushState) {
           // Use replaceState to clear the existing history
           window.history.replaceState(null, null, "/");
- 
+
           // Add a dummy entry to the history to replace current entry
           window.history.pushState(null, null, "/");
- 
+
           // Prevent users from navigating back to the previous state
           window.onpopstate = function (event) {
             window.history.go(1);
@@ -173,8 +171,9 @@ const Sidebar4 = ({ children }) => {  const [isSidebarOpen, setIsSidebarOpen] = 
             >
               {/* Display user's initials */}
               {userName
-                ? `${userName.split(" ")[0][0]}${userName.split(" ")[1] ? userName.split(" ")[1][0] : ""
-                }`
+                ? `${userName.split(" ")[0][0]}${
+                    userName.split(" ")[1] ? userName.split(" ")[1][0] : ""
+                  }`
                 : ""}
             </Avatar>
           </Box>
@@ -277,7 +276,7 @@ const Sidebar4 = ({ children }) => {  const [isSidebarOpen, setIsSidebarOpen] = 
         <List sx={{ marginTop: "80px" }}>
           <ListItemButton
             component={Link}
-            to="/Home5"
+            to="/management-dashboard"
             onClick={() => handleItemClick("Home")}
             selected={selectedItem === "Home"}
             sx={{

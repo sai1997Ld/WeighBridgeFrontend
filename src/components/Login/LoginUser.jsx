@@ -69,7 +69,9 @@ const LoginUser = () => {
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home5", { state: { userId: data.userId } });
+              navigate("/management-dashboard", {
+                state: { userId: data.userId },
+              });
             });
           } else if (data.roles.includes("GATE_USER")) {
             Swal.fire({
@@ -87,7 +89,9 @@ const LoginUser = () => {
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home4", { state: { userId: data.userId } });
+              navigate("/weighbridge-dashboard", {
+                state: { userId: data.userId },
+              });
             });
           } else if (data.roles.includes("SALE_USER")) {
             Swal.fire({

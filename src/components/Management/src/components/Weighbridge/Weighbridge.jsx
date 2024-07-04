@@ -3,18 +3,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileWord } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { faSearch, faPrint, faTruck, faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faPrint,
+  faTruck,
+  faHome,
+} from "@fortawesome/free-solid-svg-icons";
 import { Chart, ArcElement } from "chart.js/auto";
 import { Button } from "antd";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { SearchOutlined } from "@ant-design/icons";
-import {  Input, InputNumber, DatePicker } from "antd";
+import { Input, InputNumber, DatePicker } from "antd";
 import { Row, Col } from "antd";
 import styled from "styled-components";
 import { Modal, Typography } from "antd";
 import SideBar4 from "../../../../SideBar/SideBar4";
-
 
 const ManagementWeighbridge = () => {
   const [currentDate, setCurrentDate] = useState(getFormattedDate());
@@ -306,17 +310,20 @@ const ManagementWeighbridge = () => {
         }}
       >
         <div className="container-fluid mt-0">
-        <div className="mb-3 text-center" style={{ position: 'relative' }}>
-  <h2 style={{ fontFamily: 'Arial', marginBottom: '0px !important' }}>
-    Transaction Dashboard
-  </h2>
-  <div style={{ position: 'absolute', right: '0', top: '0' }}>
-    <Link to="/home5">
-      <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} className="mb-3" />
-    </Link>
-  </div>
+          <div className="mb-3 text-center" style={{ position: "relative" }}>
+            <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
+              Transaction Dashboard
+            </h2>
+            <div style={{ position: "absolute", right: "0", top: "0" }}>
+              <Link to="/management-dashboard">
+                <FontAwesomeIcon
+                  icon={faHome}
+                  style={{ fontSize: "1.5em" }}
+                  className="mb-3"
+                />
+              </Link>
+            </div>
 
-            
             <Row gutter={[16, 16]} justify="start" align="top">
               <Col
                 xs={24}
@@ -358,22 +365,29 @@ const ManagementWeighbridge = () => {
                 />
               </Col>
             </Row>
-            
           </div>
-          
+
           <div>
             <TransactionUpdatesContainer>
               <TransactionUpdateBox bgColor="#BDBDBD">
-                <Text>Inbound Pending Tare Weight: <b>{pendingTareInbound}</b></Text>
+                <Text>
+                  Inbound Pending Tare Weight: <b>{pendingTareInbound}</b>
+                </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#36A2EB">
-                <Text>Inbound Pending Gross Weight: <b>{pendingGrossInbound}</b></Text>
+                <Text>
+                  Inbound Pending Gross Weight: <b>{pendingGrossInbound}</b>
+                </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#BDBDBD">
-                <Text>Outbound Pending Tare Weight: <b>{pendingTareOutbound}</b></Text>
+                <Text>
+                  Outbound Pending Tare Weight: <b>{pendingTareOutbound}</b>
+                </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#36A2EB">
-                <Text>Outbound Pending Gross Weight: <b>{pendingGrossOutbound}</b></Text>
+                <Text>
+                  Outbound Pending Gross Weight: <b>{pendingGrossOutbound}</b>
+                </Text>
               </TransactionUpdateBox>
             </TransactionUpdatesContainer>
           </div>
