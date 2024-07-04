@@ -18,7 +18,6 @@ function MaterialManagement() {
   const [materialTypeName, setMaterialTypeName] = useState("");
   const [materialNames, setMaterialNames] = useState([]);
   const [materialTypeNames, setMaterialTypeNames] = useState([]);
-  const [error, setError] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [showTypeInput, setShowTypeInput] = useState(false);
   const [userInputName, setUserInputName] = useState("");
@@ -48,7 +47,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -75,7 +73,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -270,7 +267,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -297,7 +293,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -372,7 +367,7 @@ function MaterialManagement() {
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-3"
+                 className="mb-2"
               />
             </Link>
           </div>

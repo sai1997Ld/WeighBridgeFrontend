@@ -16,7 +16,6 @@ function ProductManagement() {
   const [productTypeName, setproductTypeName] = useState("");
   const [productNames, setproductNames] = useState([]);
   const [productTypeNames, setproductTypeNames] = useState([]);
-  const [error, setError] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [showTypeInput, setShowTypeInput] = useState(false);
   const [userInputName, setUserInputName] = useState("");
@@ -47,7 +46,6 @@ function ProductManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -74,7 +72,6 @@ function ProductManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -307,7 +304,7 @@ function ProductManagement() {
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-3"
+                 className="mb-2"
               />
             </Link>
           </div>

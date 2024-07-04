@@ -12,7 +12,7 @@ function SiteManagement() {
   const [siteName, setSiteName] = useState("");
   const [siteAddress, setSiteAddress] = useState("");
   const [companies, setCompanies] = useState([]);
-  const [error, setError] = useState("");
+
 
 
   const userId = sessionStorage.getItem("userId");
@@ -85,7 +85,6 @@ function SiteManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -105,7 +104,7 @@ function SiteManagement() {
         <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Site Registration</h2>
               <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
+              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
               </Link>
         </div>
           <div className="site-container d-flex justify-content-center">

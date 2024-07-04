@@ -13,7 +13,7 @@ function CompanyManagement() {
   const [companyAddress, setCompanyAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [error, setError] = useState("");
+
 
 
   const userId = sessionStorage.getItem("userId");
@@ -104,7 +104,6 @@ function CompanyManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -124,7 +123,7 @@ function CompanyManagement() {
         <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Company Registration</h2>
               <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
+              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
               </Link>
             </div>
           <div

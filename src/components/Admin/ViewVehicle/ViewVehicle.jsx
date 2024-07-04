@@ -188,7 +188,7 @@ const ViewVehicle = () => {
         <div className="d-flex justify-content-between align-items-center">
           <h2 className="text-center mx-auto">View Vehicle</h2>
           <Link to={"/home1"}>
-            <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}} className="mb-3"/>
+            <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-2"/>
           </Link>
         </div>
         <div className="filters d-flex justify-content-between gap-2">

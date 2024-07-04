@@ -233,7 +233,7 @@ const ViewTransporter = () => {
             <FontAwesomeIcon
               icon={faHome}
               style={{ float: "right", fontSize: "1.5em" }}
-              className="mb-3"
+               className="mb-2"
             />
           </Link>
         </div>

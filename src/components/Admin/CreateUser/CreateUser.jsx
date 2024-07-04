@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import{ useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
@@ -197,7 +197,7 @@ function CreateUser() {
             <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Create User</h2>
               <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
+              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}   className="mb-2"/>
               </Link>
             </div>
               <div className="create-user-container">
