@@ -6,7 +6,6 @@ import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
 
-
 function SalesOrder() {
   const [purchaseOrderedDate, setPurchaseOrderedDate] = useState("");
   const [saleOrderNo, setSaleOrderNo] = useState("");
@@ -35,9 +34,39 @@ function SalesOrder() {
       .then((response) => response.json())
       .then((data) => setProductNames(data))
       .catch((error) => console.error("Error fetching product names:", error));
+
+    // Load saved form data from sessionStorage
+    const savedFormData = sessionStorage.getItem('salesOrderFormData');
+    if (savedFormData) {
+      const parsedData = JSON.parse(savedFormData);
+      setPurchaseOrderedDate(parsedData.purchaseOrderedDate || '');
+      setSaleOrderNo(parsedData.saleOrderNo || '');
+      setPurchaseOrderNo(parsedData.purchaseOrderNo || '');
+      setCustomerName(parsedData.customerName || '');
+      setCustomerAddress(parsedData.customerAddress || '');
+      setProductName(parsedData.productName || '');
+      setOrderedQuantity(parsedData.orderedQuantity || 0);
+      setBrokerName(parsedData.brokerName || '');
+      setBrokerAddress(parsedData.brokerAddress || '');
+      
+      // Clear the saved form data after loading
+      sessionStorage.removeItem('salesOrderFormData');
+    }
   }, []);
 
   const handleAddCustomer = () => {
+    // Save current form state to sessionStorage
+    sessionStorage.setItem('salesOrderFormData', JSON.stringify({
+      purchaseOrderedDate,
+      saleOrderNo,
+      purchaseOrderNo,
+      customerName,
+      customerAddress,
+      productName,
+      orderedQuantity,
+      brokerName,
+      brokerAddress
+    }));
     navigate("/SalesCustomer");
   };
 
@@ -131,6 +160,8 @@ function SalesOrder() {
           },
         });
         handleClear();
+        // Clear saved form data
+        sessionStorage.removeItem('salesOrderFormData');
         navigate("/home6");
       })
       .catch((error) => {
@@ -157,7 +188,7 @@ function SalesOrder() {
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-3"
+                 className="mb-2"
               />
             </Link>
           </div>
@@ -236,9 +267,7 @@ function SalesOrder() {
                           </span>
                         </label>
                         <button
-                         className
-                         =
-                         "btn btn-sm border btn-success-1 btn-hover"
+                         className="btn btn-sm border btn-success-1 btn-hover"
                           style={{
                             borderRadius: "5px",
                             marginLeft: "5px",

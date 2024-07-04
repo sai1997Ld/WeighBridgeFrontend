@@ -2,24 +2,28 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import "./SalesVehicle.css";
 import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faRectangleXmark, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function SalesVehicle() {
   const [vehicleNo, setVehicleNo] = useState("");
-  const [transporterName, setTransporter] = useState("");
+  const [transporter, setTransporter] = useState("");
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleManufacturer, setVehicleManufacturer] = useState("");
   const [vehicleWheelsNo, setvehicleWheelsNo] = useState("");
   const [vehicleFitnessUpTo, setvehicleFitnessUpTo] = useState("");
   const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState(0);
+  const [loadCapacityUnit, setLoadCapacityUnit] = useState("kg");
   const [transporters, setTransporters] = useState([]);
-  const [error, setError] = useState("");
-  
+
+
   const navigate = useNavigate();
 
+  const handleAddTransporter = () => {
+    navigate("/SalesTransporter");
+  }
   const handleClear = () => {
     setVehicleNo("");
     setTransporter("");
@@ -28,8 +32,8 @@ function SalesVehicle() {
     setvehicleWheelsNo("");
     setvehicleFitnessUpTo("");
     setVehicleLoadCapacity(0);
+    setLoadCapacityUnit("kg");
   };
-  const userId = sessionStorage.getItem("userId");
 
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/transporter")
@@ -37,17 +41,11 @@ function SalesVehicle() {
       .then((data) => setTransporters(data))
       .catch((error) => console.error("Error fetching transporters:", error));
   }, []);
-  
-  const handleAddTransporter = () => {
-    navigate("/SalesTransporter");
-  };
 
   const handleSave = () => {
     if (
       vehicleNo.trim() === "" ||
-      transporterName.trim() === "" 
-      // vehicleFitnessUpTo.trim() === "" ||
-      // vehicleLoadCapacity.toString().trim() === ""
+      transporter.trim() === ""
     ) {
       Swal.fire({
         title: "Please fill in all required fields.",
@@ -66,10 +64,10 @@ function SalesVehicle() {
       vehicleManufacturer,
       vehicleWheelsNo,
       vehicleFitnessUpTo,
-      vehicleLoadCapacity,
+      vehicleLoadCapacity: loadCapacityUnit === "kg" ? vehicleLoadCapacity : vehicleLoadCapacity * 1000,
     };
 
-    fetch(`http://localhost:8080/api/v1/vehicles/${transporterName}?userId=${userId}`, {
+    fetch(`http://localhost:8080/api/v1/vehicles/${transporter}?userId=${sessionStorage.getItem("userId")}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,11 +95,10 @@ function SalesVehicle() {
           },
         });
         handleClear();
-        navigate("/ProcessOrder");
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
+
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -114,29 +111,46 @@ function SalesVehicle() {
       });
   };
 
+  const toggleLoadCapacityUnit = () => {
+    if (loadCapacityUnit === "kg") {
+      setVehicleLoadCapacity(vehicleLoadCapacity / 1000);
+      setLoadCapacityUnit("ton");
+    } else {
+      setVehicleLoadCapacity(vehicleLoadCapacity * 1000);
+      setLoadCapacityUnit("kg");
+    }
+  };
+
+  const selectStyles = {
+    control: (provided) => ({
+      ...provided,
+      marginBottom: '20px',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
+  };
+
   return (
     <SideBar6>
-      <div className="vehicle-register container-fluid">
-        <div className="vehicle-content-sales ">
-        <div className="d-flex justify-content-between align-items-center">
+      <div className="vehicle-register">
+        <div className="vehicle-content container-fluid">
+        
+ <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Vehicle Registration</h2>
-              <Link to={"/home6"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
         </div>
+ 
           <div className="vehicle-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
-            <div
-              className="card-body p-4"
-              
-            >
+            <div className="card-body p-4">
               <form>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleNo" className="form-label">
-                      Vehicle Number{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Vehicle Number <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
                     <input
                       type="text"
@@ -149,53 +163,47 @@ function SalesVehicle() {
                     />
                   </div>
                   <div className="col-md-6">
-                    <label htmlFor="transporterName" className="form-label">
-                      Transporter{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                    <label htmlFor="transporter" className="form-label">
+                      Transporter <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
+                    
                     <button
-                      className
-                      =
-                      "btn btn-sm border btn-success-1 btn-hover"
-                      style={{
-                        borderRadius: "5px",
-                        marginLeft: "5px",
-                        backgroundColor: "lightblue",
-                      }}
-                    >
-                      <div
-                        onClick={handleAddTransporter}
-                        style={{
-                          display: "block",
-                          textDecoration: "none",
-                          color: "black",
-                        }}
-                      >
-                        Add Transporter
-                      </div>
-                    </button>
+                         className="btn btn-sm border btn-success-1 btn-hover"
+                          style={{
+                            borderRadius: "5px",
+                            marginLeft: "5px",
+                            backgroundColor: "lightblue",
+                          }}
+                        >
+                          <div
+                            onClick={handleAddTransporter}
+                            style={{
+                              display: "block",
+                              textDecoration: "none",
+                              color: "black",
+                            }}
+                          >
+                            Add Transporter
+                          </div>
+                        </button>
                     <Select
-                      options={transporters.map((transporterName) => ({
-                        value: transporterName,
-                        label: transporterName,
+                      options={transporters.map((transporter) => ({
+                        value: transporter,
+                        label: transporter,
                       }))}
-                      value={{ value: transporterName, label: transporterName }}
-                      onChange={(selectedOption) =>
-                        setTransporter(selectedOption.value)
-                      }
+                      value={transporter ? { value: transporter, label: transporter } : null}
+                      onChange={(selectedOption) => setTransporter(selectedOption.value)}
                       placeholder="Select Transporter"
                       isSearchable
                       required
+                      styles={selectStyles}
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleType" className="form-label">
-                      Vehicle Type{" "}
-                     
+                      Vehicle Type
                     </label>
                     <Select
                       options={[
@@ -203,13 +211,11 @@ function SalesVehicle() {
                         { value: "large-truck", label: "Large Truck" },
                         { value: "others", label: "Others" },
                       ]}
-                      value={{ value: vehicleType, label: vehicleType }}
-                      onChange={(selectedOption) =>
-                        setVehicleType(selectedOption.value)
-                      }
+                      value={vehicleType ? { value: vehicleType, label: vehicleType } : null}
+                      onChange={(selectedOption) => setVehicleType(selectedOption.value)}
                       placeholder="Select Vehicle Type"
                       isSearchable
-
+                      styles={selectStyles}
                     />
                   </div>
                   <div className="col-md-6">
@@ -219,60 +225,52 @@ function SalesVehicle() {
                     <Select
                       options={[
                         { value: "Tata Motors", label: "Tata Motors" },
-                        {
-                          value: "Ashok Leyland Limited",
-                          label: "Ashok Leyland Limited",
-                        },
-                        {
-                          value: "VE Commercial Vehicles Limited",
-                          label: "VE Commercial Vehicles Limited",
-                        },
-                        {
-                          value: "Mahindra & Mahindra Limited",
-                          label: "Mahindra & Mahindra Limited",
-                        },
+                        { value: "Ashok Leyland Limited", label: "Ashok Leyland Limited" },
+                        { value: "VE Commercial Vehicles Limited", label: "VE Commercial Vehicles Limited" },
+                        { value: "Mahindra & Mahindra Limited", label: "Mahindra & Mahindra Limited" },
                         { value: "Piaggio India", label: "Piaggio India" },
-                        {
-                          value: "Scania Commercial Vehicle India Pvt Ltd",
-                          label: "Scania Commercial Vehicle India Pvt Ltd",
-                        },
+                        { value: "Scania Commercial Vehicle India Pvt Ltd", label: "Scania Commercial Vehicle India Pvt Ltd" },
                         { value: "Force Motors", label: "Force Motors" },
                         { value: "Bharat Benz", label: "Bharat Benz" },
                         { value: "others", label: "Others" },
                       ]}
-                      value={{
-                        value: vehicleManufacturer,
-                        label: vehicleManufacturer,
-                      }}
-                      onChange={(selectedOption) =>
-                        setVehicleManufacturer(selectedOption.value)
-                      }
+                      value={vehicleManufacturer ? { value: vehicleManufacturer, label: vehicleManufacturer } : null}
+                      onChange={(selectedOption) => setVehicleManufacturer(selectedOption.value)}
                       placeholder="Select Manufacturer"
                       isSearchable
+                      styles={selectStyles}
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleLoadCapacity" className="form-label">
-                      Vehicle Load Capacity{" "}
-                    
+                      Vehicle Load Capacity ({loadCapacityUnit})
                     </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="vehicleLoadCapacity"
-                      placeholder="Enter Vehicle Load Capacity"
-                      value={vehicleLoadCapacity}
-                      onChange={(e) => {
-                        const newValue = Math.max(0, parseFloat(e.target.value, 10));
-                        setVehicleLoadCapacity(newValue);
-                      }}
-                    />
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="vehicleLoadCapacity"
+                        placeholder={`Enter Vehicle Load Capacity in ${loadCapacityUnit}`}
+                        value={vehicleLoadCapacity}
+                        onChange={(e) => {
+                          const newValue = Math.max(0, parseFloat(e.target.value, 10));
+                          setVehicleLoadCapacity(newValue);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={toggleLoadCapacityUnit}
+                      >
+                        <FontAwesomeIcon icon={faExchangeAlt} />
+                      </button>
+                    </div>
                   </div>
                   <div className="col-md-3">
                     <label htmlFor="vehicleFitnessUpTo" className="form-label">
-                      Fitness Upto{" "}
+                      Fitness Upto
                     </label>
                     <input
                       type="date"
@@ -280,7 +278,6 @@ function SalesVehicle() {
                       id="vehicleFitnessUpTo"
                       value={vehicleFitnessUpTo}
                       onChange={(e) => setvehicleFitnessUpTo(e.target.value)}
-
                     />
                   </div>
                   <div className="col-md-3">
@@ -293,7 +290,7 @@ function SalesVehicle() {
                       value={vehicleWheelsNo}
                       onChange={(e) => setvehicleWheelsNo(e.target.value)}
                     >
-                      {[6, 8, 10, 12, 14, 16, 18, 20, 22].map((wheel) => (
+                      {["select wheel", 4, 6, 8, 10, 12, 14, 16, 18, 20, 22].map((wheel) => (
                         <option key={wheel} value={wheel}>
                           {wheel}
                         </option>

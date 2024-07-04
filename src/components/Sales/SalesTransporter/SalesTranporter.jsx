@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
+import SideBar from "../../SideBar/SideBar";
+import "./SalesTransporter.css";
+import { faSave, faEraser, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 function SalesTransporter() {
   const [transporterName, setTransporterName] = useState("");
@@ -12,9 +14,8 @@ function SalesTransporter() {
   const [transporterAddress, setTransporterAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [error, setError] = useState("");
 
-  const userId = sessionStorage.getItem("userId");
+
   const handleClear = () => {
     setTransporterName("");
     setTransporterContactNo("");
@@ -23,6 +24,10 @@ function SalesTransporter() {
     setEmailError("");
     setPhoneError("");
   };
+
+  const navigate = useNavigate();
+
+  const userId = sessionStorage.getItem("userId");
 
   const handleSave = () => {
     let emailIsValid = true;
@@ -80,13 +85,12 @@ function SalesTransporter() {
       body: JSON.stringify(transporterData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
@@ -102,8 +106,6 @@ function SalesTransporter() {
         handleClear();
       })
       .catch((error) => {
-        console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -117,15 +119,17 @@ function SalesTransporter() {
   };
 
   return (
-    <SideBar6>
-      <div className="transporter-register container-fluid">
-        <div className="transporter-main-content ">
-        <div className="d-flex justify-content-between align-items-center">
+    <SideBar>
+      <div className="transporter-register">
+        <div className="transporter-main-content container-fluid">
+        
+ <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Transporter Registration</h2>
-              <Link to={"/home6"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
         </div>
+ 
           <div className="transporter-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
             <div
               className="card-body p-4"
@@ -261,7 +265,7 @@ function SalesTransporter() {
           </div>
         </div>
       </div>
-    </SideBar6>
+    </SideBar>
   );
 }
 
