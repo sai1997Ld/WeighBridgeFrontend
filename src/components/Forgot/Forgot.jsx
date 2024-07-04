@@ -97,6 +97,7 @@ const Forgot = () => {
 
   return (
     <div className="login-page">
+       <div className="login-background"></div>
       <div className="login-container">
         <div className="login-content">
           <h1 className="login-title" style={{ backgroundColor: "white" }}>
