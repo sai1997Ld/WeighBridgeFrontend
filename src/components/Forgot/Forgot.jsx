@@ -2,9 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faEnvelope,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import login from '../../assets/login.jpg';
+import login from "../../assets/login.jpg";
 
 const Forgot = () => {
   const [email, setEmail] = useState("");
@@ -17,9 +21,12 @@ const Forgot = () => {
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/auths/forgot?emailId=${email}`, {
-        method: "POST",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/auths/forgot?emailId=${email}`,
+        {
+          method: "POST",
+        }
+      );
 
       if (response.ok) {
         const data = await response.text();
@@ -53,13 +60,20 @@ const Forgot = () => {
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/v1/auths/forget/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ emailId: email, otp: otp, newPassword: newPassword }),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/v1/auths/forget/reset-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailId: email,
+            otp: otp,
+            newPassword: newPassword,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.text();
@@ -97,23 +111,20 @@ const Forgot = () => {
 
   return (
     <div className="login-page">
-       <div className="login-background"></div>
+      <div className="login-background"></div>
       <div className="login-container">
         <div className="login-content">
           <h1 className="login-title" style={{ backgroundColor: "white" }}>
             Weighbridge Management System
           </h1>
-          <img
-            src={login}
-            alt="Truck"
-            className="login-truck-image"
-          />
+          <img src={login} alt="Truck" className="login-truck-image" />
           <form
             onSubmit={otpSent ? handleResetPasswordSubmit : handleEmailSubmit}
             className="login-form"
             style={{ backgroundColor: "white" }}
           >
             <div className="form-group">
+              <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
               <input
                 type="email"
                 placeholder="Email"
