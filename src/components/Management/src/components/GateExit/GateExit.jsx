@@ -43,7 +43,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [systemOutTime, setSystemOutTime] = useState('');
   const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(moment());
+  const [selectedDate, setSelectedDate] = useState(null);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageNumber, setStartPageNumber] = useState(1);
@@ -129,14 +129,13 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
   // }, []);
 
   const handleDateChange = (date) => {
+    setSelectedDate(date);
     if (date && date.isValid()) {
-      setSelectedDate(date);
       console.log("The date is valid:", date);
       fetchData(currentPage, date);
     } else {
-      console.error("Invalid date");
-      // Optionally, you can set a default date here
-      // setSelectedDate(moment());
+      console.log("No date selected, fetching all transactions");
+      fetchData(currentPage, null);
     }
   };
 
@@ -287,7 +286,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
   const fetchDataByTransactionType = async (transactionType) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?transactionType=${transactionType}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?vehicleStatus=completed&transactionType=${transactionType}`, {
         credentials: "include" // Include credentials option here
       });
       if (!response.ok) {
@@ -310,7 +309,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     // Initial fetch
-    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&transactionType=inbound&companyName=${company}&siteName=${site},${site}&page=${pageNumber}", {
+    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&transactionType=inbound&companyName=${company}&siteName=${site},${site}", {
       credentials: "include"
     })
       .then(response => {
@@ -346,6 +345,10 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     }
   }, [currentPage, selectedDate]);
 
+  useEffect(() => {
+    fetchData(0); // Initial fetch with page 0 and no date
+  }, []);
+
   const fetchData = (pageNumber, date = selectedDate) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
@@ -355,21 +358,19 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
       return;
     }
   
-    let formattedDate;
-    if (date && date.isValid()) {
-      // Format the selected date as "DD-MM-YYYY"
-      const year = date.year();
-      const month = String(date.month() + 1).padStart(2, '0');
-      const day = String(date.date()).padStart(2, '0');
-      formattedDate = `${year}-${month}-${day}`;
-    } else {
-      // Use current date if no valid date is provided
-      formattedDate = moment().format('DD-MM-YYYY');
+    let apiUrl = `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}`;
+  
+    if (selectedSiteName) {
+      apiUrl += `&siteName=${selectedSiteName}`;
     }
   
-    const apiUrl = selectedSiteName
-    ? `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&date=${formattedDate}`
-    : `http://localhost:8080/api/v1/management/transactions/ongoing??vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}&date=${formattedDate}`;
+    apiUrl += `&page=${pageNumber}`;
+  
+    if (date && date.isValid()) {
+      const formattedDate = date.format('YYYY-MM-DD');
+      apiUrl += `&date=${formattedDate}`;
+    }
+  
     fetch(apiUrl, {
       credentials: "include"
     })
@@ -382,7 +383,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
       .then(data => {
         setVehicleEntryDetails(data.transactions);
         setTotalPage(data.totalPages);
-        setTotalEntries(data.totalElements)
+        setTotalEntries(data.totalElements);
         console.log("total Page " + data.totalPages);
       })
       .then((secondResponse) => {
@@ -446,7 +447,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
             <div className="d-flex justify-content-between align-items-center w-100">
               <div style={{ flex: "2" }}>
               <DatePicker
-  value={selectedDate || moment()} // Provide a default value
+  value={selectedDate}
   onChange={handleDateChange}
   disabledDate={disabledFutureDate}
   format="DD-MM-YYYY"
@@ -454,6 +455,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     borderRadius: "5px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   }}
+  allowClear={true} // This allows the user to clear the date
 />
               </div>
               <div style={{ flex: "15", textAlign: "center" }}>
