@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./LoginUser.css";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
-import login from '../../assets/login.jpg';
+import {
+  faEye,
+  faEyeSlash,
+  faUser,
+  faLock,
+} from "@fortawesome/free-solid-svg-icons";
+import login from "../../assets/login.jpg";
 
 const LoginUser = () => {
   const [userId, setUserId] = useState("");
@@ -42,59 +46,29 @@ const LoginUser = () => {
           sessionStorage.setItem("userId", data.userId);
           console.log(data);
 
-          if (data.roles.includes("ADMIN")) {
+          const roleRoutes = {
+            ADMIN: "/admin-dashboard",
+            QUALITY_USER: "/quality-dashboard",
+            MANAGEMENT: "/management-dashboard",
+            GATE_USER: "/gate-dashboard",
+            WEIGHBRIDGE_OPERATOR: "/weighbridge-dashboard",
+            SALE_USER: "/sales-dashboard",
+          };
+
+          const userRole = Object.keys(roleRoutes).find((role) =>
+            data.roles.includes(role)
+          );
+
+          if (userRole) {
             Swal.fire({
               title: "Login Successful!",
-              text: "Welcome, Admin!",
+              text: `Welcome, ${userRole.replace("_", " ")}!`,
               icon: "success",
               confirmButtonText: "OK",
             }).then(() => {
-              navigate("/home1", { state: { userId: data.userId } });
-            });
-          } else if (data.roles.includes("QUALITY_USER")) {
-            Swal.fire({
-              title: "Login Successful!",
-              text: "Welcome, Quality User!",
-              icon: "success",
-              confirmButtonText: "OK",
-            }).then(() => {
-              navigate("/home2", { state: { userId: data.userId } });
-            });
-          } else if (data.roles.includes("MANAGEMENT")) {
-            Swal.fire({
-              title: "Login Successful!",
-              text: "Welcome, Management!",
-              icon: "success",
-              confirmButtonText: "OK",
-            }).then(() => {
-              navigate("/home5", { state: { userId: data.userId } });
-            });
-          } else if (data.roles.includes("GATE_USER")) {
-            Swal.fire({
-              title: "Login Successful!",
-              text: "Welcome, Gate User!",
-              icon: "success",
-              confirmButtonText: "OK",
-            }).then(() => {
-              navigate("/home3", { state: { userId: data.userId } });
-            });
-          } else if (data.roles.includes("WEIGHBRIDGE_OPERATOR")) {
-            Swal.fire({
-              title: "Login Successful!",
-              text: "Welcome, Weighbridge Operator!",
-              icon: "success",
-              confirmButtonText: "OK",
-            }).then(() => {
-              navigate("/home4", { state: { userId: data.userId } });
-            });
-          } else if (data.roles.includes("SALE_USER")) {
-            Swal.fire({
-              title: "Login Successful!",
-              text: "Welcome, Sales User!",
-              icon: "success",
-              confirmButtonText: "OK",
-            }).then(() => {
-              navigate("/home6", { state: { userId: data.userId } });
+              navigate(roleRoutes[userRole], {
+                state: { userId: data.userId },
+              });
             });
           } else {
             Swal.fire({
@@ -133,22 +107,14 @@ const LoginUser = () => {
 
   return (
     <div className="login-page">
+      <div className="login-background"></div>
       <div className="login-container">
         <div className="login-content">
-          <h1 className="login-title" style={{ backgroundColor: "white" }}>
-            Weighbridge Management System
-          </h1>
-          <img
-            src={login}
-            alt="Truck"
-            className="login-truck-image"
-          />
-          <form
-            onSubmit={handleSubmit}
-            className="login-form"
-            style={{ backgroundColor: "white" }}
-          >
+          <h1 className="login-title">Weighbridge Management System</h1>
+          <img src={login} alt="Truck" className="login-truck-image" />
+          <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
+              <FontAwesomeIcon icon={faUser} className="input-icon" />
               <input
                 type="text"
                 placeholder="User Id"
@@ -159,6 +125,7 @@ const LoginUser = () => {
               />
             </div>
             <div className="form-group password-input">
+              <FontAwesomeIcon icon={faLock} className="input-icon" />
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"

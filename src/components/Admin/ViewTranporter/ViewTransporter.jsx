@@ -12,7 +12,6 @@ import SideBar from "../../SideBar/SideBar";
 import "./ViewTransporter.css";
 import { Link } from "react-router-dom";
 
-
 const { Search } = Input;
 
 const ViewTransporter = () => {
@@ -229,11 +228,11 @@ const ViewTransporter = () => {
       <div className="view-transporter-page container-fluid">
         <div className="d-flex justify-content-between align-items-center">
           <h2 className="text-center mx-auto">Manage Transporter</h2>
-          <Link to={"/home1"}>
+          <Link to={"/admin-dashboard"}>
             <FontAwesomeIcon
               icon={faHome}
               style={{ float: "right", fontSize: "1.5em" }}
-              className="mb-3"
+              className="mb-2"
             />
           </Link>
         </div>

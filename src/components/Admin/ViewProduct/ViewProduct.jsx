@@ -73,11 +73,11 @@ const ViewProduct = () => {
       <div className="view-product-page container-fluid">
         <div className="d-flex justify-content-between align-items-center">
           <h2 className="text-center mx-auto">View Product</h2>
-          <Link to={"/home1"}>
+          <Link to={"/admin-dashboard"}>
             <FontAwesomeIcon
               icon={faHome}
               style={{ float: "right", fontSize: "1.5em" }}
-              className="mb-3"
+              className="mb-2"
             />
           </Link>
         </div>
@@ -115,7 +115,7 @@ const ViewProduct = () => {
               </div>
               <div className="modal-body">
                 {modalData.map((item, index) => (
-                  <div key={index} className="mb-3">
+                  <div key={index} className="mb-2">
                     <p className="fw-bold mb-1">{item.parameterName}</p>
                     <p className="mb-0">
                       {item.rangeFrom}(Min) - {item.rangeTo}(Max)

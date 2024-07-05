@@ -18,7 +18,6 @@ function MaterialManagement() {
   const [materialTypeName, setMaterialTypeName] = useState("");
   const [materialNames, setMaterialNames] = useState([]);
   const [materialTypeNames, setMaterialTypeNames] = useState([]);
-  const [error, setError] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [showTypeInput, setShowTypeInput] = useState(false);
   const [userInputName, setUserInputName] = useState("");
@@ -48,7 +47,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -75,7 +73,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -183,11 +180,7 @@ function MaterialManagement() {
       supplierName.trim() === "" ||
       supplierAddress.trim() === "" ||
       materialName2.trim() === "" ||
-      parameters.some(
-        (param) =>
-          param.parameterName.trim() === "" 
-   
-      )
+      parameters.some((param) => param.parameterName.trim() === "")
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -270,7 +263,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -297,7 +289,6 @@ function MaterialManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -368,11 +359,11 @@ function MaterialManagement() {
         <div className="material-management-main-content container-fluid">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Material Registration</h2>
-            <Link to={"/home1"}>
+            <Link to={"/admin-dashboard"}>
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-3"
+                className="mb-2"
               />
             </Link>
           </div>
@@ -530,7 +521,11 @@ function MaterialManagement() {
                     </label>
                     <Select
                       id="supplierName"
-                      value= {supplierName ? { value: supplierName, label: supplierName } : null}
+                      value={
+                        supplierName
+                          ? { value: supplierName, label: supplierName }
+                          : null
+                      }
                       onChange={(selectedOption) =>
                         setSupplierName(selectedOption.label)
                       } // use label

@@ -1,4 +1,4 @@
-import { useState,} from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
@@ -6,16 +6,23 @@ import "./UpdateTransporter.css";
 import SideBar from "../../SideBar/SideBar";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 
-
 function UpdateTransporter() {
   const location = useLocation();
   const transporter = location.state;
   console.log(transporter);
-  const[id, setid] = useState(transporter.id);
-  const [transporterName, setTransporterName] = useState(transporter.transporterName);
-  const [transporterContactNo, setTransporterContactNo] = useState(transporter.transporterContactNo);
-  const [transporterEmailId, setTransporterEmailId] = useState(transporter.transporterEmailId);
-  const [transporterAddress, setTransporterAddress] = useState(transporter.transporterAddress);
+  const [id, setid] = useState(transporter.id);
+  const [transporterName, setTransporterName] = useState(
+    transporter.transporterName
+  );
+  const [transporterContactNo, setTransporterContactNo] = useState(
+    transporter.transporterContactNo
+  );
+  const [transporterEmailId, setTransporterEmailId] = useState(
+    transporter.transporterEmailId
+  );
+  const [transporterAddress, setTransporterAddress] = useState(
+    transporter.transporterAddress
+  );
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const navigate = useNavigate();
@@ -50,7 +57,10 @@ function UpdateTransporter() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (transporterEmailId.trim() !== "" && !emailRegex.test(transporterEmailId)) {
+    if (
+      transporterEmailId.trim() !== "" &&
+      !emailRegex.test(transporterEmailId)
+    ) {
       setEmailError("Please enter a valid email address.");
       emailIsValid = false;
     } else {
@@ -70,21 +80,26 @@ function UpdateTransporter() {
     }
 
     const transporterData = {
-        id,
+      id,
       transporterName,
       transporterContactNo,
       transporterEmailId,
       transporterAddress,
     };
 
-    fetch(`http://localhost:8080/api/v1/transporter/${transporter.id}?userId=${sessionStorage.getItem('userId')}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(transporterData),
-      credentials: "include",
-    })
+    fetch(
+      `http://localhost:8080/api/v1/transporter/${
+        transporter.id
+      }?userId=${sessionStorage.getItem("userId")}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transporterData),
+        credentials: "include",
+      }
+    )
       .then(async (response) => {
         if (response.ok) {
           return response.text();
@@ -123,17 +138,27 @@ function UpdateTransporter() {
     <SideBar>
       <div className="update-transporter">
         <div className="update-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Update Transporter</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
-          <div className="update-transporter-container card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)" }}>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Update Transporter</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
+          <div
+            className="update-transporter-container card"
+            style={{
+              boxShadow:
+                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+            }}
+          >
             <div className="card-body p-4">
               <form>
                 <div className="row mb-2">
-                    <div className="col-md-4">
+                  <div className="col-md-4">
                     <label htmlFor="id" className="form-label">
                       Transporter ID
                     </label>
@@ -166,22 +191,30 @@ function UpdateTransporter() {
                     />
                   </div>
                   <div className="col-md-4">
-                    <label htmlFor="transporterContactNo" className="form-label">
+                    <label
+                      htmlFor="transporterContactNo"
+                      className="form-label"
+                    >
                       Contact Number
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                     </label>
                     <input
                       type="tel"
-                      className={`form-control ${phoneError ? "is-invalid" : ""}`}
+                      className={`form-control ${
+                        phoneError ? "is-invalid" : ""
+                      }`}
                       id="transporterContactNo"
                       placeholder="Enter Contact Number"
                       value={transporterContactNo}
                       onChange={(e) => setTransporterContactNo(e.target.value)}
                       required
                       pattern="\d{10}"
-                      onInput={(e) => (e.target.value = e.target.value.replace(/\D/g, ""))}
+                      onInput={(e) =>
+                        (e.target.value = e.target.value.replace(/\D/g, ""))
+                      }
                       title="Please enter 10 numbers"
                       maxLength="10"
                     />
@@ -197,7 +230,9 @@ function UpdateTransporter() {
                     </label>
                     <input
                       type="email"
-                      className={`form-control ${emailError ? "is-invalid" : ""}`}
+                      className={`form-control ${
+                        emailError ? "is-invalid" : ""
+                      }`}
                       id="transporterEmailId"
                       placeholder="Enter Email ID"
                       value={transporterEmailId}

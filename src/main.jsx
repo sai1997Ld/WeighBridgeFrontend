@@ -280,12 +280,12 @@ const router = createBrowserRouter(
     <Route>
       <Route path="/" element={<LoginUser />} />
       <Route path="/forgot-password" element={<Forgot />} />
-      <Route path="/home1" element={<HomePage1 />} />
-      <Route path="/home2" element={<HomePage2 />} />
-      <Route path="/home3" element={<HomePage3 />} />
-      <Route path="/home4" element={<HomePage4 />} />
-      <Route path="/home5" element={<HomePage5 />} />
-      <Route path="/home6" element={<HomePage6 />} />
+      <Route path="/admin-dashboard" element={<HomePage1 />} />
+      <Route path="/qualtity-dashboard" element={<HomePage2 />} />
+      <Route path="/gate-dashboard" element={<HomePage3 />} />
+      <Route path="/weighbridge-dashboard" element={<HomePage4 />} />
+      <Route path="/management-dashboard" element={<HomePage5 />} />
+      <Route path="/sales-dashboard" element={<HomePage6 />} />
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/manage-user" element={<ManageUser />} />
       <Route path="/update-user" element={<UpdateUser />} />
@@ -425,7 +425,7 @@ const router = createBrowserRouter(
       />
       <Route path="/Spinner" element={<Spinner />} />
       <Route path="/CameraMaster" element={<CameraMaster />} />
-      <Route path = "/view-camera" element={<ViewCamera />} />
+      <Route path="/view-camera" element={<ViewCamera />} />
     </Route>
   )
 );

@@ -12,8 +12,6 @@ function SiteManagement() {
   const [siteName, setSiteName] = useState("");
   const [siteAddress, setSiteAddress] = useState("");
   const [companies, setCompanies] = useState([]);
-  const [error, setError] = useState("");
-
 
   const userId = sessionStorage.getItem("userId");
   const handleClear = () => {
@@ -85,7 +83,6 @@ function SiteManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -102,12 +99,16 @@ function SiteManagement() {
     <SideBar>
       <div className="site-management">
         <div className="site-management-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Site Registration</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-        </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Site Registration</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
           <div className="site-container d-flex justify-content-center">
             <div
               className="site-card-container card d-flex justify-content-center"
@@ -128,23 +129,24 @@ function SiteManagement() {
                         </span>
                       </label>
                       <Select
-  options={companies.map((company) => ({
-    value: company.companyName,
-    label: company.companyName,
-  }))}
-  value={
-    companyName
-      ? { value: companyName, label: companyName }
-      : null
-  }
-  onChange={(selectedOption) =>
-    setCompanyName(selectedOption ? selectedOption.value : "")
-  }
-  placeholder="Select a company"
-  isSearchable
-  required
-/>
-
+                        options={companies.map((company) => ({
+                          value: company.companyName,
+                          label: company.companyName,
+                        }))}
+                        value={
+                          companyName
+                            ? { value: companyName, label: companyName }
+                            : null
+                        }
+                        onChange={(selectedOption) =>
+                          setCompanyName(
+                            selectedOption ? selectedOption.value : ""
+                          )
+                        }
+                        placeholder="Select a company"
+                        isSearchable
+                        required
+                      />
                     </div>
                   </div>
                   <div className="row mb-3 justify-content-center">

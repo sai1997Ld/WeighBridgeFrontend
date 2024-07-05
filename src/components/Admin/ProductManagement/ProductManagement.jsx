@@ -8,15 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-
 function ProductManagement() {
-
   const [productName, setproductName] = useState("");
   const [productName2, setproductName2] = useState("");
   const [productTypeName, setproductTypeName] = useState("");
   const [productNames, setproductNames] = useState([]);
   const [productTypeNames, setproductTypeNames] = useState([]);
-  const [error, setError] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [showTypeInput, setShowTypeInput] = useState(false);
   const [userInputName, setUserInputName] = useState("");
@@ -27,11 +24,9 @@ function ProductManagement() {
 
   useEffect(() => {
     fetchproductNames();
-
   }, []);
 
   const userId = sessionStorage.getItem("userId");
-
 
   const fetchproductNames = () => {
     fetch("http://localhost:8080/api/v1/products/names")
@@ -47,7 +42,6 @@ function ProductManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -74,7 +68,6 @@ function ProductManagement() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -98,7 +91,6 @@ function ProductManagement() {
   };
 
   const handleClear2 = () => {
-
     setproductName2("");
     setParameters([{ parameterName: "", rangeFrom: 0, rangeTo: 0 }]);
   };
@@ -179,10 +171,7 @@ function ProductManagement() {
   const handleSaveParameters = () => {
     if (
       productName2.trim() === "" ||
-      parameters.some(
-        (param) =>
-          param.parameterName.trim() === "" 
-      )
+      parameters.some((param) => param.parameterName.trim() === "")
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -248,9 +237,6 @@ function ProductManagement() {
       });
   };
 
-
- 
-
   const handleSelectChange = (event) => {
     const { value } = event.target;
     setproductName(value);
@@ -303,11 +289,11 @@ function ProductManagement() {
         <div className="product-management-main-content container-fluid">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Product Registration</h2>
-            <Link to={"/home1"}>
+            <Link to={"/admin-dashboard"}>
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-3"
+                className="mb-2"
               />
             </Link>
           </div>

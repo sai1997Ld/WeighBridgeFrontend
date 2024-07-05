@@ -20,10 +20,9 @@ function ProcessOrder() {
   const [transporterName, setTransporterName] = useState("");
   const [purchaseProcessDate, setPurchaseProcessDate] = useState("");
   const [consignmentWeight, setConsignmentWeight] = useState(0);
-  const [error, setError] = useState("");
   const [vehicleNumbers, setVehicleNumbers] = useState([]);
   const [transporters, setTransporters] = useState([]);
-  const [balanceWeight, setBalanceWeight] = useState(0); // State for balance weight
+  const [balanceWeight, setBalanceWeight] = useState(0);
 
   const navigate = useNavigate();
 
@@ -41,6 +40,22 @@ function ProcessOrder() {
       .catch((error) =>
         console.error("Error fetching vehicle numbers:", error)
       );
+
+    // Load saved form data from sessionStorage
+    const savedFormData = sessionStorage.getItem("processOrderFormData");
+    if (savedFormData) {
+      const parsedData = JSON.parse(savedFormData);
+      setFormsaleOrderNo(parsedData.formsaleOrderNo || "");
+      setFormProductName(parsedData.formProductName || "");
+      setProductType(parsedData.productType || "");
+      setVehicleNo(parsedData.vehicleNo || "");
+      setTransporterName(parsedData.transporterName || "");
+      setPurchaseProcessDate(parsedData.purchaseProcessDate || "");
+      setConsignmentWeight(parsedData.consignmentWeight || 0);
+
+      // Clear the saved form data after loading
+      sessionStorage.removeItem("processOrderFormData");
+    }
   }, []);
 
   useEffect(() => {
@@ -81,7 +96,9 @@ function ProcessOrder() {
     if (formsaleOrderNo) {
       // Fetch balance weight for the sales order
       fetch(
-        `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(formsaleOrderNo)}`
+        `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(
+          formsaleOrderNo
+        )}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -101,10 +118,22 @@ function ProcessOrder() {
     setTransporterName("");
     setPurchaseProcessDate("");
     setConsignmentWeight(0);
-    setError("");
   };
 
   const handleAddVehicle = () => {
+    // Save current form state to sessionStorage
+    sessionStorage.setItem(
+      "processOrderFormData",
+      JSON.stringify({
+        formsaleOrderNo,
+        formProductName,
+        productType,
+        vehicleNo,
+        transporterName,
+        purchaseProcessDate,
+        consignmentWeight,
+      })
+    );
     navigate("/SalesVehicle");
   };
 
@@ -164,11 +193,12 @@ function ProcessOrder() {
           },
         });
         handleClear();
-        navigate("/home6");
+        // Clear saved form data
+        sessionStorage.removeItem("processOrderFormData");
+        navigate("/sales-dashboard");
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -187,11 +217,11 @@ function ProcessOrder() {
         <div className="sales-process-main-content">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Create Sales Pass</h2>
-            <Link to={"/home6"}>
+            <Link to={"/sales-dashboard"}>
               <FontAwesomeIcon
                 icon={faHome}
                 style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-3"
+                className="mb-2"
               />
             </Link>
           </div>
@@ -236,7 +266,6 @@ function ProcessOrder() {
                         onChange={(e) => setFormProductName(e.target.value)}
                       />
                     </div>
-
                     <div className="col-md-4">
                       <label htmlFor="productType" className="form-label">
                         Product Type
@@ -266,11 +295,8 @@ function ProcessOrder() {
                         </span>
                       </label>
                       <button
-                        className
-                        =
-                        "btn btn-sm border btn-success-1 btn-hover"
+                        className="btn btn-sm border btn-success-1 btn-hover"
                         style={{
-                          
                           borderRadius: "5px",
                           marginLeft: "5px",
                           backgroundColor: "lightblue",
@@ -297,7 +323,6 @@ function ProcessOrder() {
                         required
                       />
                     </div>
-
                     <div className="col-md-6">
                       <label htmlFor="transporterName" className="form-label">
                         Transporter Name{" "}
@@ -305,7 +330,6 @@ function ProcessOrder() {
                           *
                         </span>
                       </label>
-
                       <select
                         className="form-select"
                         id="transporterName"
@@ -322,7 +346,6 @@ function ProcessOrder() {
                       </select>
                     </div>
                   </div>
-
                   <div className="row mb-2">
                     <div className="col-md-6">
                       <label

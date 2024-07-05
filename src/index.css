@@ -10,7 +10,6 @@ label {
   font-weight: bold;
 }
 
-
 .btn-hover:hover {
   background-color: #d63031 !important;
   color: #fff !important;
@@ -34,7 +33,7 @@ label {
 }
 
 .custom-table .ant-table-thead > tr > th {
-  background-color: #0077b6; 
+  background-color: #0077b6;
   color: white;
   padding: 8px;
 }
@@ -46,7 +45,6 @@ label {
 .custom-table .ant-table-filter-trigger .anticon-filter {
   color: white;
 }
-
 
 .action-buttons {
   display: flex;

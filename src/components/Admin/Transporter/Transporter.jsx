@@ -6,7 +6,6 @@ import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 
-
 function Transporter() {
   const [transporterName, setTransporterName] = useState("");
   const [transporterContactNo, setTransporterContactNo] = useState("");
@@ -14,7 +13,6 @@ function Transporter() {
   const [transporterAddress, setTransporterAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  // const [error, setError] = useState("");
 
   const handleClear = () => {
     setTransporterName("");
@@ -30,7 +28,7 @@ function Transporter() {
   const handleSave = () => {
     let emailIsValid = true;
     let phoneIsValid = true;
-  
+
     if (
       transporterName.trim() === "" ||
       transporterAddress.trim() === "" ||
@@ -46,16 +44,19 @@ function Transporter() {
       });
       return;
     }
-  
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     // Check if email field is not empty before validating
-    if (transporterEmailId.trim() !== "" && !emailRegex.test(transporterEmailId)) {
+    if (
+      transporterEmailId.trim() !== "" &&
+      !emailRegex.test(transporterEmailId)
+    ) {
       setEmailError("Please enter a valid email address.");
       emailIsValid = false;
     } else {
       setEmailError("");
     }
-  
+
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(transporterContactNo)) {
       setPhoneError("Please enter a valid 10-digit phone number.");
@@ -63,7 +64,7 @@ function Transporter() {
     } else {
       setPhoneError("");
     }
-  
+
     if (!emailIsValid || !phoneIsValid) {
       return;
     }
@@ -104,8 +105,6 @@ function Transporter() {
         handleClear();
       })
       .catch((error) => {
-        // console.error("Error:", error);
-        // setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -122,17 +121,24 @@ function Transporter() {
     <SideBar>
       <div className="transporter-register">
         <div className="transporter-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Transporter Registration</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
-          <div className="transporter-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
-            <div
-              className="card-body p-4"
-              
-            >
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Transporter Registration</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
+          <div
+            className="transporter-user-container card"
+            style={{
+              boxShadow:
+                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+            }}
+          >
+            <div className="card-body p-4">
               <form>
                 <div className="row mb-2">
                   <div className="col-md-6">
@@ -159,7 +165,8 @@ function Transporter() {
                     >
                       Contact Number
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                     </label>
                     <input
@@ -190,7 +197,7 @@ function Transporter() {
                       Email ID
                     </label>
                     <input
-                      type= "email"
+                      type="email"
                       className={`form-control ${
                         emailError ? "is-invalid" : ""
                       }`}
@@ -230,14 +237,14 @@ function Transporter() {
                       backgroundColor: "white",
                       color: "black",
                       border: "1px solid #cccccc",
-                       
+
                       width: "100px",
 
                       // transition: "transform 0.3s ease-in-out",
                     }}
                     onClick={handleClear}
                   >
-                     <FontAwesomeIcon icon={faEraser} className="me-1" />
+                    <FontAwesomeIcon icon={faEraser} className="me-1" />
                     Clear
                   </button>
                   <button
@@ -246,7 +253,7 @@ function Transporter() {
                     style={{
                       backgroundColor: "white",
                       color: "black",
-                       
+
                       border: "1px solid #cccccc",
                       width: "100px",
 

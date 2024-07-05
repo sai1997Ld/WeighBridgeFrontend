@@ -5,8 +5,9 @@ import Select from "react-select";
 import "./SalesCustomer.css";
 import SideBar6 from "../../SideBar/Sidebar6";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faEraser,faHome } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate, Link } from "react-router-dom";
+import { faSave, faEraser, faRectangleXmark} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+
 
 function SalesCustomer() {
   const [customerName, setCustomerName] = useState("");
@@ -20,15 +21,17 @@ function SalesCustomer() {
   const [zip, setZip] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [error, setError] = useState("");
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCountries();
   }, []);
+
+  const navigate = useNavigate();
+
+  const userId = sessionStorage.getItem("userId");
 
   const fetchCountries = () => {
     const countryData = Country.getAllCountries().map((country) => ({
@@ -55,8 +58,6 @@ function SalesCustomer() {
     );
     setCities(cityData);
   };
-
-  
 
   const handleClear = () => {
     setCustomerName("");
@@ -130,7 +131,7 @@ function SalesCustomer() {
       zip,
     };
 
-    fetch("http://localhost:8080/api/v1/customers", {
+    fetch(`http://localhost:8080/api/v1/customers?userId=${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -138,13 +139,12 @@ function SalesCustomer() {
       body: JSON.stringify(customerData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
@@ -158,11 +158,9 @@ function SalesCustomer() {
           },
         });
         handleClear();
-        navigate("/SalesOrder");
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -177,19 +175,22 @@ function SalesCustomer() {
 
   return (
     <SideBar6>
-      <div className="customer-management container-fluid">
-        <div className="customer-main-content-sales ">
+      <div className="customer-management">
+        <div className="customer-main-content container-fluid">
         <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Customer Registration</h2>
-              <Link to={"/home6"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
         </div>
-          <div className="customer-card-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
-            <div
-              className="card-body p-4"
-              
-            >
+          <div
+            className="customer-card-container card"
+            style={{
+              boxShadow:
+                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+            }}
+          >
+            <div className="card-body p-4">
               <form>
                 <div className="row mb-2">
                   <div className="col-md-6">
@@ -213,9 +214,7 @@ function SalesCustomer() {
                     <label htmlFor="customerEmail" className="form-label">
                       Customer Email
                     </label>
-                    <span style={{ color: "red", fontWeight: "bold" }}>
-                    {" "}*
-                      </span>
+                    <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                     <input
                       type="email"
                       className={`form-control ${
@@ -268,22 +267,22 @@ function SalesCustomer() {
                     >
                       Address Line 1
                     </label>
-                    <span style={{ color: "red", fontWeight: "bold" }}>
-                    {" "}*
-                      </span>
+                    <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                     <input
                       type="text"
                       className="form-control"
                       id="customerAddressLine1"
                       placeholder="Enter Address Line 1"
-                      value={customerAddressLine1}    
+                      value={customerAddressLine1}
                       onChange={(e) => {
-                        const onlyAlphabetsAndSpace = e.target.value.replace(/[^A-Za-z\s]/ig, '');
+                        const onlyAlphabetsAndSpace = e.target.value.replace(
+                          /[^A-Za-z\s]/gi,
+                          ""
+                        );
                         setCustomerAddressLine1(onlyAlphabetsAndSpace);
                       }}
                       required
                     />
-                    
                   </div>
                 </div>
                 <div className="row mb-2">
@@ -292,7 +291,10 @@ function SalesCustomer() {
                       htmlFor="customerAddressLine2"
                       className="form-label"
                     >
-                      Address Line 2
+                      Address Line 2{" "}
+                      <span style={{ color: "red", fontWeight: "bold" }}>
+                        *
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -301,13 +303,14 @@ function SalesCustomer() {
                       placeholder="Enter Address Line 2"
                       value={customerAddressLine2}
                       onChange={(e) => setCustomerAddressLine2(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="country" className="form-label">
-                      Country
+                      Country{" "}
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                    {" "}*
+                        *
                       </span>
                     </label>
                     <Select
@@ -321,16 +324,16 @@ function SalesCustomer() {
                         setCities([]);
                         fetchStates(selectedOption.value);
                       }}
-                      required
+                      placeholder="Select Country"
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="state" className="form-label">
-                      State
+                      State{" "}
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                    {" "}*
+                        *
                       </span>
                     </label>
                     <Select
@@ -345,15 +348,14 @@ function SalesCustomer() {
                           selectedOption.value
                         );
                       }}
-                      required
-
+                      placeholder="Select State"
                     />
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="city" className="form-label">
-                      City
+                      City{" "}
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                    {" "}*
+                        *
                       </span>
                     </label>
                     <Select
@@ -362,17 +364,16 @@ function SalesCustomer() {
                       onChange={(selectedOption) =>
                         setSelectedCity(selectedOption)
                       }
-                      required
-
+                      placeholder="Select City"
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="zip" className="form-label">
-                      ZIP
+                      ZIP{" "}
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                    {" "}*
+                        *
                       </span>
                     </label>
                     <input
@@ -385,8 +386,6 @@ function SalesCustomer() {
                       onInput={(e) =>
                         (e.target.value = e.target.value.replace(/\D/g, ""))
                       }
-                      required
-
                     />
                   </div>
                 </div>
@@ -399,12 +398,10 @@ function SalesCustomer() {
                       color: "black",
                       border: "1px solid #cccccc",
                       width: "100px",
-
-                       
                     }}
                     onClick={handleClear}
                   >
-                       <FontAwesomeIcon icon={faEraser} className="me-1" />
+                    <FontAwesomeIcon icon={faEraser} className="me-1" />
                     Clear
                   </button>
                   <button
@@ -413,14 +410,14 @@ function SalesCustomer() {
                     style={{
                       backgroundColor: "white",
                       color: "black",
-                       
+
                       width: "100px",
 
                       border: "1px solid #cccccc",
                     }}
                     onClick={handleSave}
                   >
-                       <FontAwesomeIcon icon={faSave} className="me-1" />
+                    <FontAwesomeIcon icon={faSave} className="me-1" />
                     Save
                   </button>
                 </div>

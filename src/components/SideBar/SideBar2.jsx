@@ -17,15 +17,13 @@ import {
   Dashboard as DashboardIcon,
   Menu as MenuIcon,
   Person,
-  Print,
-  Camera,
   ExitToApp,
   PowerSettingsNewOutlined,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import FireTruckIcon from '@mui/icons-material/FireTruck';
-import SummarizeIcon from '@mui/icons-material/Summarize';
-import { styled } from '@mui/material/styles';
+import FireTruckIcon from "@mui/icons-material/FireTruck";
+import SummarizeIcon from "@mui/icons-material/Summarize";
+import { styled } from "@mui/material/styles";
 import Swal from "sweetalert2";
 
 const SideBar2 = ({ children }) => {
@@ -35,10 +33,8 @@ const SideBar2 = ({ children }) => {
 
   const isLargeScreen = useMediaQuery("(min-width:600px)");
 
-
-
   const ReversedFireTruckIcon = styled(FireTruckIcon)({
-    transform: 'scaleX(-1)',
+    transform: "scaleX(-1)",
   });
 
   const handleItemClick = (item) => {
@@ -94,23 +90,23 @@ const SideBar2 = ({ children }) => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, sign out",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         // Clear session storage
         sessionStorage.clear();
- 
+
         // Clear browser history and redirect
         window.location.href = "/";
- 
+
         // Additional history manipulation to prevent users from navigating back
         if (window.history && window.history.pushState) {
           // Use replaceState to clear the existing history
           window.history.replaceState(null, null, "/");
- 
+
           // Add a dummy entry to the history to replace current entry
           window.history.pushState(null, null, "/");
- 
+
           // Prevent users from navigating back to the previous state
           window.onpopstate = function (event) {
             window.history.go(1);
@@ -169,8 +165,9 @@ const SideBar2 = ({ children }) => {
             >
               {/* Display user's initials */}
               {userName
-                ? `${userName.split(" ")[0][0]}${userName.split(" ")[1] ? userName.split(" ")[1][0] : ""
-                }`
+                ? `${userName.split(" ")[0][0]}${
+                    userName.split(" ")[1] ? userName.split(" ")[1][0] : ""
+                  }`
                 : ""}
             </Avatar>
           </Box>
@@ -315,7 +312,6 @@ const SideBar2 = ({ children }) => {
             <ListItemText primary="Completed Transaction" />
           </ListItemButton>
 
-
           <ListItemButton
             component={Link}
             to="/VehicleEntryDetails"
@@ -332,7 +328,7 @@ const SideBar2 = ({ children }) => {
             }}
           >
             <ListItemIcon>
-              < ReversedFireTruckIcon />
+              <ReversedFireTruckIcon />
             </ListItemIcon>
             <ListItemText primary="Inbound" />
           </ListItemButton>

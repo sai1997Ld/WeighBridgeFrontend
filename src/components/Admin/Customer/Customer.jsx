@@ -5,7 +5,7 @@ import Select from "react-select";
 import "./Customer.css";
 import SideBar from "../../SideBar/SideBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faEraser, faHome} from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 function Customer() {
@@ -20,7 +20,6 @@ function Customer() {
   const [zip, setZip] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [error, setError] = useState("");
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -28,7 +27,6 @@ function Customer() {
   useEffect(() => {
     fetchCountries();
   }, []);
-
 
   const userId = sessionStorage.getItem("userId");
 
@@ -160,7 +158,6 @@ function Customer() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -177,12 +174,16 @@ function Customer() {
     <SideBar>
       <div className="customer-management">
         <div className="customer-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Customer Registration</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Customer Registration</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
           <div
             className="customer-card-container card"
             style={{

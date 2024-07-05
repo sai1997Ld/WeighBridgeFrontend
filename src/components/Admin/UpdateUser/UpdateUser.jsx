@@ -4,12 +4,8 @@ import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import "./UpdateUser.css";
 import SideBar from "../../SideBar/SideBar";
-import Select from 'react-select';
+import Select from "react-select";
 import { Link } from "react-router-dom";
-
-
-
-
 
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +52,7 @@ function UpdateUser() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Roles List:", data);
-        setRoles(data.map(r => ({ value: r, label: r })));
+        setRoles(data.map((r) => ({ value: r, label: r })));
       })
       .catch((error) => {
         console.error("Error fetching roles list:", error);
@@ -144,22 +140,27 @@ function UpdateUser() {
       lastName,
     };
 
-    fetch(`http://localhost:8080/api/v1/users/updateUser/${userId}?user=${sessionStorage.getItem('userId')}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-      credentials: "include",
-    })
-    .then(async (response) => {
-      if (response.ok) {
-        return response.text(); // Assume the success response is text
-      } else {
-        const error = await response.json();
-        throw new Error(error.message);
+    fetch(
+      `http://localhost:8080/api/v1/users/updateUser/${userId}?user=${sessionStorage.getItem(
+        "userId"
+      )}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+        credentials: "include",
       }
-    })
+    )
+      .then(async (response) => {
+        if (response.ok) {
+          return response.text(); // Assume the success response is text
+        } else {
+          const error = await response.json();
+          throw new Error(error.message);
+        }
+      })
       .then((data) => {
         // Determine the title for the SweetAlert modal
         const title =
@@ -211,17 +212,25 @@ function UpdateUser() {
     <SideBar>
       <div className="update-user">
         <div className="update-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Update User</h2>
-              <Link to={"/home1"}>
-              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}}  className="mb-3"/>
-              </Link>
-            </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Update User</h2>
+            <Link to={"/admin-dashboard"}>
+              <FontAwesomeIcon
+                icon={faHome}
+                style={{ float: "right", fontSize: "1.5em" }}
+                className="mb-2"
+              />
+            </Link>
+          </div>
           <div className="update-user-container">
-            <div className="card update-user-form" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
-              <div
-                className="card-body"
-              >
+            <div
+              className="card update-user-form"
+              style={{
+                boxShadow:
+                  "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+              }}
+            >
+              <div className="card-body">
                 <form>
                   <div className="row mb-3">
                     <div className="col-md-6">
@@ -260,7 +269,10 @@ function UpdateUser() {
                     <div className="col-md-6">
                       <label htmlFor="role" className="form-label">
                         Role
-                        <span style={{ color: "red", fontWeight: "bold" }}> *</span>
+                        <span style={{ color: "red", fontWeight: "bold" }}>
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <Select
                         isMulti
@@ -277,7 +289,8 @@ function UpdateUser() {
                         First Name
                       </label>
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                       <input
                         type="text"
@@ -306,7 +319,8 @@ function UpdateUser() {
                         Last Name
                       </label>
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                       <input
                         type="text"
@@ -325,7 +339,8 @@ function UpdateUser() {
                         Email Id
                       </label>
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                       <input
                         type="email"
@@ -345,12 +360,14 @@ function UpdateUser() {
                         Mobile Number
                       </label>
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                       <input
                         type="tel"
-                        className={`form-control ${contactNoError && "is-invalid"
-                          }`}
+                        className={`form-control ${
+                          contactNoError && "is-invalid"
+                        }`}
                         id="contactNo"
                         placeholder="Enter Mobile Number"
                         value={contactNo}
@@ -375,7 +392,8 @@ function UpdateUser() {
                         Company Name
                       </label>
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                       <select
                         className="form-select"
@@ -398,7 +416,8 @@ function UpdateUser() {
                         Site Name
                       </label>
                       <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
+                        {" "}
+                        *
                       </span>
                       <select
                         className="form-select"
