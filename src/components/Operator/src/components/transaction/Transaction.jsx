@@ -3,7 +3,7 @@ import "./transaction.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { faPrint, faTruck } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faTruck, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button } from "antd";
 import { Typography } from "antd";
@@ -13,6 +13,50 @@ import { Row, Col } from "antd";
 import TicketComponent from "./TicketPrintComponent";
 import { useReactToPrint } from "react-to-print";
 import styled from "styled-components";
+
+const TransactionUpdatesContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+  }
+`;
+
+const TransactionUpdateBox = styled.div`
+  background-color: ${(props) => props.bgColor};
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  flex: 1;
+  text-align: center;
+  margin: 0 0.25rem;
+  color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    flex: 0 0 calc(50% - 0.5rem);
+    margin-bottom: 0.5rem;
+  }
+`;
 
 const OperatorTransaction2 = () => {
   const [currentDate, setCurrentDate] = useState(getFormattedDate());
@@ -36,6 +80,7 @@ const OperatorTransaction2 = () => {
   const [totalSearchPages, setTotalSearchPages] = useState(0);
   const [searchWeighments, setSearchWeighments] = useState([]);
   const [searchPager, setSearchPager] = useState(0);
+  const [allMaterials, setAllMaterials] = useState([]);
 
   const [userId, setUserId] = useState("");
 
@@ -55,13 +100,31 @@ const OperatorTransaction2 = () => {
 
   const goToTransForm = (ticketNo, transactionType) => {
     if (transactionType === "Inbound") {
-      navigate(`/OperatorTransactionFromInbound/?ticketNumber=${ticketNo}`);
+      navigate(`/OperatorTransactionFromInbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`);
     } else {
-      navigate(`/OperatorTransactionFromOutbound/?ticketNumber=${ticketNo}`);
+      navigate(`/OperatorTransactionFromOutbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`);
     }
   };
 
   const itemsPerPage = 5;
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  const fetchMaterials = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/materials`,
+        {
+          withCredentials: true,
+        }
+      );
+      const materials = response.data.map((material) => material.materialName);
+      setAllMaterials([...new Set(materials)]);
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+    }
+  };
 
   const fetchData = (pageNumber) => {
     axios
@@ -276,6 +339,10 @@ const OperatorTransaction2 = () => {
     }
   };
 
+  const handleRefresh = () =>{
+    window.location.reload();
+  }
+
   const handlePrintClick = useReactToPrint({
     content: () => componentRef.current,
   });
@@ -285,50 +352,6 @@ const OperatorTransaction2 = () => {
       handlePrintClick();
     }
   }, [ticketData]);
-
-  const TransactionUpdatesContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-
-    @media (max-width: 768px) {
-      flex-wrap: wrap;
-    }
-  `;
-
-  const TransactionUpdateBox = styled.div`
-    background-color: ${(props) => props.bgColor};
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    flex: 1;
-    text-align: center;
-    margin: 0 0.25rem;
-    color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    @media (max-width: 768px) {
-      flex: 0 0 calc(50% - 0.5rem);
-      margin-bottom: 0.5rem;
-    }
-  `;
 
   return (
     <SideBar5>
@@ -365,6 +388,20 @@ const OperatorTransaction2 = () => {
                   value={currentDate}
                   disabled
                 />
+              </Col>
+              <Col
+                xs={24}
+                sm={12}
+                md={6}
+                style={{
+                  display: "flex",
+                  justifyContent: "start",
+                  alignItems: "center",
+                }}
+              >
+                <div   onClick={handleRefresh} style={{cursor:"pointer"}}>
+                  <FontAwesomeIcon icon={faRefresh} aria-hidden="true" />
+                </div>
               </Col>
 
               <Col
@@ -412,6 +449,24 @@ const OperatorTransaction2 = () => {
                         </Select.Option>
                         <Select.Option value="Inbound">Inbound</Select.Option>
                         <Select.Option value="Outbound">Outbound</Select.Option>
+                      </Select>
+                    ) : searchOption === "materialName" ? (
+                      <Select
+                        value={searchValue}
+                        onChange={(value) => {
+                          setSearchValue(value);
+                          setSearchPageNumber(0);
+                        }}
+                        style={{ width: "100%" }}
+                      >
+                        <Select.Option value="">
+                          Select Material Name
+                        </Select.Option>
+                        {allMaterials.map((material) => (
+                          <Select.Option key={material} value={material}>
+                            {material}
+                          </Select.Option>
+                        ))}
                       </Select>
                     ) : (
                       <Input
