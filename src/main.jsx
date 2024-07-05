@@ -167,6 +167,8 @@ const PrintTicket = lazy(() =>
   )
 );
 
+
+
 const ManagementHome = lazy(() =>
   import("./components/Management/src/components/Home/ManagementHome.jsx")
 );

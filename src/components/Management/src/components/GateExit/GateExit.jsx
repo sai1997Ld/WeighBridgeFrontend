@@ -1,42 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faPrint,
-  faFileWord,
-  faHome,
-} from "@fortawesome/free-solid-svg-icons";
-import OutTimeVehicle from "../../assets/OutTimeVehicle.jpg";
+
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Chart, ArcElement } from "chart.js/auto";
-import Swal from "sweetalert2";
-import {
-  Table,
-  Tag,
-  Button,
-  Input,
-  Select,
-  DatePicker,
-  Menu,
-  Dropdown,
-} from "antd";
-import {
-  SearchOutlined,
-  PrinterOutlined,
-  FilterOutlined,
-} from "@ant-design/icons";
-import moment from "moment";
-import axios from "axios";
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import Swal from 'sweetalert2';
+import { Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
+import { FilterOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { Typography } from "antd";
+import styled from "styled-components";
 import SideBar4 from "../../../../SideBar/SideBar4";
+import moment from "moment";
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import PendingIcon from '@mui/icons-material/Pending';
+
+
 
 const { Option } = Select;
 const api = axios.create({
-  baseURL: "http://localhost:8080/api/v1/gate",
+  baseURL: 'http://localhost:8080/api/v1/gate',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 
   withCredentials: true,
@@ -88,16 +76,125 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
     }
   };
 
+
+const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
+  const [currentDate, setCurrentDate] = useState();
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
+  const [searchOption, setSearchOption] = useState('');
+  const [searchValue, setSearchValue] = useState('');
+  const [totalPage, setTotalPage] = useState(0);
+  const [date, setDate] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [systemOutTime, setSystemOutTime] = useState('');
+  const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(moment());
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [startPageNumber, setStartPageNumber] = useState(1);
+  const itemsPerPage = 5;
+  const [totalEntries, setTotalEntries] = useState(0);
+  const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
+  const [materialOptions, setMaterialOptions] = useState([]);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [selectedTransactionType, setSelectedTransactionType] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
+  const { Text } = Typography;
+  const [inboundPending, setInboundPending] = useState(null);
+
+  const [outboundPending, setOutboundPending] = useState(null);
+
+  const [Completed, setCompleted] = useState(null);
+
+  // const [isEditDisabled, setIsEditDisabled] = useState(false);
+
+
+
+  const disabledFutureDate = (current) => {
+    return current && current > moment().endOf("day");
+  };
+
+  const TransactionUpdatesContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+ 
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+  }
+`;
+
+  const TransactionUpdateBox = styled.div`
+  background-color: ${(props) => props.bgColor};
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  flex: 1;
+  text-align: center;
+  margin: 0 0.25rem;
+  color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+ 
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+ 
+  @media (max-width: 768px) {
+    flex: 0 0 calc(50% - 0.5rem);
+    margin-bottom: 0.5rem;
+  }
+`;
+
+
+  // Code for Date:
+
+  // useEffect(() => {
+  //   const today = new Date();
+  //   const formattedDate = today.toISOString().split("T")[0];
+  //   setCurrentDate(formattedDate);
+  // }, []);
+
+
+  // useEffect(() => {
+  //   const today = new Date().toISOString().split('T')[0];
+  //   setSelectedDate(today);
+  // }, []);
+
+  const handleDateChange = (date) => {
+    if (date && date.isValid()) {
+      setSelectedDate(date);
+      console.log("The date is valid:", date);
+      fetchData(currentPage, date);
+    } else {
+      console.error("Invalid date");
+      // Optionally, you can set a default date here
+      // setSelectedDate(moment());
+    }
+  };
+
   // Code for Searching:
 
   // const handleSearch = (value) => {
   //   setSearchQuery(value);
   //   setCurrentPage(0); // Reset to the first page when searching
-  //   console.log(value);
+  //   console.log(value); 
   // };
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
-    setSearchValue(""); // Reset the search value when the option changes
+    setSearchValue(''); // Reset the search value when the option changes
   };
   const handleInputChange = (e) => {
     setSearchValue(e.target.value);
@@ -105,7 +202,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
 
   const handleSearch = async () => {
     if (!searchValue) {
-      message.error("Please enter a search value");
+      message.error('Please enter a search value');
       return;
     }
 
@@ -113,19 +210,19 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
 
     // Build the URL based on the selected search option
     switch (searchOption) {
-      case "ticketNo":
+      case 'ticketNo':
         apiUrl += `?ticketNo=${searchValue}`;
         break;
-      case "date":
+      case 'date':
         apiUrl += `?date=${searchValue}`;
         break;
-      case "vehicleNo":
+      case 'vehicleNo':
         apiUrl += `?vehicleNo=${searchValue}`;
         break;
-      case "supplier":
+      case 'supplier':
         apiUrl += `?supplier=${searchValue}`;
         break;
-      case "address":
+      case 'address':
         apiUrl += `?address=${searchValue}`;
         break;
       default:
@@ -139,18 +236,16 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
       setVehicleEntryDetails(response.data.transactions); // Update the vehicleEntryDetails state with the fetched data
       setTotalPage(response.data.totalPages);
     } catch (error) {
-      console.error("Error fetching data:", error);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      console.error('Error fetching data:', error);
+      if (error.response && error.response.data && error.response.data.message) {
         message.error(error.response.data.message);
       } else {
-        message.error("Failed to fetch data. Please try again.");
+        message.error('Failed to fetch data. Please try again.');
       }
     }
   };
+
+  // Code for Filltered Data:
 
   // Function to fetch material options from the API
   const fetchMaterialOptions = async () => {
@@ -201,88 +296,165 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
     </Menu>
   );
 
-  // API  For Completed Dashboard:
+
+  // const getFilteredData = () => {
+  //   return vehicleEntryDetails.filter((entry) => {
+  //     let matchesMaterial = true;
+  //     let matchesTransactionType = true;
+
+  //     if (selectedMaterial) {
+  //       matchesMaterial = entry.materialOrProduct === selectedMaterial;
+  //     }
+
+  //     if (selectedTransactionType) {
+  //       matchesTransactionType = entry.transactionType.toLowerCase() === selectedTransactionType;
+  //     }
+
+  //     return matchesMaterial && matchesTransactionType;
+  //   });
+  // };
+
+  // const filteredData = getFilteredData();
+
+  const applyFilter = (data, material, transactionType) => {
+    const filtered = data.filter((entry) => {
+      let matchesMaterial = true;
+
+      if (material) {
+        matchesMaterial = entry.material.toLowerCase() === material.toLowerCase();
+      }
+
+      return matchesMaterial;
+    });
+
+    setFilteredData(filtered);
+  };
+
+  const fetchDataByTransactionType = async (transactionType) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?transactionType=${transactionType}`, {
+        credentials: "include" // Include credentials option here
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setFilteredData(data.transactions);
+    } catch (error) {
+      console.error('Error fetching vehicle entry details:', error);
+    }
+  };
+  // Fetch data by transaction type when selectedTransactionType changes
+  useEffect(() => {
+    if (selectedTransactionType) {
+      fetchDataByTransactionType(selectedTransactionType);
+    }
+  }, [selectedTransactionType]);
+
+  // API for Pagination:
 
   useEffect(() => {
     // Initial fetch
-    fetch(
-      "http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&vehicleStatus=completed&companyName=${selectedCompany}&siteName=${siteName}&page=${pageNumber}",
-      {
-        credentials: "include",
-      }
-    )
-      .then((response) => {
+    fetch("http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&transactionType=inbound&companyName=${company}&siteName=${site},${site}&page=${pageNumber}", {
+      credentials: "include"
+    })
+      .then(response => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
         return response.json();
       })
-      .then((data) => {
+      .then(data => {
         setVehicleEntryDetails(data.transactions);
         setTotalPage(data.totalPages);
         console.log("total Page " + data.totalPages);
 
         // Set the current page to 0 to trigger the paginated fetch
-
-        setCurrentPage(0);
+        // setCurrentPage(0);
+        // Apply initial filter
+        applyFilter(data.transactions, selectedMaterial, selectedTransactionType);
       })
-      .catch((error) => {
-        console.error("Error fetching vehicle entry details:", error);
+      .catch(error => {
+        console.error('Error fetching vehicle entry details:', error);
       });
+    fetchData();
   }, []);
 
-  // API for Pagination:
+  useEffect(() => {
+    applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
+  }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
+
 
   useEffect(() => {
     if (currentPage !== null) {
-      fetchData(currentPage);
+      fetchData(currentPage, selectedDate);
     }
   }, [currentPage, selectedDate]);
 
-  const fetchData = (pageNumber) => {
-    const selectedCompany = sessionStorage.getItem("company");
-    const selectedSiteName = sessionStorage.getItem("site");
-    // const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
-
+  const fetchData = (pageNumber, date = selectedDate) => {
+    const selectedCompany = sessionStorage.getItem('company');
+    const selectedSiteName = sessionStorage.getItem('site');
+  
     if (!selectedCompany) {
-      console.error("Company not selected");
+      console.error('Company not selected');
       return;
     }
-
-    // Get the selected date and format it as "YYYY-MM-DD"
-    const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
-
-    // Construct the API URL with the selected date
+  
+    let formattedDate;
+    if (date && date.isValid()) {
+      // Format the selected date as "DD-MM-YYYY"
+      const year = date.year();
+      const month = String(date.month() + 1).padStart(2, '0');
+      const day = String(date.date()).padStart(2, '0');
+      formattedDate = `${year}-${month}-${day}`;
+    } else {
+      // Use current date if no valid date is provided
+      formattedDate = moment().format('DD-MM-YYYY');
+    }
+  
     const apiUrl = selectedSiteName
-      ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&startDate=${formattedDate}`
-      : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=outbound&vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
-
+    ? `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&date=${formattedDate}`
+    : `http://localhost:8080/api/v1/management/transactions/ongoing??vehicleStatus=completed&companyName=${selectedCompany}&page=${pageNumber}&date=${formattedDate}`;
     fetch(apiUrl, {
-      credentials: "include",
+      credentials: "include"
     })
-      .then((response) => {
+      .then(response => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
         return response.json();
       })
-      .then((data) => {
+      .then(data => {
         setVehicleEntryDetails(data.transactions);
         setTotalPage(data.totalPages);
-        setTotalEntries(data.totalElements);
+        setTotalEntries(data.totalElements)
         console.log("total Page " + data.totalPages);
       })
-      .catch((error) => {
-        console.error("Error fetching vehicle entry details:", error);
+      .then((secondResponse) => {
+        setInboundPending(secondResponse.data); // Set the inbound pending data
+        console.log("Data from the second API:", secondResponse.data);
+      })
+      .then((thirdResponse) => {
+        setOutboundPending(thirdResponse.data);
+        console.log("Data from the third API:", thirdResponse.data);
+      })
+      .then((fourthResponse) => {
+        setCompleted(fourthResponse.data);
+        console.log("Data from the fourth API:", fourthResponse.data);
+      })
+      .catch(error => {
+        console.error('Error fetching vehicle entry details:', error);
       });
   };
 
+
+
+    if (selectedOption === "inbound") {
+      navigate("/VehicleEntryDetails");
+    }
+
+
   const pageCount = totalPage;
-  const handlePageChange = ({ selected }) => {
-    const newStartPage = Math.max(1, selected * 3 - 2);
-    setCurrentPage(selected);
-    setStartPageNumber(newStartPage);
-  };
 
   const chartRef = useRef(null);
   const chartRef2 = useRef(null);
@@ -311,38 +483,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
     };
   }, []);
 
-  const openPopup = () => {
-    setShowPopup(true);
-  };
 
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleConfirm = () => {
-    const details = {
-      ticketType: selectedOption,
-      inTimeDate: selectedDate,
-      outTimeDate: selectedDate, // Assuming both in and out time/date are same for now
-    };
-    onConfirmTicket(details);
-
-    if (selectedOption === "inbound") {
-      navigate("/VehicleEntryDetails");
-    }
-
-    setSelectedOption("");
-    setSelectedDate("");
-    closePopup();
-  };
-
-  // API for Vehicle Out
-
-  // Code for Quality Report:
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
@@ -393,107 +534,65 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
         yPosition += 10; // Increment Y position for each detail line
       });
 
-      // Move the table start position down to avoid overlapping with details
-      yPosition += 10;
 
-      const filteredEntries = Object.entries(data.qualityParameters).filter(
-        ([key, value]) => value !== null && value !== undefined && value !== ""
-      );
+  
 
-      const tableBody = filteredEntries.map(([key, value]) => [key, value]);
-      doc.autoTable({
-        startY: yPosition,
-        head: [["Field", "Value"]],
-        body: tableBody,
-      });
-
-      doc.save("quality_report.pdf");
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      alert("Failed to download the quality report. Please try again later.");
-    }
-  };
-  // Code for Disabled Quality Report
-  useEffect(() => {
-    const fetchReportStatuses = async () => {
-      const statuses = {};
-      for (const entry of vehicleEntryDetails) {
-        const status = await checkQualityReportStatus(entry.ticketNo);
-        statuses[entry.ticketNo] = status;
-      }
-      setReportStatuses(statuses);
-    };
-
-    fetchReportStatuses();
-  }, [vehicleEntryDetails]);
+ 
 
   return (
     <SideBar4>
-      <div
-        style={{
-          fontFamily: "Arial",
-          color: "#333",
-          "--table-border-radius": "30px",
-        }}
-      >
+      <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
         <div className="container-fluid mt-0">
-          <div
-            className="d-flex justify-content-between align-items-center"
-            style={{ marginTop: "1rem", marginBottom: "1rem" }}
-          >
+          <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <div className="d-flex justify-content-between align-items-center w-100">
               <div style={{ flex: "2" }}>
-                <DatePicker
-                  value={selectedDate}
-                  onChange={(date) => setSelectedDate(date)}
-                  disabledDate={disabledFutureDate}
-                  format="DD-MM-YYYY"
-                  style={{
-                    borderRadius: "5px",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  }}
-                />
+              <DatePicker
+  value={selectedDate || moment()} // Provide a default value
+  onChange={handleDateChange}
+  disabledDate={disabledFutureDate}
+  format="DD-MM-YYYY"
+  style={{
+    borderRadius: "5px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  }}
+/>
               </div>
               <div style={{ flex: "15", textAlign: "center" }}>
-                <h2
-                  style={{
-                    fontFamily: "Arial",
-                    marginBottom: "0px",
-                    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  Processed Transactions
+                <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
+                Processed Transactions
                 </h2>
               </div>
-              <div style={{ flex: "2", textAlign: "right" }}>
-                <Link to="/management-dashboard">
-                  <FontAwesomeIcon
-                    icon={faHome}
-                    style={{ fontSize: "1.5em" }}
-                  />
+              <div style={{ flex: "1", textAlign: "right" }}>
+                <Link to="/home5">
+                  <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
                 </Link>
               </div>
             </div>
+
+
+
+
             <div style={{ flex: "1" }}></div> {/* To balance the layout */}
           </div>
           <div className="d-flex justify-content-center mb-3">
-            <div
-              className="d-flex align-items-center"
-              style={{ marginLeft: "auto", marginRight: "auto" }}
-            >
+            <div className="d-flex align-items-center" style={{ marginLeft: "auto", marginRight: "auto" }}>
+
               <Select
                 placeholder="Select a search option"
                 style={{ width: "200px" }}
                 onChange={handleSearchOptionChange}
-                // suffixIcon={<SearchOutlined />}
+              // suffixIcon={<SearchOutlined />}
               >
+
+
                 <Option value="ticketNo">Search by Ticket No</Option>
                 <Option value="vehicleNo">Search by Vehicle No</Option>
               </Select>
               {searchOption && (
                 <Input
                   placeholder={`Enter ${searchOption}`}
-                  style={{ width: "200px" }}
+                  style={{ width: "200px", }}
+
                   value={searchValue}
                   onChange={handleInputChange}
                   onPressEnter={handleSearch} // Optionally allow search on Enter key press
@@ -507,335 +606,72 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
             </div>
           </div>
 
-          <div
-            className=" table-responsive"
-            style={{
-              overflowX: "auto",
-              maxWidth: "100%",
-              borderRadius: "10px",
-            }}
-          >
-            <div>
-              <table
-                className=" ant-table table table-striped"
-                style={{ width: "100%" }}
-              >
-                <thead className="ant-table-thead">
+
+
+          <div className=" table-responsive" style={{ overflowX: "auto", maxWidth: "100%", borderRadius: "10px" }}>
+            <div >
+              <table className=" ant-table table table-striped" style={{ width: "100%" }} >
+                <thead className="ant-table-thead" >
                   <tr className="ant-table-row">
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Ticket No.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Vehicle No.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      In Time/Date
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Out Time/Date
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Transporter Name
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Supplier/Customer
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Supplier's /Customer's Address
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Material/Product
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Gross weight
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Tare weight
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Net weight
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      TP No.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      TP Net weight
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      PO No.
-                    </th>
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Challan No.
-                    </th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Ticket No.</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Vehicle No.</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>In Time/Date</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Out Time/Date</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transporter Name</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Supplier/Customer</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Supplier's /Customer's Address</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Material/Product</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Gross weight</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Tare weight</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Net weight</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>TP No.</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>TP Net weight(Ton)</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>PO No.</th>
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Challan No.</th>
                     {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transaction Status </th> */}
-                    <th
-                      className="ant-table-cell"
-                      style={{
-                        whiteSpace: "nowrap",
-                        color: "white",
-                        backgroundColor: "#0077b6",
-                        borderRight: "1px solid white",
-                      }}
-                    >
-                      Transaction Type
-                    </th>
-                    {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}> Print </th> */}
+                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transaction Type</th>
+                    {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Quality Report </th> */}
+
                     {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>OUT</th> */}
                   </tr>
                 </thead>
                 <tbody className="text-center">
-                  {vehicleEntryDetails.map((entry) => (
+
+                  {filteredData.map((entry) => (
                     <tr key={entry.id}>
-                      <td
-                        className="ant-table-cell"
-                        style={{ textAlign: "center" }}
-                      >
-                        {entry.ticketNo}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.vehicleNo}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.vehicleIn}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.vehicleOut}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.transporter}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.transactionType === "Inbound"
-                          ? entry.supplier
-                          : entry.customer}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.transactionType === "Inbound"
-                          ? entry.supplierAddress
-                          : entry.customerAddress}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.material}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.grossWeight}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.tareWeight}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.netWeight}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.tpNo}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.tpNetWeight}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.poNo}{" "}
-                      </td>
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.challanNo}{" "}
-                      </td>
-                      {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center"}}> {entry.transactionStatus}</td> */}
-                      <td
-                        className="ant-table-cell"
-                        style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {" "}
-                        {entry.transactionType}
-                      </td>
+                      <td className="ant-table-cell" style={{ textAlign: "center" }} >{entry.ticketNo}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.vehicleNo} </td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.vehicleIn} </td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.vehicleOut}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.transporter}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.transactionType === 'Inbound' ? entry.supplier : entry.customer}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.transactionType === 'Inbound' ? entry.supplierAddress : entry.customerAddress}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.material}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.grossWeight}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.tareWeight}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.netWeight}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.tpNo}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.tpNetWeight}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.poNo}</td>
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.challanNo}</td>
+                      {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.transactionStatus}</td> */}
+                      <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transactionType}</td>
+
                       {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
-                                                <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
-                                                    onClick={() => { handlePrint(entry.print) }}
-                                                >
-                                                    <FontAwesomeIcon icon={faPrint} />
-                                                </button>
-                                            </td> */}
+                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
+                            onClick={() => handleQualityReportDownload(entry.ticketNo)}
+                            disabled={!entry.quality}
+                          >
+                            <FontAwesomeIcon icon={faFileWord} />
+                          </button> 
+                        </td>*/}
                       {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
-                                                <button className="image-button" onClick={() => handleVehicleExit(entry.ticketNo)}>
-                                                    <div className="image-container" style={{ border: 'none' }}>
-                                                        <img src={OutTimeVehicle} alt="Out" className="time-image" />
-                                                    </div>
-                                                </button>
-                                            </td> */}
+                        <button className="image-button" onClick={() => handleVehicleExit(entry.ticketNo)}>
+                          <div className="image-container" style={{ border: 'none' }}>
+                            <img src={OutTimeVehicle} alt="Out" className="time-image" />
+                          </div>
+                        </button>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>
@@ -849,11 +685,11 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
       <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
         <span>
           Showing {currentPage * itemsPerPage + 1} to{" "}
-          {Math.min(
-            (currentPage + 1) * itemsPerPage,
-            currentPage * itemsPerPage + vehicleEntryDetails.length
-          )}{" "}
-          of {totalEntries} entries
+          {Math.min((currentPage + 1) * itemsPerPage, ((currentPage) * itemsPerPage) + vehicleEntryDetails.length)} of{" "}
+          {totalEntries} entries
+
+
+
         </span>
         <div className="ml-auto">
           <button
@@ -887,9 +723,9 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
             return (
               <button
                 key={pageNumber}
-                className={`btn btn-outline-primary btn-sm me-2 ${
-                  currentPage === pageNumber ? "active" : ""
-                }`}
+                className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
+                  }`}
+
                 style={{
                   color: currentPage === pageNumber ? "#fff" : "#0077B6",
                   backgroundColor:
@@ -907,9 +743,8 @@ const ManagementGateExit = ({ onConfirmTicket = () => {} }) => {
           {currentPage + 3 < pageCount && <span>...</span>}
           {currentPage + 3 < pageCount && (
             <button
-              className={`btn btn-outline-primary btn-sm me-2 ${
-                currentPage === pageCount - 1 ? "active" : ""
-              }`}
+              className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
+                }`}
               style={{
                 color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
                 backgroundColor:
