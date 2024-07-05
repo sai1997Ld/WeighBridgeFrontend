@@ -117,7 +117,12 @@ const MonthlyReport = lazy(() =>
 const CustomizedReport = lazy(() =>
   import("./components/GateUser/src/components/Report/CustomizedReport.jsx")
 );
-
+const Print = lazy(() =>
+  import("./components/GateUser/src/components/Print/Print.jsx")
+);
+const Camera = lazy(() =>
+  import("./components/GateUser/src/components/Camera/Camera.jsx")
+);
 const Capture = lazy(() =>
   import("./components/GateUser/src/components/Camera/Capture.jsx")
 );
@@ -230,6 +235,16 @@ const OperatorTransactionFromInbound = lazy(() =>
     "./components/Operator/src/components/transactionform/TransactionFrom.jsx"
   )
 );
+const OperatorCompletedTransactionFromInbound = lazy(() =>
+  import(
+    "./components/Operator/src/components/compinbound/compinbound.jsx"
+  )
+);
+const OperatorCompletedTransactionFromOutbound = lazy(() =>
+  import(
+    "./components/Operator/src/components/compoutbound/compoutbound.jsx"
+  )
+);
 const OperatorTransactionFromOutbound = lazy(() =>
   import(
     "./components/Operator/src/components/transactionform1/Transactionform1.jsx"
@@ -280,12 +295,12 @@ const router = createBrowserRouter(
     <Route>
       <Route path="/" element={<LoginUser />} />
       <Route path="/forgot-password" element={<Forgot />} />
-      <Route path="/admin-dashboard" element={<HomePage1 />} />
-      <Route path="/qualtity-dashboard" element={<HomePage2 />} />
-      <Route path="/gate-dashboard" element={<HomePage3 />} />
-      <Route path="/weighbridge-dashboard" element={<HomePage4 />} />
-      <Route path="/management-dashboard" element={<HomePage5 />} />
-      <Route path="/sales-dashboard" element={<HomePage6 />} />
+      <Route path="/home1" element={<HomePage1 />} />
+      <Route path="/home2" element={<HomePage2 />} />
+      <Route path="/home3" element={<HomePage3 />} />
+      <Route path="/home4" element={<HomePage4 />} />
+      <Route path="/home5" element={<HomePage5 />} />
+      <Route path="/home6" element={<HomePage6 />} />
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/manage-user" element={<ManageUser />} />
       <Route path="/update-user" element={<UpdateUser />} />
@@ -409,6 +424,8 @@ const router = createBrowserRouter(
         path="/OperatorTransactionFromInbound"
         element={<OperatorTransactionFromInbound />}
       />
+      <Route path="/OperatorCompletedTransactionFromInbound" element={<OperatorCompletedTransactionFromInbound/>}/>
+      <Route path="/OperatorCompletedTransactionFromOutbound" element={<OperatorCompletedTransactionFromOutbound/>}/>
       <Route
         path="/OperatorTransactionFromOutbound"
         element={<OperatorTransactionFromOutbound />}
@@ -425,7 +442,7 @@ const router = createBrowserRouter(
       />
       <Route path="/Spinner" element={<Spinner />} />
       <Route path="/CameraMaster" element={<CameraMaster />} />
-      <Route path="/view-camera" element={<ViewCamera />} />
+      <Route path = "/view-camera" element={<ViewCamera />} />
     </Route>
   )
 );
