@@ -303,16 +303,20 @@ function VehicleOutboundDetails() {
     };
 
     // Create JSON payload
-    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+    const fetchAndAppendBlob = async (capturedImage, name) => {
+      if (capturedImage) {
+        const blob = await fetch(capturedImage).then((res) => res.blob());
+        return formD.append(name, blob, `${name}_GATE_USER_${userId}_${Date.now()}.jpg`);
+      }
+    };
 
     const formD = new FormData();
-    formD.append("frontImg1", blobFront);
-    formD.append("frontImg1", blobRear);
-    formD.append("frontImg1", blobSide);
-    formD.append("frontImg1", blobTop);
+    await Promise.all([
+      fetchAndAppendBlob(capturedFrontImage, "frontImg1"),
+      fetchAndAppendBlob(capturedRearImage, "backImg2"),
+      fetchAndAppendBlob(capturedSideImage, "leftImg5"),
+      fetchAndAppendBlob(capturedTopImage, "topImg3"),
+    ]);
 
     // Append gateData fields to formD
     formD.append("requestBody", JSON.stringify(gateData));
@@ -768,7 +772,7 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame3"}
                                           imageRef={canvasTopRef}
                                           setCapturedImage={setCapturedTopImage}
                                           capturedImage={capturedTopImage}
@@ -780,7 +784,7 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame4"}
                                           imageRef={canvasRearRef}
                                           setCapturedImage={setCapturedRearImage}
                                           capturedImage={capturedRearImage}
@@ -795,7 +799,7 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame51"}
                                           imageRef={canvasFrontRef}
                                           setCapturedImage={setCapturedFrontImage}
                                           capturedImage={capturedFrontImage}
@@ -807,7 +811,7 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame1"}
+                                          wsUrl={"ws://localhost:8080/ws/frame51"}
                                           imageRef={canvasSideRef}
                                           setCapturedImage={setCapturedSideImage}
                                           capturedImage={capturedSideImage}

@@ -129,11 +129,14 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   // }, []);
 
   const handleDateChange = (date) => {
-    setDate(date);
     if (date && date.isValid()) {
+      setSelectedDate(date);
       console.log("The date is valid:", date);
+      fetchData(currentPage, date);
     } else {
       console.error("Invalid date");
+      // Optionally, you can set a default date here
+      // setSelectedDate(moment());
     }
   };
 
@@ -339,32 +342,35 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   useEffect(() => {
     if (currentPage !== null) {
-      fetchData(currentPage);
+      fetchData(currentPage, selectedDate);
     }
   }, [currentPage, selectedDate]);
 
-  const fetchData = (pageNumber) => {
+  const fetchData = (pageNumber, date = selectedDate) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
-    // const selectedSiteAddress = sessionStorage.getItem('site');
-
+  
     if (!selectedCompany) {
       console.error('Company not selected');
       return;
     }
-
-
- 
-  // Format the selected date as "DD-MM-YYYY"
-  const year = selectedDate.year();
-  const month = String(selectedDate.month() + 1).padStart(2, '0');
-  const day = String(selectedDate.date()).padStart(2, '0');
-  const formattedDate = `${day}-${month}-${year}`;
-
-  const apiUrl = selectedSiteName
-    ? `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&startDate=${formattedDate}`
-    : `http://localhost:8080/api/v1/management/transactions/ongoing?transactionType=inbound&companyName=${selectedCompany}&page=${pageNumber}&startDate=${formattedDate}`;
-
+  
+    let formattedDate;
+    if (date && date.isValid()) {
+      // Format the selected date as "DD-MM-YYYY"
+      const year = date.year();
+      const month = String(date.month() + 1).padStart(2, '0');
+      const day = String(date.date()).padStart(2, '0');
+      formattedDate = `${year}-${month}-${day}`;
+    } else {
+      // Use current date if no valid date is provided
+      formattedDate = moment().format('DD-MM-YYYY');
+    }
+  
+    const apiUrl = selectedSiteName
+      ? `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&siteName=${selectedSiteName}&page=${pageNumber}&date=${formattedDate}`
+      : `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}&page=${pageNumber}&date=${formattedDate}`;
+  
     fetch(apiUrl, {
       credentials: "include"
     })
@@ -440,16 +446,16 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
           <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <div className="d-flex justify-content-between align-items-center w-100">
               <div style={{ flex: "2" }}>
-                <DatePicker
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  disabledDate={disabledFutureDate}
-                  format="DD-MM-YYYY"
-                  style={{
-                    borderRadius: "5px",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  }}
-                />
+              <DatePicker
+  value={selectedDate || moment()} // Provide a default value
+  onChange={handleDateChange}
+  disabledDate={disabledFutureDate}
+  format="DD-MM-YYYY"
+  style={{
+    borderRadius: "5px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  }}
+/>
               </div>
               <div style={{ flex: "15", textAlign: "center" }}>
                 <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
