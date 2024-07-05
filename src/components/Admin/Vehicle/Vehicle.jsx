@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import "./Vehicle.css";
 import SideBar from "../../SideBar/SideBar";
-import {
-  faSave,
-  faEraser,
-  faHome,
-  faExchangeAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { Link } from "react-router-dom";
@@ -22,6 +17,7 @@ function Vehicle() {
   const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState(0);
   const [loadCapacityUnit, setLoadCapacityUnit] = useState("kg");
   const [transporters, setTransporters] = useState([]);
+  const [error, setError] = useState("");
 
   const handleClear = () => {
     setVehicleNo("");
@@ -42,7 +38,10 @@ function Vehicle() {
   }, []);
 
   const handleSave = () => {
-    if (vehicleNo.trim() === "" || transporter.trim() === "") {
+    if (
+      vehicleNo.trim() === "" ||
+      transporter.trim() === ""
+    ) {
       Swal.fire({
         title: "Please fill in all required fields.",
         icon: "warning",
@@ -60,25 +59,17 @@ function Vehicle() {
       vehicleManufacturer,
       vehicleWheelsNo,
       vehicleFitnessUpTo,
-      vehicleLoadCapacity:
-        loadCapacityUnit === "kg"
-          ? vehicleLoadCapacity
-          : vehicleLoadCapacity * 1000,
+      vehicleLoadCapacity: loadCapacityUnit === "kg" ? vehicleLoadCapacity : vehicleLoadCapacity * 1000,
     };
 
-    fetch(
-      `http://localhost:8080/api/v1/vehicles/${transporter}?userId=${sessionStorage.getItem(
-        "userId"
-      )}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(vehicleData),
-        credentials: "include",
-      }
-    )
+    fetch(`http://localhost:8080/api/v1/vehicles/${transporter}?userId=${sessionStorage.getItem("userId")}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(vehicleData),
+      credentials: "include",
+    })
       .then((response) => {
         if (response.ok) {
           return response.text();
@@ -102,7 +93,7 @@ function Vehicle() {
       })
       .catch((error) => {
         console.error("Error:", error);
-
+        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -128,7 +119,7 @@ function Vehicle() {
   const selectStyles = {
     control: (provided) => ({
       ...provided,
-      marginBottom: "20px",
+      marginBottom: '20px',
     }),
     menu: (provided) => ({
       ...provided,
@@ -142,30 +133,17 @@ function Vehicle() {
         <div className="vehicle-content container-fluid">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Vehicle Registration</h2>
-            <Link to={"/admin-dashboard"}>
-              <FontAwesomeIcon
-                icon={faHome}
-                style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-2"
-              />
+            <Link to={"/home1"}>
+              <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}} className="mb-3"/>
             </Link>
           </div>
-          <div
-            className="vehicle-user-container card"
-            style={{
-              boxShadow:
-                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
-            }}
-          >
+          <div className="vehicle-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
             <div className="card-body p-4">
               <form>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleNo" className="form-label">
-                      Vehicle Number{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Vehicle Number <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
                     <input
                       type="text"
@@ -179,24 +157,15 @@ function Vehicle() {
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="transporter" className="form-label">
-                      Transporter{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Transporter <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
                     <Select
                       options={transporters.map((transporter) => ({
                         value: transporter,
                         label: transporter,
                       }))}
-                      value={
-                        transporter
-                          ? { value: transporter, label: transporter }
-                          : null
-                      }
-                      onChange={(selectedOption) =>
-                        setTransporter(selectedOption.value)
-                      }
+                      value={transporter ? { value: transporter, label: transporter } : null}
+                      onChange={(selectedOption) => setTransporter(selectedOption.value)}
                       placeholder="Select Transporter"
                       isSearchable
                       required
@@ -215,14 +184,8 @@ function Vehicle() {
                         { value: "large-truck", label: "Large Truck" },
                         { value: "others", label: "Others" },
                       ]}
-                      value={
-                        vehicleType
-                          ? { value: vehicleType, label: vehicleType }
-                          : null
-                      }
-                      onChange={(selectedOption) =>
-                        setVehicleType(selectedOption.value)
-                      }
+                      value={vehicleType ? { value: vehicleType, label: vehicleType } : null}
+                      onChange={(selectedOption) => setVehicleType(selectedOption.value)}
                       placeholder="Select Vehicle Type"
                       isSearchable
                       styles={selectStyles}
@@ -235,38 +198,17 @@ function Vehicle() {
                     <Select
                       options={[
                         { value: "Tata Motors", label: "Tata Motors" },
-                        {
-                          value: "Ashok Leyland Limited",
-                          label: "Ashok Leyland Limited",
-                        },
-                        {
-                          value: "VE Commercial Vehicles Limited",
-                          label: "VE Commercial Vehicles Limited",
-                        },
-                        {
-                          value: "Mahindra & Mahindra Limited",
-                          label: "Mahindra & Mahindra Limited",
-                        },
+                        { value: "Ashok Leyland Limited", label: "Ashok Leyland Limited" },
+                        { value: "VE Commercial Vehicles Limited", label: "VE Commercial Vehicles Limited" },
+                        { value: "Mahindra & Mahindra Limited", label: "Mahindra & Mahindra Limited" },
                         { value: "Piaggio India", label: "Piaggio India" },
-                        {
-                          value: "Scania Commercial Vehicle India Pvt Ltd",
-                          label: "Scania Commercial Vehicle India Pvt Ltd",
-                        },
+                        { value: "Scania Commercial Vehicle India Pvt Ltd", label: "Scania Commercial Vehicle India Pvt Ltd" },
                         { value: "Force Motors", label: "Force Motors" },
                         { value: "Bharat Benz", label: "Bharat Benz" },
                         { value: "others", label: "Others" },
                       ]}
-                      value={
-                        vehicleManufacturer
-                          ? {
-                              value: vehicleManufacturer,
-                              label: vehicleManufacturer,
-                            }
-                          : null
-                      }
-                      onChange={(selectedOption) =>
-                        setVehicleManufacturer(selectedOption.value)
-                      }
+                      value={vehicleManufacturer ? { value: vehicleManufacturer, label: vehicleManufacturer } : null}
+                      onChange={(selectedOption) => setVehicleManufacturer(selectedOption.value)}
                       placeholder="Select Manufacturer"
                       isSearchable
                       styles={selectStyles}
@@ -286,10 +228,7 @@ function Vehicle() {
                         placeholder={`Enter Vehicle Load Capacity in ${loadCapacityUnit}`}
                         value={vehicleLoadCapacity}
                         onChange={(e) => {
-                          const newValue = Math.max(
-                            0,
-                            parseFloat(e.target.value, 10)
-                          );
+                          const newValue = Math.max(0, parseFloat(e.target.value, 10));
                           setVehicleLoadCapacity(newValue);
                         }}
                       />
@@ -324,19 +263,7 @@ function Vehicle() {
                       value={vehicleWheelsNo}
                       onChange={(e) => setvehicleWheelsNo(e.target.value)}
                     >
-                      {[
-                        "select wheel",
-                        4,
-                        6,
-                        8,
-                        10,
-                        12,
-                        14,
-                        16,
-                        18,
-                        20,
-                        22,
-                      ].map((wheel) => (
+                      {["select wheel", 4, 6, 8, 10, 12, 14, 16, 18, 20, 22].map((wheel) => (
                         <option key={wheel} value={wheel}>
                           {wheel}
                         </option>
