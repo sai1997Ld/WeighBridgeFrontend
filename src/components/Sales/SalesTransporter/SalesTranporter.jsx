@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import SideBar from "../../SideBar/SideBar";
+import SideBar6 from "../../SideBar/Sidebar6";
 import "./SalesTransporter.css";
 import { faSave, faEraser, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -119,7 +119,7 @@ function SalesTransporter() {
   };
 
   return (
-    <SideBar>
+    <SideBar6>
       <div className="transporter-register">
         <div className="transporter-main-content container-fluid">
         
@@ -265,7 +265,7 @@ function SalesTransporter() {
           </div>
         </div>
       </div>
-    </SideBar>
+    </SideBar6>
   );
 }
 

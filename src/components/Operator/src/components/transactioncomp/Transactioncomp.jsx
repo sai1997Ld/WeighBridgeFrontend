@@ -34,6 +34,7 @@ const OperatorTransaction2 = () => {
   const [totalSearchPages, setTotalSearchPages] = useState(0);
   const [searchWeighments, setSearchWeighments] = useState([]);
   const [searchPager, setSearchPager] = useState(0);
+  const [allMaterials, setAllMaterials] = useState([]);
 
   function getFormattedDate() {
     const date = new Date();
@@ -46,9 +47,9 @@ const OperatorTransaction2 = () => {
 
   const goToTransForm = (ticketNo, transactionType) => {
     if (transactionType === "Inbound") {
-      navigate(`/OperatorTransactionFromInbound/?ticketNumber=${ticketNo}`);
+      navigate(`/OperatorCompletedTransactionFromInbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`);
     } else {
-      navigate(`/OperatorTransactionFromOutbound/?ticketNumber=${ticketNo}`);
+      navigate(`/OperatorCompletedTransactionFromOutbound/?ticketNumber=${ticketNo}&truckStatus=EXIT`);
     }
   };
 
@@ -60,6 +61,21 @@ const OperatorTransaction2 = () => {
     const userId = sessionStorage.getItem("userId");
     setUserId(userId);
   }, []);
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  const fetchMaterials = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/materials`, {
+        withCredentials: true,
+      });
+      const materials = response.data.map((material) => material.materialName);
+      setAllMaterials([...new Set(materials)]);
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+    }
+  };
 
   const fetchData = (pageNumber) => {
     axios
@@ -73,7 +89,11 @@ const OperatorTransaction2 = () => {
         setWeighments(response.data.weighmentTransactionResponses);
         setTotalPages(response.data.totalPages);
         setPager(response.data.totalElements);
+      
         setIsLoading(false);
+        const materials = response.data.map((transaction) => transaction.materialName);
+        setAllMaterials([...new Set(materials)]);
+        
       })
       .catch((error) => {
         console.error("Error fetching weighments:", error);
@@ -320,10 +340,29 @@ const OperatorTransaction2 = () => {
                         <Select.Option value="">
                           Select Transaction Type
                         </Select.Option>
-                        <Select.Option value="Inbound">Inbound</Select.Option>
-                        <Select.Option value="Outbound">Outbound</Select.Option>
+                        <Select.Option value=" Inbound ">Inbound</Select.Option>
+                        <Select.Option value=" Outbound ">Outbound</Select.Option>
                       </Select>
-                    ) : (
+                    ) : searchOption === "materialName" ?(
+                      <Select 
+                      value = {searchValue}
+                      onChange={(value) =>{
+                        setSearchValue(value);
+                        setSearchPageNumber(0);
+                      }}
+                      style={{width : "100%"}}
+                      >
+                        <Select.Option value ="">Select Material Name</Select.Option>
+                        {
+                          allMaterials.map((material) => (
+                            <Select.Option key={material} value={material}>
+                              {material}
+                            </Select.Option>
+                          ))
+                        }
+                      </Select>
+
+                    ) :(
                       <Input
                         value={searchValue}
                         onChange={handleInputChange}
