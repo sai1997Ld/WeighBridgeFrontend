@@ -65,6 +65,23 @@ const PrintCompleted = React.forwardRef((props, ref) => {
             <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Net Weight:</strong></td>
             <td style={{ padding: "10px", fontSize: "18px" }}>{ticketData.netWeight} kg</td>
           </tr>
+           {/* Signature Rows */}
+           <tr>
+            <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Issued by:</strong></td>
+            <td style={{ padding: "10px", fontSize: "18px", borderBottom: "1px solid black" }}></td>
+          </tr>
+          <tr>
+            <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Approved by:</strong></td>
+            <td style={{ padding: "10px", fontSize: "18px", borderBottom: "1px solid black" }}></td>
+          </tr>
+          <tr>
+            <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Loaded by:</strong></td>
+            <td style={{ padding: "10px", fontSize: "18px", borderBottom: "1px solid black" }}></td>
+          </tr>
+          <tr>
+            <td style={{ padding: "10px", fontSize: "18px", whiteSpace: "nowrap" }}><strong>Security Officer:</strong></td>
+            <td style={{ padding: "10px", fontSize: "18px", borderBottom: "1px solid black" }}></td>
+          </tr>
         </tbody>
       </table>
     </div>
