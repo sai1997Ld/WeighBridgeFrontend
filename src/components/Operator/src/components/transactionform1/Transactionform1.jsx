@@ -70,7 +70,7 @@ function TransactionFrom2() {
       setInputValue("");
       return;
     } else {
-      setInputValue(newValue);
+      // setInputValue(newValue);
 
       if (ticket.tareWeight === 0) {
         setTareWeight(newValue);
@@ -91,7 +91,7 @@ function TransactionFrom2() {
         },
       });
     } else {
-      if (grossWeight <= tareWeight) {
+      if (grossWeight < tareWeight) {
         Swal.fire({
           title: "Gross weight must be greater than tare weight",
           icon: "error",
@@ -118,15 +118,24 @@ function TransactionFrom2() {
     const upperBound = parseFloat((consignment + 100).toFixed(3));
     if (netWeight) {
       if (netWeight < lowerBound || netWeight > upperBound) {
-        Swal.fire({
+        const result = await Swal.fire({
           title: "Net weight is out of the allowed range",
-          icon: "error",
+          icon: "warning",
+          showCancelButton: true,
           confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
           customClass: {
-            confirmButton: "btn btn-danger",
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger",
           },
         });
-        return;
+  
+        if (result.isConfirmed) {
+          // Proceed with saving
+        } else {
+          // Cancel the save operation
+          return;
+        }
       }
     }
     window.location.reload();
@@ -343,9 +352,15 @@ function TransactionFrom2() {
         socket.close();
       }
     };
-  }, []); // Empty dependency array ensures useEffect runs only on mount
+  }, [ticket]); 
 
-  console.log(trimmedWeight);
+  // useEffect(() => {
+  //    const match = true;
+  //    if (match) {
+  //      setInputValue(90);
+  //      handleChange1(90);
+  //    }
+  //  },[ticket])
 
 
   return (

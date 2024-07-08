@@ -3,7 +3,7 @@ import "./transaction.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { faPrint, faTruck, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faPrint, faTruck, faSyncAlt , faFileWord } from "@fortawesome/free-solid-svg-icons";
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button } from "antd";
 import { Typography } from "antd";
@@ -13,6 +13,10 @@ import { Row, Col } from "antd";
 import TicketComponent from "./TicketPrintComponent";
 import { useReactToPrint } from "react-to-print";
 import styled from "styled-components";
+
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
 
 const TransactionUpdatesContainer = styled.div`
   display: flex;
@@ -100,9 +104,13 @@ const OperatorTransaction2 = () => {
 
   const goToTransForm = (ticketNo, transactionType) => {
     if (transactionType === "Inbound") {
-      navigate(`/OperatorTransactionFromInbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`);
+      navigate(
+        `/OperatorTransactionFromInbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`
+      );
     } else {
-      navigate(`/OperatorTransactionFromOutbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`);
+      navigate(
+        `/OperatorTransactionFromOutbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`
+      );
     }
   };
 
@@ -339,9 +347,9 @@ const OperatorTransaction2 = () => {
     }
   };
 
-  const handleRefresh = () =>{
+  const handleRefresh = () => {
     window.location.reload();
-  }
+  };
 
   const handlePrintClick = useReactToPrint({
     content: () => componentRef.current,
@@ -352,6 +360,89 @@ const OperatorTransaction2 = () => {
       handlePrintClick();
     }
   }, [ticketData]);
+
+  const handleQualityReportDownload = async (ticketNo) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+      
+      const doc = new jsPDF();
+
+      const text = data.companyName;
+      const textWidth = doc.getTextWidth(text);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const x = (pageWidth - textWidth) / 2;
+      doc.setFontSize(18);
+      doc.text(text, x, 22);
+
+      doc.setFontSize(12);
+      doc.setTextColor(100);
+      const subtitle1 = data.companyAddress;
+      const formatDate = (date) => {
+        const d = new Date(date);
+        let day = d.getDate();
+        let month = d.getMonth() + 1;
+        const year = d.getFullYear();
+
+        if (day < 10) {
+          day = '0' + day;
+        }
+        if (month < 10) {
+          month = '0' + month;
+        }
+        return `${day}-${month}-${year}`;
+      };
+      const subtitle2 = `Generated on: ${formatDate(new Date())}`;
+      const subtitleWidth1 = doc.getTextWidth(subtitle1);
+      const subtitleWidth2 = doc.getTextWidth(subtitle2);
+      const subtitleX1 = (pageWidth - subtitleWidth1) / 2;
+      const subtitleX2 = (pageWidth - subtitleWidth2) / 2;
+      doc.text(subtitle1, subtitleX1, 32);
+      doc.text(subtitle2, subtitleX2, 38);
+
+      // Add the additional details before the table
+      const details = [
+        `Ticket No: ${data.ticketNo}`,
+        `Date: ${data.date}`,
+        `Vehicle No: ${data.vehicleNo}`,
+        `Material/Product: ${data.materialOrProduct}`,
+        `Material/Product Type: ${data.materialTypeOrProductType}`,
+        `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
+        `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
+        `Transaction Type: ${data.transactionType}`
+      ];
+
+      doc.setFontSize(14);
+      let yPosition = 50; // Initial Y position for the details
+      details.forEach(detail => {
+        doc.text(detail, 20, yPosition);
+        yPosition += 10; // Increment Y position for each detail line
+      });
+
+      // Move the table start position down to avoid overlapping with details
+      yPosition += 10;
+
+      const filteredEntries = Object.entries(data.qualityParameters).filter(
+        ([key, value]) => value !== null && value !== undefined && value !== ""
+      );
+
+      const tableBody = filteredEntries.map(([key, value]) => [key, value]);
+      doc.autoTable({
+        startY: yPosition,
+        head: [["Field", "Value"]],
+        body: tableBody,
+      });
+
+      doc.save("quality_report.pdf");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Failed to download the quality report. Please try again later.");
+    }
+  };
 
   return (
     <SideBar5>
@@ -399,9 +490,20 @@ const OperatorTransaction2 = () => {
                   alignItems: "center",
                 }}
               >
-                <div   onClick={handleRefresh} style={{cursor:"pointer"}}>
-                  <FontAwesomeIcon icon={faRefresh} aria-hidden="true" />
-                </div>
+                <button
+                  onClick={handleRefresh}
+                  className="btn btn-success"
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    height:"4vh"
+                  }}
+                >
+                  <span>Refresh</span>
+                  <FontAwesomeIcon icon={faSyncAlt} aria-hidden="true"  style={{ marginLeft: "8px" }}/>
+                  
+                </button>
               </Col>
 
               <Col
@@ -537,6 +639,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Ticket No.
@@ -548,6 +651,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Transaction Type
@@ -559,6 +663,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Vehicle No.
@@ -570,10 +675,11 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
-                    &nbsp;&nbsp;&nbsp;Transporter
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    Transporter
+                   
                   </th>
                   <th
                     className="ant-table-cell"
@@ -582,6 +688,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Supplier/Customer
@@ -593,6 +700,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Gross Wt.
@@ -604,6 +712,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Tare Wt.
@@ -615,6 +724,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Net Wt.
@@ -626,6 +736,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Material/Product
@@ -637,9 +748,22 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
+                      textAlign:"center",
                     }}
                   >
                     Print
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                      textAlign:"center",
+                    }}
+                  >
+                    Quality Report
                   </th>
                 </tr>
               </thead>
@@ -734,6 +858,19 @@ const OperatorTransaction2 = () => {
                             />
                           </div>
                         </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
+                            onClick={() => handleQualityReportDownload(weighment.ticketNo)}
+                            // disabled={!entry.qualityParameters}
+                            // disabled={!entry.quality}
+                          >
+                            <FontAwesomeIcon icon={faFileWord} />
+                          </button>
+                        </td>
+
                       </tr>
                     ))
                   : weighments.map((weighment) => (
@@ -842,6 +979,18 @@ const OperatorTransaction2 = () => {
                               ticketData={ticketData}
                             />
                           </div>
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
+                            onClick={() => handleQualityReportDownload(weighment.ticketNo)}
+                            // disabled={!entry.qualityParameters}
+                            // disabled={!entry.quality}
+                          >
+                            <FontAwesomeIcon icon={faFileWord} />
+                          </button>
                         </td>
                       </tr>
                     ))}
