@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SideBar5 from "../../../../SideBar/SideBar5";
-
+// import Read from './Read';
 import "./transactionform.css";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -20,7 +20,7 @@ function TransactionFrom() {
 
   const queryParams = new URLSearchParams(window.location.search);
 
-  const [inputValue, setInputValue] = useState();
+  const [inputValue, setInputValue] = useState("");
 
   const [grossWeight, setGrossWeight] = useState(0);
   const [tareWeight, setTareWeight] = useState(0);
@@ -29,13 +29,15 @@ function TransactionFrom() {
   const [ticket, setTicket] = useState([]);
 
   const ticketNumber = queryParams.get("ticketNumber");
+  const ENTRY = queryParams.get("truckStatus");
+  const EXIT = queryParams.get("truckStatus");
   const [port, setPort] = useState(null);
   const [simulate, setSimulate] = useState(false);
 
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [output, setOutput] = useState('');
-  const [error, setError] = useState('');
- 
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
+
   const userId = sessionStorage.getItem("userId");
 
   useEffect(() => {
@@ -61,8 +63,8 @@ function TransactionFrom() {
     console.log("Count changed:", netWeight);
   }, [tareWeight]);
 
-  const handleChange1 = (e) => {
-    const newValue = parseFloat(e.target.value);
+  const handleChange1 = (value) => {
+    const newValue = parseFloat(value);
     if (isNaN(newValue) || newValue <= 0) {
       Swal.fire({
         title: "Invalid weight",
@@ -77,9 +79,10 @@ function TransactionFrom() {
       return;
     }
 
-    setInputValue(newValue);
-
+    // setInputValue(newValue);
+console.log({ticket})
     if (ticket.grossWeight === 0) {
+      console.log('called')
       setGrossWeight(newValue);
     } else if (newValue >= ticket.grossWeight) {
       Swal.fire({
@@ -133,48 +136,32 @@ function TransactionFrom() {
     goBack();
     setInputValue("");
 
-
-    // const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    // const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    // const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    // const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
-    // const payload = {
-    //   machineId: "1",
-    //   ticketNo: ticketNumber,
-    //   weight: inputValue,
-    // };
-    const fetchAndAppendBlob = async (capturedImage, name) => {
-      if (capturedImage) {
-        const blob = await fetch(capturedImage).then((res) => res.blob());
-        return formD.append(name, blob, `${name}_${ticketNumber}_${Date.now()}.jpg`);
-      }
-    };
-
-    const formD = new FormData();
-    await Promise.all([
-      fetchAndAppendBlob(capturedFrontImage, "frontImg1"),
-      fetchAndAppendBlob(capturedRearImage, "backImg2"),
-      fetchAndAppendBlob(capturedSideImage, "leftImg5"),
-      fetchAndAppendBlob(capturedTopImage, "topImg3"),
-    ]);
+    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
+    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
     const payload = {
       machineId: "1",
       ticketNo: ticketNumber,
       weight: inputValue,
     };
-
+    const formD = new FormData();
+    formD.append("frontImg1", blobFront, Date.now());
+    formD.append("backImg2", blobRear, Date.now());
+    formD.append("leftImg5", blobSide, Date.now());
+    formD.append("topImg3", blobTop, Date.now());
     formD.append("weighmentRequest", JSON.stringify(payload));
+
     const response = await axios({
       method: "post",
-      url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${'WEIGHBRIDGE_OPERATOR'}`,
+      url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
       data: formD,
       headers: {
         withCredentials: true,
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log({response})
-  
+    console.log({ response });
   };
 
   const [formData, setFormData] = useState({
@@ -198,75 +185,6 @@ function TransactionFrom() {
     tpNetWeight: "",
     rcFitnessUpto: "",
   });
-
-  useEffect(() => {
-    if (port) {
-      readSerialData();
-    }
-  }, [port]);
-
-  const connectSerial = async () => {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.serial) {
-      console.error("Web Serial API is not supported in this environment.");
-      return;
-    }
-
-
-    try {
-      const port = await navigator.serial.requestPort();
-      await port.open({ baudRate: 9600 });
-      setPort(port);
-    } catch (error) {
-      console.error("There was an error opening the serial port:", error);
-    }
-  };
-
-  const readSerialData = async () => {
-    try {
-      const decoder = new TextDecoderStream();
-      port.readable.pipeTo(decoder.writable);
-      const inputStream = decoder.readable;
-      const reader = inputStream.getReader();
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-          console.log("Stream closed");
-          reader.releaseLock();
-          break;
-        }
-        const newValue = value.trim();
-        const extractedWeight = extractWeight(newValue);
-        if (extractedWeight) {
-          setInputValue(extractedWeight);
-          handleChange1({ target: { value: extractedWeight } });
-        }
-      }
-    } catch (error) {
-      console.error("Error reading serial data:", error);
-    }
-  };
-
-  const extractWeight = (data) => {
-    const match = data.match(/(\d+(\.\d+)?)\s*kg/);
-    return match ? match[0] : null;
-  };
-  const simulateSerialData = () => {
-    const simulatedWeight = (Math.random() * 1000).toFixed(2); // Generate random weight data
-    setInputValue(simulatedWeight);
-    handleChange1({ target: { value: simulatedWeight } });
-  };
-
-  useEffect(() => {
-    if (simulate) {
-      const interval = setInterval(simulateSerialData, 2000); // Simulate data every 2 seconds
-      return () => clearInterval(interval);
-    }
-  }, [simulate]);
-
-  const toggleSimulation = () => {
-    setSimulate(!simulate);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -298,62 +216,95 @@ function TransactionFrom() {
   const [capturedFrontImage, setCapturedFrontImage] = useState(null);
   const [capturedSideImage, setCapturedSideImage] = useState(null);
 
-  const [weight, setWeight] = useState('Connecting...');
-  const [trimmedWeight, setTrimmedWeight] = useState('');
+  const [grossWeightImages, setGrossWeightImages] = useState({
+    frontImg1: "",
+    backImg2: "",
+    leftImg5: "",
+    topImg3: "",
+  });
+  useEffect(() => {
+    axios
+      .get(
+        `http://localhost:8081/api/v1/camera/get?ticketNo=${ticketNumber}&userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}&truckStatus=${ENTRY}`
+      )
+      .then((response) => {
+        setGrossWeightImages({
+          frontImg1: response.data.frontImg1,
+          backImg2: response.data.backImg2,
+          leftImg5: response.data.leftImg5,
+          topImg3: response.data.topImg3,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching images:", error);
+      });
+  }, [ticketNumber, userId]);
+
+  const [weight, setWeight] = useState("Connecting...");
+  const [trimmedWeight, setTrimmedWeight] = useState("");
   const [socket, setSocket] = useState(null);
- 
+
   useEffect(() => {
     const createWebSocket = () => {
-      const ws = new WebSocket('ws://localhost:8080/ws/weight');
- 
+      
+      const ws = new WebSocket("ws://localhost:8080/ws/weight");
+
       ws.onopen = () => {
-        console.log('Connected to WebSocket server');
-        setWeight('Waiting for data...');
+        console.log("Connected to WebSocket server");
+        setWeight("Waiting for data...");
       };
- 
+
       ws.onmessage = (event) => {
         const receivedData = event.data.trim();
-        console.log('Received data:', receivedData);
+        console.log("Received data:", receivedData);
         setWeight(receivedData);
-      
+
         // Extract and trim the weight
         const match = receivedData.match(/(\d+(\.\d+)?)/);
         if (match) {
-          setTrimmedWeight(match[0]);
+          console.log(match[0]);
+          handleChange1(match[0]);
+          // setTrimmedWeight(match[0]);
           setInputValue(match[0]); // Update the input value
         }
       };
 
- 
       ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        setWeight('Error receiving data');
+        console.error("WebSocket error:", error);
+        setWeight("Error receiving data");
       };
- 
+
       ws.onclose = (event) => {
-        console.log('WebSocket connection closed', event);
+        console.log("WebSocket connection closed", event);
         if (event.wasClean) {
-          setWeight('Connection closed');
+          setWeight("Connection closed");
         } else {
-          setWeight('Connection lost, attempting to reconnect...');
+          setWeight("Connection lost, attempting to reconnect...");
           setTimeout(createWebSocket, 5000); // Attempt to reconnect after 5 seconds
         }
       };
- 
+
       setSocket(ws);
     };
- 
+
     createWebSocket();
 
-     // Cleanup on component unmount
-  return () => {
-    if (socket) {
-      socket.close();
-    }
-  };
-}, []); // Empty dependency array ensures useEffect runs only on mount
+    // Cleanup on component unmount
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [ticket]); // Empty dependency array ensures useEffect runs only on mount
+  // useEffect(() => {
+  //   const match = true;
+  //   if (match) {
+  //     setInputValue(90);
+  //     handleChange1(90);
+  //   }
+  // },[ticket])
 
-console.log(trimmedWeight );
+  console.log(trimmedWeight);
 
   return (
     <SideBar5>
@@ -485,27 +436,33 @@ console.log(trimmedWeight );
             <div className="col-md-12">
               <h5>Weighment Details:</h5>
               <div className="row mb-2">
-  <div className="col-md-5">
-    <div className="sub">
-      <input
-        type="number"
-        className="abcv"
-        placeholder="0"
-        style={{
-          height: "50px",
-          appearance: "textfield",
-          WebkitAppearance: "none",
-          MozAppearance: "textfield",
-        }}
-        min="0"
-        
-        value={trimmedWeight} // Use trimmedWeight here
-        onChange={(e) => {
-          setTrimmedWeight(e.target.value);
-          handleChange1(e);
-        }}
-        inputMode="numeric"
-      />
+                <div className="col-md-5">
+                  <div className="sub">
+                    <input
+                      type="number"
+                      className="abcv"
+                      placeholder="0"
+                      style={{
+                        height: "50px",
+                        appearance: "textfield",
+                        WebkitAppearance: "none",
+                        MozAppearance: "textfield",
+                      }}
+                      min="0"
+                      // value={inputValue}
+                      // onChange={(e) => handleChange1(e, ticket.grossWeight)}
+                      value={inputValue} // Use trimmedWeight here
+                      onChange={(e) => {
+                        console.log(e);
+                        setInputValue(e.target.value);
+                        handleChange1(e.target.value);
+                      }}
+                      inputMode="numeric"
+                    />
+                    {/* <div>
+                    <input type="file" onChange={showFile} />
+                    {fileContent && <Read fileContent={fileContent} setInputValue={setInputValue} />} 
+                                        </div> */}
                     <div className="icons-group">
                       <div>
                         {ticket.tareWeight === 0 && ticket.netWeight === 0 ? (
@@ -595,7 +552,7 @@ console.log(trimmedWeight );
                       />
                       <input
                         type="text"
-                        value={ticket.netWeightTime}
+                        value={ticket.tareWeightTime}
                         className="abcv"
                         readOnly
                       />
@@ -608,13 +565,13 @@ console.log(trimmedWeight );
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-12">
               <div className="row">
-              <div className="col-md-3">
+                <div className="col-md-3">
                   <LiveVideo
                     wsUrl={"ws://localhost:8080/ws/frame1"}
                     imageRef={canvasTopRef}
                     setCapturedImage={setCapturedTopImage}
                     capturedImage={capturedTopImage}
-                    label= "Top View"
+                    label="Top View"
                   />
                 </div>
                 <div className="col-md-3">
@@ -623,7 +580,7 @@ console.log(trimmedWeight );
                     imageRef={canvasRearRef}
                     setCapturedImage={setCapturedRearImage}
                     capturedImage={capturedRearImage}
-                    label = "Rear View"
+                    label="Rear View"
                   />
                 </div>
                 <div className="col-md-3">
@@ -632,7 +589,7 @@ console.log(trimmedWeight );
                     imageRef={canvasFrontRef}
                     setCapturedImage={setCapturedFrontImage}
                     capturedImage={capturedFrontImage}
-                    label = "Front View"
+                    label="Front View"
                   />
                 </div>
                 <div className="col-md-3">
@@ -641,8 +598,51 @@ console.log(trimmedWeight );
                     imageRef={canvasSideRef}
                     setCapturedImage={setCapturedSideImage}
                     capturedImage={capturedSideImage}
-                    label = "Side View"
+                    label="Side View"
                   />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row mb-2 p-2 border shadow-lg rounded-lg">
+            <div className="col-md-12">
+              <div className="row">
+                <h5>Gross Weight Images</h5>
+                <div className="col-md-3">
+                  {grossWeightImages.frontImg1 && (
+                    <img
+                      src={`data:image/jpeg;base64,${grossWeightImages.frontImg1}`}
+                      alt="Front View"
+                      className="img-fluid"
+                    />
+                  )}
+                </div>
+                <div className="col-md-3">
+                  {grossWeightImages.backImg2 && (
+                    <img
+                      src={`data:image/jpeg;base64,${grossWeightImages.backImg2}`}
+                      alt="Rear View"
+                      className="img-fluid"
+                    />
+                  )}
+                </div>
+                <div className="col-md-3">
+                  {grossWeightImages.leftImg5 && (
+                    <img
+                      src={`data:image/jpeg;base64,${grossWeightImages.leftImg5}`}
+                      alt="Top View"
+                      className="img-fluid"
+                    />
+                  )}
+                </div>
+                <div className="col-md-3">
+                  {grossWeightImages.topImg3 && (
+                    <img
+                      src={`data:image/jpeg;base64,${grossWeightImages.topImg3}`}
+                      alt="Side View"
+                      className="img-fluid"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -729,6 +729,20 @@ console.log(trimmedWeight );
                   id="material"
                   name="material"
                   value={ticket.material}
+                  onChange={handleChange}
+                  className="abcv"
+                  readOnly
+                />
+              </div>
+              <div className="grid-item-op">
+                <label htmlFor="material" className="form-label">
+                  Material Type:
+                </label>
+                <input
+                  type="text"
+                  id="material"
+                  name="material"
+                  value={ticket.materialType}
                   onChange={handleChange}
                   className="abcv"
                   readOnly

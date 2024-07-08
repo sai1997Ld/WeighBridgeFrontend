@@ -53,6 +53,7 @@ function VehicleEntryDetails() {
   const [scannedDataArray, setScannedDataArray] = useState([]);
   const [isScanning, setIsScanning] = useState(false);
 
+  const [supplierAddresses, setSupplierAddresses] = useState([]);
 
 
   useEffect(() => {
@@ -203,32 +204,32 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   //   setFormData({ ...formData, [name]: value, });
 
   const handleSupplierChange = (selectedOption) => {
-
     setSelectedSupplier(selectedOption);
-
+  
     fetch(`http://localhost:8080/api/v1/supplier/get/${selectedOption.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-
-        // Check if data is an array and has at least one element
-        if (Array.isArray(data) && data.length > 0) {
-          // Set the first element of the array as the supplier address
-          const newData = {
-            ...formData,
-            supplier: selectedOption.value,
-            supplierAddressLine1: data[0],
-
-          }
-          setFormData(newData);
-
-          // Save supplier details to session storage
-
-          sessionStorage.setItem('vehicleData', JSON.stringify(newData))
+  
+        // Assuming data is an array of addresses
+        const addressOptions = data.map(address => ({
+          value: address,
+          label: address
+        }));
+  
+        setSupplierAddresses(addressOptions);
+  
+        const newData = {
+          ...formData,
+          supplier: selectedOption.value,
+          supplierAddressLine1: "", // Clear the previous address
         }
+        setFormData(newData);
+  
+        sessionStorage.setItem('vehicleData', JSON.stringify(newData));
       })
       .catch((error) => {
-        console.error("Error fetching supplier Address:", error);
+        console.error("Error fetching supplier addresses:", error);
       });
   };
 
@@ -1225,26 +1226,30 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                         />
                       </div>
                       <div className="col-md-3 mb-3">
-                        <label
-                          htmlFor="supplierContactNo"
-                          className="user-form-label"
-                        >
-                          Supplier's Address:
-                        </label>
-                        <input
-                          type="text"
-                          id="supplierAddressLine1"
-                          name="supplierAddressLine1"
-                          value={formData.supplierAddressLine1}
-                          onChange={handleChange}
-                          className="form-control"
-                          disabled={!formData.supplier}
-                          style={{
-                            backgroundColor: "#efefef",
-                            color: "#818181",
-                          }}
-                        />
-                      </div>
+  <label htmlFor="supplierAddressLine1" className="user-form-label">
+    Supplier's Address:
+  </label>
+  <Select
+    id="supplierAddressLine1"
+    name="supplierAddressLine1"
+    options={supplierAddresses}
+    value={supplierAddresses.find(option => option.value === formData.supplierAddressLine1)}
+    onChange={(selectedOption) => {
+      const newData = { ...formData, supplierAddressLine1: selectedOption.value };
+      setFormData(newData);
+      sessionStorage.setItem('vehicleData', JSON.stringify(newData));
+    }}
+    placeholder="Select Supplier Address"
+    // isDisabled={!formData.supplier}
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        backgroundColor: formData.supplier ? "white" : "#efefef",
+        color: formData.supplier ? "black" : "#818181",
+      })
+    }}
+  />
+</div>
                       {/* Rc fitness UpTo */}
                       <div className="col-md-3">
                         <label

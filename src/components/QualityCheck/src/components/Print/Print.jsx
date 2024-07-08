@@ -145,6 +145,13 @@ const QPrint = () => {
               }
             </tbody>
           </table>
+           <div class="signature-line">
+              <p>Chief Chemist</p>
+              <p>For ${data.companyName}</p>
+              <br>
+              <br>
+              <p>Authorised Signatory</p>
+          </div>
           <script>
             window.print();
             window.close();
