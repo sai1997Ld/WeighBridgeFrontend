@@ -18,11 +18,11 @@ function ProcessOrder() {
   const [productTypes, setProductTypes] = useState([]);
   const [vehicleNo, setVehicleNo] = useState("");
   const [transporterName, setTransporterName] = useState("");
-  const [purchaseProcessDate, setPurchaseProcessDate] = useState("");
-  const [consignmentWeight, setConsignmentWeight] = useState(0);
+  // const [purchaseProcessDate, setPurchaseProcessDate] = useState("");
+  // const [consignmentWeight, setConsignmentWeight] = useState(0);
   const [vehicleNumbers, setVehicleNumbers] = useState([]);
   const [transporters, setTransporters] = useState([]);
-  const [balanceWeight, setBalanceWeight] = useState(0);
+  // const [balanceWeight, setBalanceWeight] = useState(0);
 
   const navigate = useNavigate();
 
@@ -50,8 +50,8 @@ function ProcessOrder() {
       setProductType(parsedData.productType || "");
       setVehicleNo(parsedData.vehicleNo || "");
       setTransporterName(parsedData.transporterName || "");
-      setPurchaseProcessDate(parsedData.purchaseProcessDate || "");
-      setConsignmentWeight(parsedData.consignmentWeight || 0);
+      // setPurchaseProcessDate(parsedData.purchaseProcessDate || "");
+      // setConsignmentWeight(parsedData.consignmentWeight || 0);
 
       // Clear the saved form data after loading
       sessionStorage.removeItem("processOrderFormData");
@@ -92,23 +92,23 @@ function ProcessOrder() {
     }
   }, [formProductName]);
 
-  useEffect(() => {
-    if (formsaleOrderNo) {
-      // Fetch balance weight for the sales order
-      fetch(
-        `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(
-          formsaleOrderNo
-        )}`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setBalanceWeight(data.balanceWeight);
-        })
-        .catch((error) =>
-          console.error("Error fetching sales order details:", error)
-        );
-    }
-  }, [formsaleOrderNo]);
+  // useEffect(() => {
+  //   if (formsaleOrderNo) {
+
+  //     fetch(
+  //       `http://localhost:8080/api/v1/sales/getSoDetails?saleOrderNo=${encodeURIComponent(
+  //         formsaleOrderNo
+  //       )}`
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         setBalanceWeight(data.balanceWeight);
+  //       })
+  //       .catch((error) =>
+  //         console.error("Error fetching sales order details:", error)
+  //       );
+  //   }
+  // }, [formsaleOrderNo]);
 
   const handleClear = () => {
     setFormsaleOrderNo("");
@@ -116,8 +116,8 @@ function ProcessOrder() {
     setProductType("");
     setVehicleNo("");
     setTransporterName("");
-    setPurchaseProcessDate("");
-    setConsignmentWeight(0);
+    // setPurchaseProcessDate("");
+    // setConsignmentWeight(0);
   };
 
   const handleAddVehicle = () => {
@@ -130,8 +130,8 @@ function ProcessOrder() {
         productType,
         vehicleNo,
         transporterName,
-        purchaseProcessDate,
-        consignmentWeight,
+        // purchaseProcessDate,
+        // consignmentWeight,
       })
     );
     navigate("/SalesVehicle");
@@ -141,8 +141,8 @@ function ProcessOrder() {
     if (
       !formsaleOrderNo ||
       !vehicleNo ||
-      !transporterName ||
-      !purchaseProcessDate
+      !transporterName 
+      // !purchaseProcessDate
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -161,8 +161,8 @@ function ProcessOrder() {
       productType,
       vehicleNo: vehicleNo.value,
       transporterName,
-      purchaseProcessDate,
-      consignmentWeight,
+      // purchaseProcessDate,
+      // consignmentWeight,
     };
 
     fetch("http://localhost:8080/api/v1/salesProcess/salesProcess", {
@@ -346,7 +346,7 @@ function ProcessOrder() {
                       </select>
                     </div>
                   </div>
-                  <div className="row mb-2">
+                  {/* <div className="row mb-2">
                     <div className="col-md-6">
                       <label
                         htmlFor="purchaseProcessDate"
@@ -395,7 +395,7 @@ function ProcessOrder() {
                         }}
                       />
                     </div>
-                  </div>
+                  </div> */}
                   <div className="d-flex justify-content-end mt-3">
                     <button
                       type="button"

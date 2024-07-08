@@ -78,10 +78,10 @@ function TransactionFrom() {
       setInputValue("");
       return;
     }
- 
     // setInputValue(newValue);
 console.log({ticket})
     if (ticket.grossWeight === 0) {
+      console.log('called')
       setGrossWeight(newValue);
     } else if (newValue >= ticket.grossWeight) {
       Swal.fire({
@@ -302,7 +302,7 @@ console.log({ticket})
   //     handleChange1(90);
   //   }
   // },[ticket])
- 
+
   console.log(trimmedWeight);
  
   return (

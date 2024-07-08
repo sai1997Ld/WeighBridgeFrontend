@@ -18,12 +18,55 @@ function SalesVehicle() {
   const [loadCapacityUnit, setLoadCapacityUnit] = useState("kg");
   const [transporters, setTransporters] = useState([]);
 
-
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Load data from sessionStorage
+    const savedData = sessionStorage.getItem('salesVehicleData');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setVehicleNo(parsedData.vehicleNo || '');
+      setTransporter(parsedData.transporter || '');
+      setVehicleType(parsedData.vehicleType || '');
+      setVehicleManufacturer(parsedData.vehicleManufacturer || '');
+      setvehicleWheelsNo(parsedData.vehicleWheelsNo || '');
+      setvehicleFitnessUpTo(parsedData.vehicleFitnessUpTo || '');
+      setVehicleLoadCapacity(parsedData.vehicleLoadCapacity || 0);
+      setLoadCapacityUnit(parsedData.loadCapacityUnit || 'kg');
+    }
+
+    // Fetch transporters
+    fetch("http://localhost:8080/api/v1/transporter")
+      .then((response) => response.json())
+      .then((data) => setTransporters(data))
+      .catch((error) => console.error("Error fetching transporters:", error));
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      saveFormToSession();
+    };
+  }, [vehicleNo, transporter, vehicleType, vehicleManufacturer, vehicleWheelsNo, vehicleFitnessUpTo, vehicleLoadCapacity, loadCapacityUnit]);
+
+  const saveFormToSession = () => {
+    const formData = {
+      vehicleNo,
+      transporter,
+      vehicleType,
+      vehicleManufacturer,
+      vehicleWheelsNo,
+      vehicleFitnessUpTo,
+      vehicleLoadCapacity,
+      loadCapacityUnit,
+    };
+    sessionStorage.setItem('salesVehicleData', JSON.stringify(formData));
+  };
+
   const handleAddTransporter = () => {
+    saveFormToSession();
     navigate("/SalesTransporter");
   }
+
   const handleClear = () => {
     setVehicleNo("");
     setTransporter("");
@@ -33,14 +76,8 @@ function SalesVehicle() {
     setvehicleFitnessUpTo("");
     setVehicleLoadCapacity(0);
     setLoadCapacityUnit("kg");
+    sessionStorage.removeItem('salesVehicleData');
   };
-
-  useEffect(() => {
-    fetch("http://localhost:8080/api/v1/transporter")
-      .then((response) => response.json())
-      .then((data) => setTransporters(data))
-      .catch((error) => console.error("Error fetching transporters:", error));
-  }, []);
 
   const handleSave = () => {
     if (
@@ -95,6 +132,7 @@ function SalesVehicle() {
           },
         });
         handleClear();
+        sessionStorage.removeItem('salesVehicleData');
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -137,12 +175,10 @@ function SalesVehicle() {
       <div className="vehicle-register">
         <div className="vehicle-content container-fluid">
         
- <div className="d-flex justify-content-between align-items-center">
-              <h2 className="text-center mx-auto">Vehicle Registration</h2>
-   
-              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
- 
-        </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2 className="text-center mx-auto">Vehicle Registration</h2>
+            <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+          </div>
  
           <div className="vehicle-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
             <div className="card-body p-4">
@@ -168,24 +204,24 @@ function SalesVehicle() {
                     </label>
                     
                     <button
-                         className="btn btn-sm border btn-success-1 btn-hover"
-                          style={{
-                            borderRadius: "5px",
-                            marginLeft: "5px",
-                            backgroundColor: "lightblue",
-                          }}
-                        >
-                          <div
-                            onClick={handleAddTransporter}
-                            style={{
-                              display: "block",
-                              textDecoration: "none",
-                              color: "black",
-                            }}
-                          >
-                            Add Transporter
-                          </div>
-                        </button>
+                      className="btn btn-sm border btn-success-1 btn-hover"
+                      style={{
+                        borderRadius: "5px",
+                        marginLeft: "5px",
+                        backgroundColor: "lightblue",
+                      }}
+                    >
+                      <div
+                        onClick={handleAddTransporter}
+                        style={{
+                          display: "block",
+                          textDecoration: "none",
+                          color: "black",
+                        }}
+                      >
+                        Add Transporter
+                      </div>
+                    </button>
                     <Select
                       options={transporters.map((transporter) => ({
                         value: transporter,
