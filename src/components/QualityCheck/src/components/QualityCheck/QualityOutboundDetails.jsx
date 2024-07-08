@@ -71,7 +71,7 @@ const QualityOutboundDetails = () => {
   const [isFormValid, setIsFormValid] = useState(false); // Initialize isFormValid as false
   const userId = sessionStorage.getItem("userId");
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-
+  const specialParameters = ['carbon', 'sulphur', '-1mm', '%Non-Mag'];
   const checkFormValidity = () => {
     const atLeastOneParameterFilled = Object.keys(parameters).some(
       (parameterName) =>
@@ -249,13 +249,13 @@ const QualityOutboundDetails = () => {
       ? { borderColor: "#ced4da", backgroundColor: "rgb(239, 239, 239)" }
       : {};
     const value = formData[propertyName] !== null ? formData[propertyName] : "";
-
+  
     // Get the parameter range
     const parameter = parameters[propertyName];
     const rangeFrom = parameter ? parseFloat(parameter.rangeFrom) : null;
     const rangeTo = parameter ? parseFloat(parameter.rangeTo) : null;
     const inputValue = parseFloat(value);
-
+  
     // Determine the class based on whether the value falls within the range and the field is not read-only
     let inputClass = "form-control";
     if (
@@ -264,12 +264,19 @@ const QualityOutboundDetails = () => {
       !isNaN(rangeTo) &&
       !isNaN(inputValue)
     ) {
-      inputClass +=
-        inputValue >= rangeFrom && inputValue <= rangeTo
+      const isSpecialParameter = specialParameters.some(param => 
+        propertyName.toLowerCase().includes(param.toLowerCase())
+      );
+      
+      if (isSpecialParameter) {
+        inputClass += (inputValue >= rangeFrom && inputValue <= rangeTo)
           ? " is-valid"
           : " is-invalid";
+      } else {
+        inputClass += " is-valid";
+      }
     }
-
+  
     return (
       <div className="col-md-3 mb-3">
         <label

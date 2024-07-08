@@ -423,9 +423,8 @@ function QualityCompleted() {
         : isInbound
         ? inboundLabels
         : transactionType === ""
-        ? [] // If transactionType is an empty string, use an empty array for labels
-        : null; // If transactionType is neither "outbound" nor "inbound", set labels to null
-  
+        ? []
+        : null;
   
       // Open a new window or tab to print the data
       const printWindow = window.open("", "_blank");
@@ -434,6 +433,7 @@ function QualityCompleted() {
           <head>
             <title>Print Report</title>
             <style>
+              body { font-family: Arial, sans-serif; }
               table {
                 width: 100%;
                 border-collapse: collapse;
@@ -447,6 +447,19 @@ function QualityCompleted() {
                 background-color: #0077b6;
                 color: white;
               }
+              .signatures {
+                margin-top: 50px;
+                display: flex;
+                justify-content: space-between;
+              }
+              .signature {
+                text-align: center;
+              }
+              .signature-line {
+                width: 200px;
+                border-top: 1px solid black;
+                margin-top: 50px;
+              }
             </style>
           </head>
           <body>
@@ -458,40 +471,49 @@ function QualityCompleted() {
                 ${labels
                   .map((label) => {
                     const propertyName = label.toLowerCase().replace(/ /g, "");
-                    const value =
-                      propertyName === "ticketno"
-                        ? data.ticketNo
-                        : propertyName === "companyname"
-                        ? data.companyName
-                        : propertyName === "companyaddress"
-                        ? data.companyAddress
-                        : propertyName === "date"
-                        ? data.date
-                        : propertyName === "vehicleno"
-                        ? data.vehicleNo
-                        : isOutbound
-                        ? propertyName === "product"
-                          ? data.materialOrProduct
-                          : propertyName === "producttype"
-                          ? data.materialTypeOrProductType
-                          : propertyName === "customername"
-                          ? data.supplierOrCustomerName
-                          : propertyName === "customeraddress"
-                          ? data.supplierOrCustomerAddress
-                          : undefined
-                        : propertyName === "material"
-                        ? data.materialOrProduct
-                        : propertyName === "materialtype"
-                        ? data.materialTypeOrProductType
-                        : propertyName === "supplier"
-                        ? data.supplierOrCustomerName
-                        : propertyName === "supplieraddress"
-                        ? data.supplierOrCustomerAddress
-                        : propertyName === "transactiontype"
-  ? (data.transactionType || "N/A")
-  : undefined;
+                    let value;
+  
+                    switch (propertyName) {
+                      case "ticketno":
+                        value = data.ticketNo;
+                        break;
+                      case "companyname":
+                        value = data.companyName;
+                        break;
+                      case "companyaddress":
+                        value = data.companyAddress;
+                        break;
+                      case "date":
+                        value = data.date;
+                        break;
+                      case "vehicleno":
+                        value = data.vehicleNo;
+                        break;
+                      case "product":
+                      case "material":
+                        value = data.materialOrProduct;
+                        break;
+                      case "producttype":
+                      case "materialtype":
+                        value = data.materialTypeOrProductType;
+                        break;
+                      case "customername":
+                      case "supplier":
+                        value = data.supplierOrCustomerName;
+                        break;
+                      case "customeraddress":
+                      case "supplieraddress":
+                        value = data.supplierOrCustomerAddress;
+                        break;
+                      case "transactiontype":
+                        value = data.transactionType || "N/A";
+                        break;
+                      default:
+                        value = undefined;
+                    }
+  
                     return `<tr><th>${label}</th><td>${
-                      typeof value === "object" ? JSON.stringify(value) : value
+                      value !== undefined ? (typeof value === "object" ? JSON.stringify(value) : value) : "N/A"
                     }</td></tr>`;
                   })
                   .join("")}
@@ -518,19 +540,28 @@ function QualityCompleted() {
                 }
               </tbody>
             </table>
-            <script>
-              window.print();
-              window.close();
-            </script>
-          </body>
-        </html>
-      `;
-      printWindow.document.write(formattedData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      alert("Failed to fetch data for printing. Please try again later.");
-    }
-  };
+            
+              <div class="signature-line">
+              <p>Chief Chemist</p>
+              <p>For ${data.companyName}</p>
+              <br>
+              <br>
+              <p>Authorised Signatory</p>
+          </div>
+
+          <script>
+            window.print();
+            window.close();
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(formattedData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    alert("Failed to fetch data for printing. Please try again later.");
+  }
+};
 
 
   const handlePrintFormat = () => {
