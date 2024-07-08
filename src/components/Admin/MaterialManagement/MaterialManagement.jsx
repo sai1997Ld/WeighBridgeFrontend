@@ -11,7 +11,8 @@ import Select from "react-select";
 
 function MaterialManagement() {
   const [supplierName, setSupplierName] = useState("");
-  const [supplierAddress, setSupplierAddress] = useState("");
+  const [supplierAddresses, setSupplierAddresses] = useState([]);
+const [selectedAddress, setSelectedAddress] = useState("");
   const [supplierNames, setSupplierNames] = useState([]);
   const [materialName, setMaterialName] = useState("");
   const [materialName2, setMaterialName2] = useState("");
@@ -97,7 +98,8 @@ function MaterialManagement() {
 
   const handleClear2 = () => {
     setSupplierName("");
-    setSupplierAddress("");
+    setSupplierAddresses([]);
+    setSelectedAddress("");
     setMaterialName2("");
     setParameters([{ parameterName: "", rangeFrom: 0, rangeTo: 0 }]);
   };
@@ -178,7 +180,7 @@ function MaterialManagement() {
   const handleSaveParameters = () => {
     if (
       supplierName.trim() === "" ||
-      supplierAddress.trim() === "" ||
+      selectedAddress.trim() === "" ||
       materialName2.trim() === "" ||
       parameters.some((param) => param.parameterName.trim() === "")
     ) {
@@ -196,7 +198,7 @@ function MaterialManagement() {
     const materialData = {
       materialName: materialName2.trim(),
       supplierName: supplierName.trim(),
-      supplierAddress: supplierAddress.trim(),
+      supplierAddress: selectedAddress.trim(),
       parameters: parameters.map((param) => ({
         parameterName: param.parameterName.trim(),
         rangeFrom: param.rangeFrom,
@@ -274,7 +276,6 @@ function MaterialManagement() {
         });
       });
   };
-
   const fetchSupplierAddress = (supplierName) => {
     fetch(`http://localhost:8080/api/v1/supplier/get/${supplierName}`)
       .then((response) => {
@@ -285,7 +286,7 @@ function MaterialManagement() {
         }
       })
       .then((data) => {
-        setSupplierAddress(data[0]); // Assuming the address is the first item in the response array
+        setSupplierAddresses(data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -539,24 +540,27 @@ function MaterialManagement() {
                     />
                   </div>
                   <div className="col-md-4">
-                    <label
-                      htmlFor="supplierAddressLine1"
-                      className="form-label"
-                    >
-                      Supplier Address{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="supplierAddressLine1"
-                      value={supplierAddress}
-                      onChange={(e) => setSupplierAddress(e.target.value)}
-                      required
-                    />
-                  </div>
+  <label htmlFor="supplierAddress" className="form-label">
+    Supplier Address{" "}
+    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+  </label>
+  <Select
+  id="supplierAddress"
+  value={
+    selectedAddress
+      ? { value: selectedAddress, label: selectedAddress }
+      : null
+  }
+  onChange={(selectedOption) => setSelectedAddress(selectedOption ? selectedOption.value : "")}
+  options={supplierAddresses.map((address) => ({
+    value: address,
+    label: address,
+  }))}
+  isSearchable
+  isRequired
+  placeholder="Select Supplier Address"
+/>
+</div>  
                   <div className="col-md-4">
                     <label htmlFor="materialName" className="form-label">
                       Material Name{" "}

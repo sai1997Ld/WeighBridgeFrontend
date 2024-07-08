@@ -7,7 +7,7 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import "./index.css";
-
+ 
 const HomePage1 = lazy(() => import("./components/HomePages/HomePage1.jsx"));
 const HomePage2 = lazy(() => import("./components/HomePages/HomePage2.jsx"));
 const HomePage3 = lazy(() => import("./components/HomePages/HomePage3.jsx"));
@@ -15,7 +15,7 @@ const HomePage4 = lazy(() => import("./components/HomePages/HomePage4.jsx"));
 const HomePage5 = lazy(() => import("./components/HomePages/HomePage5.jsx"));
 const HomePage6 = lazy(() => import("./components/HomePages/HomePage6.jsx"));
 const Spinner = lazy(() => import("./Spinner"));
-
+ 
 const LoginUser = lazy(() => import("./components/Login/LoginUser.jsx"));
 const ResetPassword = lazy(() =>
   import("./components/ResetPassword/ResetPassword.jsx")
@@ -84,11 +84,11 @@ const UpdateSupplier = lazy(() =>
 const CameraMaster = lazy(() =>
   import("./components/Admin/CameraMaster/CameraMaster.jsx")
 );
-
+ 
 const ViewCamera = lazy(() =>
   import("./components/Admin/ViewCamera/ViewCamera.jsx")
 );
-
+ 
 import VehicleEntry from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntry.jsx";
 import CompletedTransaction from "./components/GateUser/src/components/Vehicle_Entry/CompletedTransaction.jsx";
 import VehicleEntryDetails from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntryDetails.jsx";
@@ -98,7 +98,7 @@ import NewVehicleRegistration from "./components/GateUser/src/components/Vehicle
 import NewSupplier from "./components/GateUser/src/components/Vehicle_Entry/NewSupplier.jsx";
 import NewMaterial from "./components/GateUser/src/components/Vehicle_Entry/NewMaterial.jsx";
 import NewTransporter from "./components/GateUser/src/components/Vehicle_Entry/NewTransporter.jsx";
-
+ 
 const SalesDetails = lazy(() =>
   import("./components/GateUser/src/components/Vehicle_Entry/SalesDetails.jsx")
 );
@@ -117,16 +117,11 @@ const MonthlyReport = lazy(() =>
 const CustomizedReport = lazy(() =>
   import("./components/GateUser/src/components/Report/CustomizedReport.jsx")
 );
-const Print = lazy(() =>
-  import("./components/GateUser/src/components/Print/Print.jsx")
-);
-const Camera = lazy(() =>
-  import("./components/GateUser/src/components/Camera/Camera.jsx")
-);
+ 
 const Capture = lazy(() =>
   import("./components/GateUser/src/components/Camera/Capture.jsx")
 );
-
+ 
 const QualityCheck = lazy(() =>
   import(
     "./components/QualityCheck/src/components/QualityCheck/QualityCheck.jsx"
@@ -171,9 +166,7 @@ const PrintTicket = lazy(() =>
     "./components/QualityCheck/src/components/QualityCheck/PrintTicket.jsx"
   )
 );
-
-
-
+ 
 const ManagementHome = lazy(() =>
   import("./components/Management/src/components/Home/ManagementHome.jsx")
 );
@@ -215,7 +208,7 @@ const ManagementMonthlyReport = lazy(() =>
 const ManagementCustomizedReport = lazy(() =>
   import("./components/Management/src/components/customized/customized.jsx")
 );
-
+ 
 const OperatorHome = lazy(() =>
   import("./components/Operator/src/components/homed/Homed.jsx")
 );
@@ -235,16 +228,6 @@ const OperatorTransactionFromInbound = lazy(() =>
     "./components/Operator/src/components/transactionform/TransactionFrom.jsx"
   )
 );
-const OperatorCompletedTransactionFromInbound = lazy(() =>
-  import(
-    "./components/Operator/src/components/compinbound/compinbound.jsx"
-  )
-);
-const OperatorCompletedTransactionFromOutbound = lazy(() =>
-  import(
-    "./components/Operator/src/components/compoutbound/compoutbound.jsx"
-  )
-);
 const OperatorTransactionFromOutbound = lazy(() =>
   import(
     "./components/Operator/src/components/transactionform1/Transactionform1.jsx"
@@ -262,21 +245,21 @@ const OperatorMonthlyReport = lazy(() =>
 const OperatorCustomizedReport = lazy(() =>
   import("./components/Operator/src/components/customized/customized.jsx")
 );
-
+ 
 const SalesOrder = lazy(() =>
   import("./components/Sales/SalesOrder/SalesOrder.jsx")
 );
 const ProcessOrder = lazy(() =>
   import("./components/Sales/ProcessOrder/ProcessOrder.jsx")
 );
-
+ 
 const SideBar = lazy(() => import("./components/SideBar/SideBar.jsx"));
 const SideBar2 = lazy(() => import("./components/SideBar/SideBar2.jsx"));
 const SideBar3 = lazy(() => import("./components/SideBar/SideBar3.jsx"));
 const SideBar4 = lazy(() => import("./components/SideBar/SideBar4.jsx"));
 const SideBar5 = lazy(() => import("./components/SideBar/SideBar5.jsx"));
 const SideBar6 = lazy(() => import("./components/SideBar/Sidebar6.jsx"));
-
+ 
 const SalesDisplay = lazy(() =>
   import("./components/Sales/SalesDisplay/SalesDisplay.jsx")
 );
@@ -289,18 +272,18 @@ const SalesTransporter = lazy(() =>
 const SalesVehicle = lazy(() =>
   import("./components/Sales/SalesVehicle/SalesVehicle.jsx")
 );
-
+ 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/" element={<LoginUser />} />
       <Route path="/forgot-password" element={<Forgot />} />
-      <Route path="/home1" element={<HomePage1 />} />
-      <Route path="/home2" element={<HomePage2 />} />
-      <Route path="/home3" element={<HomePage3 />} />
-      <Route path="/home4" element={<HomePage4 />} />
-      <Route path="/home5" element={<HomePage5 />} />
-      <Route path="/home6" element={<HomePage6 />} />
+      <Route path="/admin-dashboard" element={<HomePage1 />} />
+      <Route path="/qualtity-dashboard" element={<HomePage2 />} />
+      <Route path="/gate-dashboard" element={<HomePage3 />} />
+      <Route path="/weighbridge-dashboard" element={<HomePage4 />} />
+      <Route path="/management-dashboard" element={<HomePage5 />} />
+      <Route path="/sales-dashboard" element={<HomePage6 />} />
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/manage-user" element={<ManageUser />} />
       <Route path="/update-user" element={<UpdateUser />} />
@@ -424,8 +407,6 @@ const router = createBrowserRouter(
         path="/OperatorTransactionFromInbound"
         element={<OperatorTransactionFromInbound />}
       />
-      <Route path="/OperatorCompletedTransactionFromInbound" element={<OperatorCompletedTransactionFromInbound/>}/>
-      <Route path="/OperatorCompletedTransactionFromOutbound" element={<OperatorCompletedTransactionFromOutbound/>}/>
       <Route
         path="/OperatorTransactionFromOutbound"
         element={<OperatorTransactionFromOutbound />}
@@ -442,11 +423,11 @@ const router = createBrowserRouter(
       />
       <Route path="/Spinner" element={<Spinner />} />
       <Route path="/CameraMaster" element={<CameraMaster />} />
-      <Route path = "/view-camera" element={<ViewCamera />} />
+      <Route path="/view-camera" element={<ViewCamera />} />
     </Route>
   )
 );
-
+ 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Suspense fallback={<Spinner />}>
     <RouterProvider router={router} />
