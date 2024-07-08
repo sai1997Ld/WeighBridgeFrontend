@@ -55,24 +55,12 @@ const SideBar6 = ({ children }) => {
   const open = Boolean(anchorEl);
 
   const handleSignOut = () => {
-    // Clear session storage
     sessionStorage.clear();
-
-    // Clear browser history and redirect
     window.location.href = "/";
-
-    // Additional history manipulation to prevent users from navigating back
     if (window.history && window.history.pushState) {
-      // Use replaceState to clear the existing history
       window.history.replaceState(null, null, "/");
-
-      // Add a dummy entry to the history to replace current entry
       window.history.pushState(null, null, "/");
-
-      // Prevent users from navigating back to the previous state
-      window.onpopstate = function (event) {
-        window.history.go(1);
-      };
+      window.onpopstate = () => window.history.go(1);
     }
   };
 
@@ -88,25 +76,7 @@ const SideBar6 = ({ children }) => {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Clear session storage
-        sessionStorage.clear();
-
-        // Clear browser history and redirect
-        window.location.href = "/";
-
-        // Additional history manipulation to prevent users from navigating back
-        if (window.history && window.history.pushState) {
-          // Use replaceState to clear the existing history
-          window.history.replaceState(null, null, "/");
-
-          // Add a dummy entry to the history to replace current entry
-          window.history.pushState(null, null, "/");
-
-          // Prevent users from navigating back to the previous state
-          window.onpopstate = function (event) {
-            window.history.go(1);
-          };
-        }
+        handleSignOut();
       }
     });
   };
@@ -286,8 +256,60 @@ const SideBar6 = ({ children }) => {
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText primary="Dashboard" />
+            <ListItemText primary="Sales Dashboard" />
           </ListItemButton>
+          <ListItemButton
+    component={Link}
+    to="/OnGoingTransaction"
+    onClick={() => handleItemClick("transactionDashboard")}
+    selected={selectedItem === "transactionDashboard"}
+    sx={{
+      "&.Mui-selected": {
+        backgroundColor: "#3e8ee6",
+        color: "white",
+      },
+      "&:hover": {
+        backgroundColor: "#3e8ee6",
+        color: "white",
+      },
+      "&.Mui-selected:hover": {
+        backgroundColor: "#2c74d1",
+        color: "white",
+      },
+    }}
+  >
+    <ListItemIcon>
+      <DashboardIcon />
+    </ListItemIcon>
+    <ListItemText primary="Transaction Dashboard" />
+  </ListItemButton>
+
+  <ListItemButton
+    component={Link}
+    to="/CompletedTransaction"
+    onClick={() => handleItemClick("completedDashboard")}
+    selected={selectedItem === "completedDashboard"}
+    sx={{
+      "&.Mui-selected": {
+        backgroundColor: "#3e8ee6",
+        color: "white",
+      },
+      "&:hover": {
+        backgroundColor: "#3e8ee6",
+        color: "white",
+      },
+      "&.Mui-selected:hover": {
+        backgroundColor: "#2c74d1",
+        color: "white",
+      },
+    }}
+  >
+    <ListItemIcon>
+      <DashboardIcon />
+    </ListItemIcon>
+    <ListItemText primary="Completed Dashboard" />
+  </ListItemButton>
+
           <ListItemButton
             component={Link}
             to="/SalesOrder"

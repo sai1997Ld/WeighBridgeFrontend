@@ -272,7 +272,16 @@ const SalesTransporter = lazy(() =>
 const SalesVehicle = lazy(() =>
   import("./components/Sales/SalesVehicle/SalesVehicle.jsx")
 );
- 
+const Ongoing_Transaction = lazy(() => 
+  import("./components/Sales/Ongoing_Transaction/Ongoing_Transaction.jsx")
+
+);
+
+const Completed_Transaction = lazy(() => 
+  import("./components/Sales/Completed_Transaction/Completed_Transaction.jsx")
+);
+
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -424,6 +433,8 @@ const router = createBrowserRouter(
       <Route path="/Spinner" element={<Spinner />} />
       <Route path="/CameraMaster" element={<CameraMaster />} />
       <Route path="/view-camera" element={<ViewCamera />} />
+      <Route path="/CompletedTransaction" element={<Completed_Transaction />} />
+      <Route path="/OnGoingTransaction" element={<Ongoing_Transaction />} />
     </Route>
   )
 );
