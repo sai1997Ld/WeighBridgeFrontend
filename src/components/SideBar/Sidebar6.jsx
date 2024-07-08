@@ -19,7 +19,6 @@ import {
   Menu as MenuIcon,
   ExitToApp,
   Assignment,
-  Build,
   PowerSettingsNewOutlined,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -334,31 +333,6 @@ const SideBar6 = ({ children }) => {
               <Assignment />
             </ListItemIcon>
             <ListItemText primary="Sales Order" />
-          </ListItemButton>
-          <ListItemButton
-            component={Link}
-            to="/ProcessOrder"
-            onClick={() => handleItemClick("ProcessOrder")}
-            selected={selectedItem === "ProcessOrder"}
-            sx={{
-              "&.Mui-selected": {
-                backgroundColor: "#3e8ee6",
-                color: "white",
-              },
-              "&:hover": {
-                backgroundColor: "#3e8ee6",
-                color: "white",
-              },
-              "&.Mui-selected:hover": {
-                backgroundColor: "#2c74d1", // Update the hover color for the selected state
-                color: "white",
-              },
-            }}
-          >
-            <ListItemIcon>
-              <Build />
-            </ListItemIcon>
-            <ListItemText primary="Sales Pass" />
           </ListItemButton>
           <ListItemButton
             onClick={handleSignOut2}
