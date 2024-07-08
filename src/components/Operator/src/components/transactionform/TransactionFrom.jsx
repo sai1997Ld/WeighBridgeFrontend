@@ -79,9 +79,10 @@ function TransactionFrom() {
       return;
     }
 
-    setInputValue(newValue);
-
+    // setInputValue(newValue);
+console.log({ticket})
     if (ticket.grossWeight === 0) {
+      console.log('called')
       setGrossWeight(newValue);
     } else if (newValue >= ticket.grossWeight) {
       Swal.fire({
@@ -260,6 +261,7 @@ function TransactionFrom() {
         // Extract and trim the weight
         const match = receivedData.match(/(\d+(\.\d+)?)/);
         if (match) {
+          console.log(match[0]);
           handleChange1(match[0]);
           // setTrimmedWeight(match[0]);
           setInputValue(match[0]); // Update the input value
@@ -292,7 +294,16 @@ function TransactionFrom() {
         socket.close();
       }
     };
+  }, [ticket]); // Empty dependency array ensures useEffect runs only on mount
+  // useEffect(() => {
+  //   const match = true;
+  //   if (match) {
+  //     setInputValue(90);
+  //     handleChange1(90);
+  //   }
+  // },[ticket])
   }, []); // Empty dependency array ensures useEffect runs only on mount
+
 
   console.log(trimmedWeight);
 
