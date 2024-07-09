@@ -7,10 +7,10 @@ import SideBar2 from "../../../../SideBar/SideBar2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRectangleXmark,
-  faDownload
+  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import * as XLSX from "xlsx";
- 
+
 const CustomizedReport = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -20,14 +20,14 @@ const CustomizedReport = () => {
     setStartDate(event.target.value);
   };
   const { Text } = Typography;
- 
+
   const handleEndDateChange = (event) => {
     setEndDate(event.target.value);
   };
- 
-  const [userId, setUserId] = useState('');
+
+  const [userId, setUserId] = useState("");
   useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem("userId");
     setUserId(userId);
   }, []);
   const fetchData = (start, end) => {
@@ -47,7 +47,7 @@ const CustomizedReport = () => {
         });
     }
   };
- 
+
   useEffect(() => {
     if (userId) {
       fetchData(startDate, endDate);
@@ -58,7 +58,7 @@ const CustomizedReport = () => {
   };
   const downloadExcel = () => {
     const fileName = "Customized_Report.xlsx";
- 
+
     // Prepare data for Excel export
     const data = weighments.flatMap((material) =>
       material.weighbridgeResponse2List.map((response) => ({
@@ -71,17 +71,19 @@ const CustomizedReport = () => {
         CH_Qty: response.supplyConsignmentWeight,
         Weigh_Qty: response.weighQuantity,
         Differences: response.excessQty,
+        "In Time": response?.inTime?.split(" ")[1],
+        "Out Time": response?.outTime?.split(" ")[1],
       }))
     );
- 
+
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Customized Report");
- 
+
     // Save the file
     XLSX.writeFile(wb, fileName);
   };
- 
+
   return (
     <SideBar2>
       <div className="container-fluid mt-0">
@@ -135,12 +137,16 @@ const CustomizedReport = () => {
                 onChange={handleEndDateChange}
               />
             </Col>
-            <Button style={{ backgroundColor: "#0077b6", color: "white" }} icon={<FontAwesomeIcon icon={faDownload} />} onClick={downloadExcel}>
+            <Button
+              style={{ backgroundColor: "#0077b6", color: "white" }}
+              icon={<FontAwesomeIcon icon={faDownload} />}
+              onClick={downloadExcel}
+            >
               Download
             </Button>
           </Row>
         </div>
- 
+
         {weighments.map((material, index) => (
           <div key={index} className="table-responsive">
             <h5>
@@ -233,6 +239,30 @@ const CustomizedReport = () => {
                   >
                     Differences
                   </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                      textAlign: "center",
+                    }}
+                  >
+                    In Time
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                      textAlign: "center",
+                    }}
+                  >
+                    Out Time
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -280,13 +310,44 @@ const CustomizedReport = () => {
                     >
                       {response.excessQty}
                     </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response?.inTime?.split(" ")[1]}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response?.outTime?.split(" ")[1]}
+                    </td>
                   </tr>
                 ))}
                 <tr>
-                  <td colSpan="4" className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}></td>
-                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.ch_SumQty}</td>
-                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.weight_SumQty}</td>
-                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.shtExcess_SumQty}</td>
+                  <td
+                    colSpan="4"
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  ></td>
+                  <td
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  >
+                    {material.ch_SumQty}
+                  </td>
+                  <td
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  >
+                    {material.weight_SumQty}
+                  </td>
+                  <td
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  >
+                    {material.shtExcess_SumQty}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -296,6 +357,5 @@ const CustomizedReport = () => {
     </SideBar2>
   );
 };
- 
+
 export default CustomizedReport;
- 

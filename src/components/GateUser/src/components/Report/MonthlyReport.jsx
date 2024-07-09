@@ -86,8 +86,8 @@ const MonthlyReport = () => {
         CH_Qty: response.supplyConsignmentWeight,
         Weigh_Qty: response.weighQuantity,
         Differences: response.excessQty,
-        "In Time": response.inTime.split(" ")[1],
-        "Out Time": response.outTime.split(" ")[1],
+        "In Time": response?.inTime?.split(" ")[1],
+        "Out Time": response?.outTime?.split(" ")[1],
       }))
     );
 
@@ -307,13 +307,13 @@ const MonthlyReport = () => {
                       className="ant-table-cell"
                       style={{ textAlign: "center" }}
                     >
-                      {response.inTime.split(" ")[1]}
+                      {response?.inTime?.split(" ")[1]}
                     </td>
                     <td
                       className="ant-table-cell"
                       style={{ textAlign: "center" }}
                     >
-                      {response.outTime.split(" ")[1]}
+                      {response?.outTime?.split(" ")[1]}
                     </td>
                   </tr>
                 ))}
