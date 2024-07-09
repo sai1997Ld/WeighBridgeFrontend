@@ -209,9 +209,7 @@ const ManagementCustomizedReport = lazy(() =>
   import("./components/Management/src/components/customized/customized.jsx")
 );
  
-const OperatorHome = lazy(() =>
-  import("./components/Operator/src/components/homed/Homed.jsx")
-);
+
 const OperatorTransaction = lazy(() =>
   import("./components/Operator/src/components/transaction/Transaction.jsx")
 );
@@ -405,7 +403,7 @@ const router = createBrowserRouter(
         path="/ManagementCustomizedReport"
         element={<ManagementCustomizedReport />}
       />
-      <Route path="/OperatorHome" element={<OperatorHome />} />
+      
       <Route path="/OperatorTransaction" element={<OperatorTransaction />} />
       <Route
         path="/OperatorTransactionComp"

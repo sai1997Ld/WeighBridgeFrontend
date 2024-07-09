@@ -58,17 +58,16 @@ function SiteManagement() {
       body: JSON.stringify(siteData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
-        console.log("Response from the API:", data);
+        // console.log("Response from the API:", data);
         Swal.fire({
           title: data,
           icon: "success",

@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 function UpdateUser() {
   const location = useLocation();
   const user = location.state;
-  console.log(user);
+  // console.log(user);
   const [userId, setuserId] = useState(user.userId);
   const [firstName, setFirstName] = useState(user.firstName);
   const [middleName, setMiddleName] = useState(user.middleName);
@@ -37,7 +37,7 @@ function UpdateUser() {
     fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Company List:", data);
+        // console.log("Company List:", data);
         setCompanies(data);
       })
       .catch((error) => {
@@ -51,7 +51,7 @@ function UpdateUser() {
     fetch("http://localhost:8080/api/v1/roles/get/all/role")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Roles List:", data);
+        // console.log("Roles List:", data);
         setRoles(data.map((r) => ({ value: r, label: r })));
       })
       .catch((error) => {
@@ -63,7 +63,7 @@ function UpdateUser() {
     fetch(`http://localhost:8080/api/v1/sites/company/${selectedCompany}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Site List:", data);
+        // console.log("Site List:", data);
         const formattedSites = data.map((site) => ({
           site: `${site.siteName},${site.siteAddress}`,
           siteId: site.siteId,

@@ -93,7 +93,6 @@ function Transporter() {
         }
       })
       .then((data) => {
-        console.log("Response from the API:", data);
         Swal.fire({
           title: data,
           icon: "success",

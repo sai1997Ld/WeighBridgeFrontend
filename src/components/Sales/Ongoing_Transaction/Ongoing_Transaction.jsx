@@ -17,7 +17,49 @@ import styled from "styled-components";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
+const TransactionUpdatesContainer = styled.div`
+display: flex;
+justify-content: space-between;
+align-items: center;
+background-color: #f5f5f5;
+border-radius: 8px;
+padding: 0.5rem;
+margin-bottom: 1rem;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
+@media (max-width: 768px) {
+  flex-wrap: wrap;
+}
+`;
+
+const TransactionUpdateBox = styled.div`
+background-color: ${(props) => props.bgColor};
+padding: 0.25rem 0.5rem;
+border-radius: 4px;
+flex: 1;
+text-align: center;
+margin: 0 0.25rem;
+color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+position: relative;
+
+&::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  flex: 0 0 calc(50% - 0.5rem);
+  margin-bottom: 0.5rem;
+}
+`;
 
 
 const Ongoing_Transaction = () => {
@@ -46,49 +88,7 @@ const Ongoing_Transaction = () => {
 
   const [userId, setUserId] = useState("");
 
-  const TransactionUpdatesContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
-  @media (max-width: 768px) {
-    flex-wrap: wrap;
-  }
-`;
-
-const TransactionUpdateBox = styled.div`
-  background-color: ${(props) => props.bgColor};
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  flex: 1;
-  text-align: center;
-  margin: 0 0.25rem;
-  color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    pointer-events: none;
-  }
-
-  @media (max-width: 768px) {
-    flex: 0 0 calc(50% - 0.5rem);
-    margin-bottom: 0.5rem;
-  }
-`;
 
   useEffect(() => {
     const userId = sessionStorage.getItem("userId");

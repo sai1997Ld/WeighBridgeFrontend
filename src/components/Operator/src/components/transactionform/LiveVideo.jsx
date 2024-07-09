@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./LiveVideo.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpand, faImage } from "@fortawesome/free-solid-svg-icons";
-import { CircularProgress } from "@mui/material";
+
 
 const CaptureFrame = ({
   imageRef,

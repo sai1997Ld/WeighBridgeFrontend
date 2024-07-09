@@ -29,7 +29,7 @@ function CreateUser() {
     fetch("http://localhost:8080/api/v1/company/names")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Company List:", data);
+        // console.log("Company List:", data);
         const formattedCompanies = data.map((company) => ({
           value: company,
           label: company,
@@ -45,7 +45,7 @@ function CreateUser() {
     fetch("http://localhost:8080/api/v1/roles/get/all/role")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Roles List:", data);
+        // console.log("Roles List:", data);
         setRoles(data.map((r) => ({ value: r, label: r })));
       })
       .catch((error) => {
