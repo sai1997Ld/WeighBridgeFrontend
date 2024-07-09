@@ -1,65 +1,74 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPrint, faFileWord, faPencilAlt, faTruck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faPrint,
+  faFileWord,
+  faPencilAlt,
+  faTruck,
+} from "@fortawesome/free-solid-svg-icons";
 import OutTimeVehicle from "../../assets/OutTimeVehicle.jpg";
 import { Link } from "react-router-dom";
 import { Chart, ArcElement } from "chart.js/auto";
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./VehicleEntry.css";
-import Swal from 'sweetalert2';
-import { Table, Tag, Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
-import { SearchOutlined, PrinterOutlined, FilterOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import axios from 'axios';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import Swal from "sweetalert2";
+import {
+  Table,
+  Tag,
+  Button,
+  Input,
+  Select,
+  DatePicker,
+  Menu,
+  Dropdown,
+} from "antd";
+import {
+  SearchOutlined,
+  PrinterOutlined,
+  FilterOutlined,
+} from "@ant-design/icons";
+import moment from "moment";
+import axios from "axios";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import { Modal, Typography } from "antd";
 import styled from "styled-components";
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import PendingIcon from '@mui/icons-material/Pending';
-import QRious from 'qrious';
-
-
-
-
-
-
-
-
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import PendingIcon from "@mui/icons-material/Pending";
+import QRious from "qrious";
 
 const { Option } = Select;
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api/v1/gate',
+  baseURL: "http://localhost:8080/api/v1/gate",
 
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 
   withCredentials: true,
 });
 
-
-
-const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
+const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
   const [currentDate, setCurrentDate] = useState();
   const [selectedDate, setSelectedDate] = useState(moment());
 
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [searchOption, setSearchOption] = useState('');
-  const [searchValue, setSearchValue] = useState('');
+  const [selectedOption, setSelectedOption] = useState("");
+  const [searchOption, setSearchOption] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [totalPage, setTotalPage] = useState(0);
   const [date, setDate] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [systemOutTime, setSystemOutTime] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [systemOutTime, setSystemOutTime] = useState("");
   const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageNumber, setStartPageNumber] = useState(1);
   const itemsPerPage = 5;
   const [totalEntries, setTotalEntries] = useState(0);
-  const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
+  const [reportStatuses, setReportStatuses] = useState({}); // function for quality report
   const [materialOptions, setMaterialOptions] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedTransactionType, setSelectedTransactionType] = useState(null);
@@ -70,56 +79,9 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const [Completed, setCompleted] = useState(null);
   // const [isEditDisabled, setIsEditDisabled] = useState(false);
 
-
-
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
-
-
-  const TransactionUpdatesContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
- 
-  @media (max-width: 768px) {
-    flex-wrap: wrap;
-  }
-`;
-
-  const TransactionUpdateBox = styled.div`
-  background-color: ${(props) => props.bgColor};
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  flex: 1;
-  text-align: center;
-  margin: 0 0.25rem;
-  color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: relative;
- 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    pointer-events: none;
-  }
- 
-  @media (max-width: 768px) {
-    flex: 0 0 calc(50% - 0.5rem);
-    margin-bottom: 0.5rem;
-  }
-`;
 
   // To add session userid in frontend
 
@@ -132,7 +94,6 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   //   const formattedDate = today.toISOString().split("T")[0];
   //   setCurrentDate(formattedDate);
   // }, []);
-
 
   // useEffect(() => {
   //   const today = new Date().toISOString().split('T')[0];
@@ -148,17 +109,16 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     }
   };
 
-
   // Code for Searching:
 
   // const handleSearch = (value) => {
   //   setSearchQuery(value);
   //   setCurrentPage(0); // Reset to the first page when searching
-  //   console.log(value); 
+  //   console.log(value);
   // };
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
-    setSearchValue(''); // Reset the search value when the option changes
+    setSearchValue(""); // Reset the search value when the option changes
   };
   const handleInputChange = (e) => {
     setSearchValue(e.target.value);
@@ -166,7 +126,7 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const handleSearch = async (pageNumber = 0) => {
     if (!searchValue) {
-      message.error('Please enter a search value');
+      message.error("Please enter a search value");
       return;
     }
 
@@ -174,19 +134,19 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
     // Build the URL based on the selected search option
     switch (searchOption) {
-      case 'ticketNo':
+      case "ticketNo":
         apiUrl += `&ticketNo=${searchValue}`;
         break;
-      case 'date':
+      case "date":
         apiUrl += `&date=${searchValue}`;
         break;
-      case 'vehicleNo':
+      case "vehicleNo":
         apiUrl += `&vehicleNo=${searchValue}`;
         break;
-      case 'supplier':
+      case "supplier":
         apiUrl += `&supplierName=${searchValue}`;
         break;
-      case 'address':
+      case "address":
         apiUrl += `&address=${searchValue}`;
         break;
       default:
@@ -200,25 +160,30 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       setVehicleEntryDetails(response.data.transactions); // Update the vehicleEntryDetails state with the fetched data
       setTotalPage(response.data.totalPages);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      if (error.response && error.response.data && error.response.data.message) {
+      console.error("Error fetching data:", error);
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
         message.error(error.response.data.message);
       } else {
-        message.error('Failed to fetch data. Please try again.');
+        message.error("Failed to fetch data. Please try again.");
       }
     }
   };
 
   // Code for Filltered Data:
 
-
-
   // Function to fetch material options from the API
   const fetchMaterialOptions = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/fetch-ProductsOrMaterials?userId=${userId}`, {
-        credentials: "include" // Include credentials option here
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/gate/fetch-ProductsOrMaterials?userId=${userId}`,
+        {
+          credentials: "include", // Include credentials option here
+        }
+      );
       const data = await response.json();
       setMaterialOptions(data);
     } catch (error) {
@@ -231,17 +196,15 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     fetchMaterialOptions();
   }, []);
 
-
-
   // Function to handle material filter selection
   const handleMaterialFilter = (e) => {
-    console.log('Selected filter:', e.key);
-    const [filterType, filterValue] = e.key.split('-');
-    if (filterType === 'material') {
+    console.log("Selected filter:", e.key);
+    const [filterType, filterValue] = e.key.split("-");
+    if (filterType === "material") {
       setSelectedMaterial(filterValue);
       // Apply filter based on material only
       applyFilter(vehicleEntryDetails, filterValue, selectedTransactionType);
-    } else if (filterType === 'transaction') {
+    } else if (filterType === "transaction") {
       setSelectedTransactionType(filterValue);
     }
   };
@@ -285,7 +248,8 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       let matchesMaterial = true;
 
       if (material) {
-        matchesMaterial = entry.material.toLowerCase() === material.toLowerCase();
+        matchesMaterial =
+          entry.material.toLowerCase() === material.toLowerCase();
       }
 
       return matchesMaterial;
@@ -296,16 +260,19 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const fetchDataByTransactionType = async (transactionType) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}&userId=${userId}`, {
-        credentials: "include" // Include credentials option here
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}&userId=${userId}`,
+        {
+          credentials: "include", // Include credentials option here
+        }
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
       setFilteredData(data.transactions);
     } catch (error) {
-      console.error('Error fetching vehicle entry details:', error);
+      console.error("Error fetching vehicle entry details:", error);
     }
   };
   // Fetch data by transaction type when selectedTransactionType changes
@@ -320,15 +287,15 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   useEffect(() => {
     // Initial fetch
     fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
-      credentials: "include"
+      credentials: "include",
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         setVehicleEntryDetails(data.transactions);
         setTotalPage(data.totalPages);
         console.log("total Page " + data.totalPages);
@@ -336,10 +303,14 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         // Set the current page to 0 to trigger the paginated fetch
         // setCurrentPage(0);
         // Apply initial filter
-        applyFilter(data.transactions, selectedMaterial, selectedTransactionType);
+        applyFilter(
+          data.transactions,
+          selectedMaterial,
+          selectedTransactionType
+        );
       })
-      .catch(error => {
-        console.error('Error fetching vehicle entry details:', error);
+      .catch((error) => {
+        console.error("Error fetching vehicle entry details:", error);
       });
     fetchData();
   }, []);
@@ -348,27 +319,28 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
   }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
 
-
   useEffect(() => {
     if (currentPage !== null) {
       if (searchValue) {
         handleSearch(currentPage);
-      }
-      else fetchData(currentPage);
+      } else fetchData(currentPage);
     }
   }, [currentPage]);
 
   const fetchData = (pageNumber) => {
-    fetch(`http://localhost:8080/api/v1/gate?page=${pageNumber}&userId=${userId}`, {
-      credentials: "include"
-    })
-      .then(response => {
+    fetch(
+      `http://localhost:8080/api/v1/gate?page=${pageNumber}&userId=${userId}`,
+      {
+        credentials: "include",
+      }
+    )
+      .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         setVehicleEntryDetails(data.transactions);
         setTotalPage(data.totalPages);
         setTotalEntries(data.totalElements);
@@ -407,11 +379,10 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         setCompleted(fourthResponse.data);
         console.log("Data from the fourth API:", fourthResponse.data);
       })
-      .catch(error => {
-        console.error('Error fetching vehicle entry details:', error);
+      .catch((error) => {
+        console.error("Error fetching vehicle entry details:", error);
       });
   };
-
 
   const pageCount = totalPage;
   const handlePageChange = ({ selected }) => {
@@ -459,42 +430,44 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     setSelectedOption(event.target.value);
   };
 
-
-
   const handleConfirm = () => {
     const details = {
       ticketType: selectedOption,
       inTimeDate: selectedDate,
-      outTimeDate: selectedDate // Assuming both in and out time/date are same for now
+      outTimeDate: selectedDate, // Assuming both in and out time/date are same for now
     };
     onConfirmTicket(details);
 
-    if (selectedOption === 'inbound') {
-      navigate('/VehicleEntryDetails');
+    if (selectedOption === "inbound") {
+      navigate("/VehicleEntryDetails");
     }
 
-    setSelectedOption('');
-    setSelectedDate('');
+    setSelectedOption("");
+    setSelectedDate("");
     closePopup();
   };
 
   //  code Of Edit API:
   const handleEdit = (ticketNo) => {
     // Make the API call using Axios with credentials
-    axios.get(`http://localhost:8080/api/v1/gate/edit/${ticketNo}?userId=${userId}`, {
-      withCredentials: true // Include credentials with the request
-    })
-      .then(response => {
+    axios
+      .get(
+        `http://localhost:8080/api/v1/gate/edit/${ticketNo}?userId=${userId}`,
+        {
+          withCredentials: true, // Include credentials with the request
+        }
+      )
+      .then((response) => {
         // If the API call is successful
         // Extract data from the response
         const responseData = response.data;
 
         // Now, navigate to the UpdateGateEntry page
         // Pass the responseData to the page for pre-filling the fields
-        navigate('/UpdateGateEntry', { state: { data: responseData } });
+        navigate("/UpdateGateEntry", { state: { data: responseData } });
       })
-      .catch(error => {
-        console.error('Error fetching data:', error);
+      .catch((error) => {
+        console.error("Error fetching data:", error);
         // Handle any errors here
       });
   };
@@ -504,19 +477,22 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
   const handleVehicleExit = async (ticketNo) => {
     console.log(`handleVehicleExit called with ticketNo: ${ticketNo}`); // Log the ticket number to ensure the function is called
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/out/${ticketNo}?userId=${userId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        // Add body if needed
-        // body: JSON.stringify({ someKey: someValue }),
-        credentials: 'include'
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/v1/gate/out/${ticketNo}?userId=${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Add body if needed
+          // body: JSON.stringify({ someKey: someValue }),
+          credentials: "include",
+        }
+      );
 
       let data;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
         data = await response.json();
       } else {
         data = await response.text();
@@ -526,10 +502,10 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       if (response.ok) {
         // Display the API response using SweetAlert
         Swal.fire({
-          icon: 'success',
-          title: 'Vehicle Exit Status',
+          icon: "success",
+          title: "Vehicle Exit Status",
           text: data.message || JSON.stringify(data), // Assuming the response body is the message you want to display
-          showConfirmButton: true
+          showConfirmButton: true,
         }).then(() => {
           // Refresh the page after the alert is closed
           window.location.reload();
@@ -537,10 +513,10 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       } else {
         // Display the error message from the API response using SweetAlert
         Swal.fire({
-          icon: 'error',
-          title: 'Vehicle Exit Status',
-          text: data.message || 'An error occurred', // Assuming the response body contains the message you want to display
-          showConfirmButton: true
+          icon: "error",
+          title: "Vehicle Exit Status",
+          text: data.message || "An error occurred", // Assuming the response body contains the message you want to display
+          showConfirmButton: true,
         });
       }
     } catch (error) {
@@ -548,10 +524,10 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
       // Display a generic error message if the API response is not available
       Swal.fire({
-        icon: 'error',
-        title: 'Error checking vehicle status',
-        text: 'Please try again later',
-        showConfirmButton: true
+        icon: "error",
+        title: "Error checking vehicle status",
+        text: "Please try again later",
+        showConfirmButton: true,
       });
     }
   };
@@ -560,13 +536,15 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
       console.log(data);
-      
+
       const doc = new jsPDF();
 
       const text = data.companyName;
@@ -586,10 +564,10 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         const year = d.getFullYear();
 
         if (day < 10) {
-          day = '0' + day;
+          day = "0" + day;
         }
         if (month < 10) {
-          month = '0' + month;
+          month = "0" + month;
         }
         return `${day}-${month}-${year}`;
       };
@@ -610,12 +588,12 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
         `Material/Product Type: ${data.materialTypeOrProductType}`,
         `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
         `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-        `Transaction Type: ${data.transactionType}`
+        `Transaction Type: ${data.transactionType}`,
       ];
 
       doc.setFontSize(14);
       let yPosition = 50; // Initial Y position for the details
-      details.forEach(detail => {
+      details.forEach((detail) => {
         doc.text(detail, 20, yPosition);
         yPosition += 10; // Increment Y position for each detail line
       });
@@ -641,16 +619,14 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
     }
   };
 
-
   const handlePrint = (entry) => {
     // Prepare data for the QR code
     const qrData = JSON.stringify({
       ticketNo: entry.ticketNo,
-
     });
 
     // Open a new window
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
 
     if (printWindow) {
       // Write HTML content to the new window
@@ -704,17 +680,70 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
 
       printWindow.document.close();
     } else {
-      console.error("Print window could not be opened. Please check your browser settings for pop-up blockers.");
+      console.error(
+        "Print window could not be opened. Please check your browser settings for pop-up blockers."
+      );
     }
   };
 
+  const TransactionUpdatesContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
+    @media (max-width: 768px) {
+      flex-wrap: wrap;
+    }
+  `;
+
+  const TransactionUpdateBox = styled.div`
+    background-color: ${(props) => props.bgColor};
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    flex: 1;
+    text-align: center;
+    margin: 0 0.25rem;
+    color: ${(props) => (props.bgColor === "#4CAF50" ? "#ffffff" : "#333333")};
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      flex: 0 0 calc(50% - 0.5rem);
+      margin-bottom: 0.5rem;
+    }
+  `;
 
   return (
     <SideBar2>
-      <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
+      <div
+        style={{
+          fontFamily: "Arial",
+          color: "#333",
+          "--table-border-radius": "30px",
+        }}
+      >
         <div className="container-fluid mt-0">
-          <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <div
+            className="d-flex justify-content-between align-items-center"
+            style={{ marginTop: "1rem", marginBottom: "1rem" }}
+          >
             <div style={{ flex: "1" }}>
               <DatePicker
                 // value={date}
@@ -723,12 +752,19 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                 onChange={(date) => setSelectedDate(date)}
                 disabledDate={disabledFutureDate}
                 format="DD-MM-YYYY"
-                style={{ borderRadius: "5px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
               />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
-                style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}
+                style={{
+                  fontFamily: "Arial",
+                  marginBottom: "0px",
+                  textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
+                }}
               >
                 Gate User In/Out Transactions
               </h2>
@@ -736,14 +772,16 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
             <div style={{ flex: "1" }}></div> {/* To balance the layout */}
           </div>
           <div className="d-flex justify-content-center mb-3">
-            <div className="d-flex align-items-center" style={{ marginLeft: "auto", marginRight: "auto" }}>
+            <div
+              className="d-flex align-items-center"
+              style={{ marginLeft: "auto", marginRight: "auto" }}
+            >
               <Select
                 placeholder="Select a search option"
                 style={{ width: "200px" }}
                 onChange={handleSearchOptionChange}
-              // suffixIcon={<SearchOutlined />}
+                // suffixIcon={<SearchOutlined />}
               >
-
                 <Option value="ticketNo">Search by Ticket No</Option>
                 <Option value="vehicleNo">Search by Vehicle No</Option>
                 <Option value="supplier">Search by Supplier</Option>
@@ -752,10 +790,12 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
               {searchOption && (
                 <Input
                   placeholder={`Enter ${searchOption}`}
-                  style={{ width: "200px", }}
+                  style={{ width: "200px" }}
                   value={searchValue}
                   onChange={handleInputChange}
-                  onPressEnter={() => { handleSearch(0), setCurrentPage(0) }} // Optionally allow search on Enter key press
+                  onPressEnter={() => {
+                    handleSearch(0), setCurrentPage(0);
+                  }} // Optionally allow search on Enter key press
                 />
               )}
             </div>
@@ -770,55 +810,224 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
               <TransactionUpdateBox bgColor="#BDBDBD">
                 {/* <PendingIcon /> */}
                 <FontAwesomeIcon icon={faTruck} flip="horizontal" />
-                <Text >Inbound Pending:<span style={{ fontWeight: 'bold' }}> {inboundPending} </span> </Text>
+                <Text>
+                  Inbound Pending:
+                  <span style={{ fontWeight: "bold" }}> {inboundPending} </span>{" "}
+                </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#9FC0EF">
                 {/* <PendingIcon /> */}
                 <FontAwesomeIcon icon={faTruck} />
-                <Text >Outbound Pending:  <span style={{ fontWeight: 'bold' }}> {outboundPending} </span> </Text>
+                <Text>
+                  Outbound Pending:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {" "}
+                    {outboundPending}{" "}
+                  </span>{" "}
+                </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#6FBE88">
                 <DoneAllIcon />
-                <Text >Completed Transactions: <span style={{ fontWeight: 'bold' }}> {Completed} </span> </Text>
+                <Text>
+                  Completed Transactions:{" "}
+                  <span style={{ fontWeight: "bold" }}> {Completed} </span>{" "}
+                </Text>
               </TransactionUpdateBox>
             </TransactionUpdatesContainer>
           </div>
 
-
-          <div className=" table-responsive" style={{ overflowX: "auto", maxWidth: "100%", borderRadius: "10px" }}>
-            <div >
-              <table className=" ant-table table table-striped" style={{ width: "100%" }} >
-                <thead className="ant-table-thead" >
+          <div
+            className=" table-responsive"
+            style={{
+              overflowX: "auto",
+              maxWidth: "100%",
+              borderRadius: "10px",
+            }}
+          >
+            <div>
+              <table
+                className=" ant-table table table-striped"
+                style={{ width: "100%" }}
+              >
+                <thead className="ant-table-thead">
                   <tr className="ant-table-row">
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Ticket No.</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Vehicle No.</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>In Time/Date</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Out Time/Date</th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Ticket No.
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Vehicle No.
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      In Time/Date
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Out Time/Date
+                    </th>
                     {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transporter Name</th> */}
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Supplier/Customer</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Supplier's /Customer's Address</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Material/Product</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>TP No.</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>PO No.</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Challan No.</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>TP Net weight(Ton)</th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Supplier/Customer
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Supplier's /Customer's Address
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Material/Product
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      TP No.
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      PO No.
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Challan No.
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      TP Net weight(Ton)
+                    </th>
                     {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>PO No.</th>
                     <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Challan No.</th> */}
                     {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transaction Status </th> */}
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transaction Type</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Quality Report </th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}> Action </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Transaction Type
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Quality Report{" "}
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      {" "}
+                      Action{" "}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
                   {filteredData.map((entry) => {
-                    const isEditDisabled = entry.transactionType === 'Outbound';
+                    const isEditDisabled = entry.transactionType === "Outbound";
 
                     return (
                       <tr key={entry.id}>
-                        <td className="ant-table-cell" style={{ textAlign: "center" }}>
-                          <button className="btn btn-info btn-md" style={{ padding: "3px 6px" }}
-                            onClick={() => { handlePrint(entry) }}
+                        <td
+                          className="ant-table-cell"
+                          style={{ textAlign: "center" }}
+                        >
+                          <button
+                            className="btn btn-info btn-md"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() => {
+                              handlePrint(entry);
+                            }}
                           >
                             <FontAwesomeIcon icon={faPrint} />
                           </button>
@@ -826,43 +1035,129 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                           {entry.ticketNo}
                         </td>
 
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleNo}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleIn}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.vehicleOut}</td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.vehicleNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.vehicleIn}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.vehicleOut}
+                        </td>
                         {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transporter}</td> */}
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transactionType === 'Inbound' ? entry.supplier : entry.customer}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transactionType === 'Inbound' ? entry.supplierAddress : entry.customerAddress}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.material}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.tpNo}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.poNo}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.challanNo}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.tpNetWeight}</td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.transactionType === "Inbound"
+                            ? entry.supplier
+                            : entry.customer}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.transactionType === "Inbound"
+                            ? entry.supplierAddress
+                            : entry.customerAddress}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.material}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.tpNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.poNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.challanNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.tpNetWeight}
+                        </td>
                         {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.poNo}</td>
                         <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.challanNo}</td> */}
                         {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transactionStatus}</td> */}
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transactionType}</td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {entry.transactionType}
+                        </td>
 
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
-                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
-                            onClick={() => handleQualityReportDownload(entry.ticketNo)}
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() =>
+                              handleQualityReportDownload(entry.ticketNo)
+                            }
                             // disabled={!entry.qualityParameters}
                             disabled={!entry.quality}
                           >
                             <FontAwesomeIcon icon={faFileWord} />
                           </button>
                         </td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
                             <Button
                               style={{ margin: "0 5px" }}
                               onClick={() => handleEdit(entry.ticketNo)}
                               disabled={isEditDisabled}
                             >
-                              <FontAwesomeIcon icon={faPencilAlt} style={{ color: "orange" }} className="edit-icon" />
+                              <FontAwesomeIcon
+                                icon={faPencilAlt}
+                                style={{ color: "orange" }}
+                                className="edit-icon"
+                              />
                             </Button>
-                            <Button style={{ margin: "0 5px" }} onClick={() => handleVehicleExit(entry.ticketNo)}>
+                            <Button
+                              style={{ margin: "0 5px" }}
+                              onClick={() => handleVehicleExit(entry.ticketNo)}
+                            >
                               {/* <img src={OutTimeVehicle} alt="Out" className="time-image" /> */}
-                              <FontAwesomeIcon icon={faTruck} style={{ color: "red" }} className="action-icon" />
+                              <FontAwesomeIcon
+                                icon={faTruck}
+                                style={{ color: "red" }}
+                                className="action-icon"
+                              />
                             </Button>
                           </div>
                         </td>
@@ -870,7 +1165,6 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                     );
                   })}
                 </tbody>
-
               </table>
             </div>
           </div>
@@ -881,10 +1175,11 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
       <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
         <span>
           Showing {currentPage * itemsPerPage + 1} to{" "}
-          {Math.min((currentPage + 1) * itemsPerPage, ((currentPage) * itemsPerPage) + vehicleEntryDetails.length)} of{" "}
-          {totalEntries} entries
-
-
+          {Math.min(
+            (currentPage + 1) * itemsPerPage,
+            currentPage * itemsPerPage + vehicleEntryDetails.length
+          )}{" "}
+          of {totalEntries} entries
         </span>
         <div className="ml-auto">
           <button
@@ -918,8 +1213,9 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
             return (
               <button
                 key={pageNumber}
-                className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
-                  }`}
+                className={`btn btn-outline-primary btn-sm me-2 ${
+                  currentPage === pageNumber ? "active" : ""
+                }`}
                 style={{
                   color: currentPage === pageNumber ? "#fff" : "#0077B6",
                   backgroundColor:
@@ -929,7 +1225,6 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
                 }}
                 //onClick={() => setCurrentPage(pageNumber)}
                 onClick={() => setCurrentPage(pageNumber)}
-
               >
                 {pageNumber + 1}
               </button>
@@ -938,8 +1233,9 @@ const VehicleEntry = ({ onConfirmTicket = () => { } }) => {
           {currentPage + 3 < pageCount && <span>...</span>}
           {currentPage + 3 < pageCount && (
             <button
-              className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
-                }`}
+              className={`btn btn-outline-primary btn-sm me-2 ${
+                currentPage === pageCount - 1 ? "active" : ""
+              }`}
               style={{
                 color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
                 backgroundColor:
