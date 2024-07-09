@@ -284,7 +284,7 @@ function TransactionFrom2() {
   });
   useEffect(() =>{
     axios
-      .get(`http://localhost:8081/api/v1/camera/get?ticketNo=${ticketNumber}&userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}&truckStatus=${ENTRY}`)
+      .get(`http://localhost:8080/api/v1/camera/get?ticketNo=${ticketNumber}&userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}&truckStatus=${ENTRY}`)
       .then((response)=>{
         setTareWeightImages({
           frontImg1: response.data.frontImg1,
@@ -479,25 +479,26 @@ function TransactionFrom2() {
               <div className="row mb-2">
                 <div className="col-md-5">
                   <div className="sub">
-                    <input
-                      type="number"
-                      className="abcv"
-                      placeholder="0"
-                      style={{
-                        height: "50px",
-                        appearance: "textfield",
-                        WebkitAppearance: "none",
-                        MozAppearance: "textfield",
-                      }}
-                      min="0"
-                      value={inputValue} // Use trimmedWeight here
-                      onChange={(e) => {
-                        console.log(e);
-                        setInputValue(e.target.value);
-                        handleChange1(e.target.value);
-                      }}
-                      inputMode="numeric"
-                    />
+                  <input
+  type="number"
+  className="abcv"
+  placeholder="0"
+  style={{
+    height: "50px",
+    // Add these lines to ensure the appearance is consistently set
+    WebkitAppearance: 'none',
+    MozAppearance: 'textfield',
+    appearance: 'textfield'
+  }}
+  min="0"
+  value={inputValue}
+  onChange={(e) => {
+    console.log(e);
+    setInputValue(e.target.value);
+    handleChange1(e.target.value);
+  }}
+  inputMode="numeric"
+/>
                     <div className="icons-group">
                       <div>
                         {ticket.grossWeight === 0 && ticket.netWeight === 0 ? (

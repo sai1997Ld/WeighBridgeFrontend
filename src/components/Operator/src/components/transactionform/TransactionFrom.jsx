@@ -437,27 +437,26 @@ console.log({ticket})
               <div className="row mb-2">
                 <div className="col-md-5">
                   <div className="sub">
-                    <input
-                      type="number"
-                      className="abcv"
-                      placeholder="0"
-                      style={{
-                        height: "50px",
-                        appearance: "textfield",
-                        WebkitAppearance: "none",
-                        MozAppearance: "textfield",
-                      }}
-                      min="0"
-                      // value={inputValue}
-                      // onChange={(e) => handleChange1(e, ticket.grossWeight)}
-                      value={inputValue} // Use trimmedWeight here
-                      onChange={(e) => {
-                        console.log(e);
-                        setInputValue(e.target.value);
-                        handleChange1(e.target.value);
-                      }}
-                      inputMode="numeric"
-                    />
+                  <input
+  type="number"
+  className="abcv"
+  placeholder="0"
+  style={{
+    height: "50px",
+    // Add these lines to ensure the appearance is consistently set
+    WebkitAppearance: 'none',
+    MozAppearance: 'textfield',
+    appearance: 'textfield'
+  }}
+  min="0"
+  value={inputValue}
+  onChange={(e) => {
+    console.log(e);
+    setInputValue(e.target.value);
+    handleChange1(e.target.value);
+  }}
+  inputMode="numeric"
+/>
                     {/* <div>
                     <input type="file" onChange={showFile} />
                     {fileContent && <Read fileContent={fileContent} setInputValue={setInputValue} />}

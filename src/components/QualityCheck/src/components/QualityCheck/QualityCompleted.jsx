@@ -429,126 +429,108 @@ function QualityCompleted() {
       // Open a new window or tab to print the data
       const printWindow = window.open("", "_blank");
       const formattedData = `
-        <html>
-          <head>
-            <title>Print Report</title>
-            <style>
-              body { font-family: Arial, sans-serif; }
-              table {
-                width: 100%;
-                border-collapse: collapse;
+      <html>
+        <head>
+          <title>Print Report</title>
+          <style>
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            th, td {
+              padding: 8px;
+              text-align: left;
+              border-bottom: 1px solid #ddd;
+            }
+            th {
+              background-color: #0077b6;
+              color: white;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>${data.companyName}</h2>
+          <p>${data.companyAddress}</p>
+          <p>Generated on: ${new Date().toLocaleDateString()}</p>
+          <table>
+            <tbody>
+              ${labels
+                .map((label) => {
+                  const propertyName = label.toLowerCase().replace(/ /g, "");
+                  let value;
+                  switch (propertyName) {
+                    case "ticketno":
+                      value = data.ticketNo;
+                      break;
+                    case "companyname":
+                      value = data.companyName;
+                      break;
+                    case "companyaddress":
+                      value = data.companyAddress;
+                      break;
+                    case "date":
+                      value = data.date;
+                      break;
+                    case "vehicleno":
+                      value = data.vehicleNo;
+                      break;
+                    case "product":
+                    case "material":
+                      value = data.materialOrProduct;
+                      break;
+                    case "producttype":
+                    case "materialtype":
+                      value = data.materialTypeOrProductType;
+                      break;
+                    case "customername":
+                    case "supplier":
+                      value = data.supplierOrCustomerName;
+                      break;
+                    case "customeraddress":
+                    case "supplieraddress":
+                      value = data.supplierOrCustomerAddress;
+                      break;
+                    case "transactiontype":
+                      value = data.transactionType.charAt(0).toUpperCase() + data.transactionType.slice(1);
+                      break;
+                    default:
+                      value = undefined;
+                  }
+                  return `<tr><th>${label}</th><td>${
+                    typeof value === "object" ? JSON.stringify(value) : value
+                  }</td></tr>`;
+                })
+                .join("")}
+              ${
+                data.qualityParameters
+                  ? `<tr>
+                        <th>Quality Parameters</th>
+                        <td>
+                          <table>
+                            <tr>
+                              <th>Parameter</th>
+                              <th>Value</th>
+                            </tr>
+                            ${Object.entries(data.qualityParameters)
+                              .map(
+                                ([key, value]) =>
+                                  `<tr><td>${key}</td><td>${value}</td></tr>`
+                              )
+                              .join("")}
+                          </table>
+                        </td>
+                      </tr>`
+                  : ""
               }
-              th, td {
-                padding: 8px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-              }
-              th {
-                background-color: #0077b6;
-                color: white;
-              }
-              .signatures {
-                margin-top: 50px;
-                display: flex;
-                justify-content: space-between;
-              }
-              .signature {
-                text-align: center;
-              }
-              .signature-line {
-                width: 200px;
-                border-top: 1px solid black;
-                margin-top: 50px;
-              }
-            </style>
-          </head>
-          <body>
-            <h2>${data.companyName}</h2>
-            <p>${data.companyAddress}</p>
-            <p>Generated on: ${new Date().toLocaleDateString()}</p>
-            <table>
-              <tbody>
-                ${labels
-                  .map((label) => {
-                    const propertyName = label.toLowerCase().replace(/ /g, "");
-                    let value;
-  
-                    switch (propertyName) {
-                      case "ticketno":
-                        value = data.ticketNo;
-                        break;
-                      case "companyname":
-                        value = data.companyName;
-                        break;
-                      case "companyaddress":
-                        value = data.companyAddress;
-                        break;
-                      case "date":
-                        value = data.date;
-                        break;
-                      case "vehicleno":
-                        value = data.vehicleNo;
-                        break;
-                      case "product":
-                      case "material":
-                        value = data.materialOrProduct;
-                        break;
-                      case "producttype":
-                      case "materialtype":
-                        value = data.materialTypeOrProductType;
-                        break;
-                      case "customername":
-                      case "supplier":
-                        value = data.supplierOrCustomerName;
-                        break;
-                      case "customeraddress":
-                      case "supplieraddress":
-                        value = data.supplierOrCustomerAddress;
-                        break;
-                      case "transactiontype":
-                        value = data.transactionType || "N/A";
-                        break;
-                      default:
-                        value = undefined;
-                    }
-  
-                    return `<tr><th>${label}</th><td>${
-                      value !== undefined ? (typeof value === "object" ? JSON.stringify(value) : value) : "N/A"
-                    }</td></tr>`;
-                  })
-                  .join("")}
-                ${
-                  data.qualityParameters
-                    ? `<tr>
-                          <th>Quality Parameters</th>
-                          <td>
-                            <table>
-                              <tr>
-                                <th>Parameter</th>
-                                <th>Value</th>
-                              </tr>
-                              ${Object.entries(data.qualityParameters)
-                                .map(
-                                  ([key, value]) =>
-                                    `<tr><td>${key}</td><td>${value}</td></tr>`
-                                )
-                                .join("")}
-                            </table>
-                          </td>
-                        </tr>`
-                    : ""
-                }
-              </tbody>
-            </table>
-            
-              <div class="signature-line">
+            </tbody>
+          </table>
+           <div class="signature-line">
               <p>Chief Chemist</p>
               <p>For ${data.companyName}</p>
               <br>
               <br>
               <p>Authorised Signatory</p>
           </div>
-
           <script>
             window.print();
             window.close();
