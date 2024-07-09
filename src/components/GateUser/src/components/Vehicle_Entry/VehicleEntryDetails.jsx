@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement } from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
@@ -22,14 +21,12 @@ import {
   faRectangleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-
 import Swal from "sweetalert2";
 import Select from "react-select";
 import axios from "axios";
 import Modal from "antd/es/modal/Modal";
 import NewVehicleRegistration from "./NewVehicleRegistration";
-import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx"
-
+import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx";
 
 function VehicleEntryDetails() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -49,36 +46,29 @@ function VehicleEntryDetails() {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
-
   const [scannedDataArray, setScannedDataArray] = useState([]);
   const [isScanning, setIsScanning] = useState(false);
 
   const [supplierAddresses, setSupplierAddresses] = useState([]);
 
-
   useEffect(() => {
-console.log({scannedDataArray})
+    console.log({ scannedDataArray });
     if (scannedDataArray.length > 36) {
-
       setFormData({
         ...formData,
         tpNo: scannedDataArray[23],
         challanNo: scannedDataArray[19],
         //challanDate:scannedData[36],
-        tpNetWeight: scannedDataArray[33]
-      })
+        tpNetWeight: scannedDataArray[33],
+      });
       setIsScanning(false);
     }
   }, [scannedDataArray]);
-
-
-
 
   const handleScanButtonClick = () => {
     alert("Scanner enabled");
     setIsScanning(true); // Enable scanning mode
   };
-
 
   //Code of Add New Vehicle
 
@@ -90,9 +80,8 @@ console.log({scannedDataArray})
     try {
       const config = {
         url: "http://localhost:8080/api/v1/vehicles?size=20",
-        method: 'get',
-
-      }
+        method: "get",
+      };
       const response = await axios(config);
       console.log({ response: response.data });
       const numbers = response.data.map((vehicle) => ({
@@ -101,31 +90,36 @@ console.log({scannedDataArray})
       }));
       setVehicleNumbers(numbers);
 
-      const vehicleData = await sessionStorage.getItem('vehicleData');
+      const vehicleData = await sessionStorage.getItem("vehicleData");
 
       const requiredData = JSON.parse(vehicleData);
 
-      const tempVehicleNo = numbers?.filter((item) => item.value === requiredData?.vehicleNo);
+      const tempVehicleNo = numbers?.filter(
+        (item) => item.value === requiredData?.vehicleNo
+      );
 
       setVehicleNo(tempVehicleNo);
       // await handleVehicleNoKeyPress(requiredData?.vehicleNo)
 
-      console.log({ vehicleData: vehicleData?.challanNo, requiredData: requiredData, numbers, tempVehicleNo, formData: { ...formData, ...requiredData } });
+      console.log({
+        vehicleData: vehicleData?.challanNo,
+        requiredData: requiredData,
+        numbers,
+        tempVehicleNo,
+        formData: { ...formData, ...requiredData },
+      });
 
-      setFormData({ ...formData, ...requiredData })
-
-
+      setFormData({ ...formData, ...requiredData });
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   // Get API for Fetching  Vehicle No if Registerd:
   useEffect(() => {
     // Fetch vehicle numbers
     fetchMaterialList();
     getVehicles();
   }, []);
-
 
   // To add session userid in frontend
 
@@ -176,12 +170,12 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         const data = await response.json();
         // Assuming data is an array of suppliers, update state or handle data accordingly
         console.log(data); // Log the data to see its structure
-        setSuppliers(data.map((supplier) => ({
-          value: supplier,
-          label: supplier,
-        })));
-
-
+        setSuppliers(
+          data.map((supplier) => ({
+            value: supplier,
+            label: supplier,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching supplier list:", error);
       }
@@ -195,7 +189,6 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     //   setFormData(parsedDetails);
     //   setSelectedSupplier({ value: parsedDetails.supplier, label: parsedDetails.supplier });
     // }
-
   }, []);
 
   // onChangeSupplier
@@ -205,28 +198,28 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
 
   const handleSupplierChange = (selectedOption) => {
     setSelectedSupplier(selectedOption);
-  
+
     fetch(`http://localhost:8080/api/v1/supplier/get/${selectedOption.value}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-  
+
         // Assuming data is an array of addresses
-        const addressOptions = data.map(address => ({
+        const addressOptions = data.map((address) => ({
           value: address,
-          label: address
+          label: address,
         }));
-  
+
         setSupplierAddresses(addressOptions);
-  
+
         const newData = {
           ...formData,
           supplier: selectedOption.value,
           supplierAddressLine1: "", // Clear the previous address
-        }
+        };
         setFormData(newData);
-  
-        sessionStorage.setItem('vehicleData', JSON.stringify(newData));
+
+        sessionStorage.setItem("vehicleData", JSON.stringify(newData));
       })
       .catch((error) => {
         console.error("Error fetching supplier addresses:", error);
@@ -243,7 +236,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   };
 
   const handleMaterialChange = (selectedOption) => {
-    const newData = { ...formData }
+    const newData = { ...formData };
     setFormData({ ...newData, material: selectedOption.value });
     setSelectedMaterial(selectedOption);
   };
@@ -265,10 +258,12 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       const data = await response.json();
       // Assuming data is an array of Materials, update state or handle data accordingly
       console.log(data); // Log the data to see its structure
-      setMaterials(data.map((material) => ({
-        value: material,
-        label: material,
-      })));
+      setMaterials(
+        data.map((material) => ({
+          value: material,
+          label: material,
+        }))
+      );
     } catch (error) {
       console.error("Error fetching Materials list:", error);
     }
@@ -310,12 +305,14 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         const newMaterialTypes = data.map((d) => {
           return {
             label: d,
-            value: d
-          }
-        })
-        const newData = newMaterialTypes?.filter((item) => item?.value === formData?.materialType);
-        console.log({ newData })
-        setSelectedMaterialType(newData)
+            value: d,
+          };
+        });
+        const newData = newMaterialTypes?.filter(
+          (item) => item?.value === formData?.materialType
+        );
+        console.log({ newData });
+        setSelectedMaterialType(newData);
         // Assuming data is an array of materialType names
         setMaterialType(newMaterialTypes); // Update the state with the fetched material types
         // setMaterialType(data); // Update the state with the fetched material types
@@ -323,7 +320,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       .catch((error) => {
         console.error("Error fetching material types:", error);
       });
-  }
+  };
 
   // const handleVehicleNoKeyPress = (e) => {
   //   if (e.key === "Enter") {
@@ -398,11 +395,10 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    const newData = { ...formData, [name]: value, };
-    console.log({ newData })
-    await sessionStorage.setItem('vehicleData', JSON.stringify(newData));
+    const newData = { ...formData, [name]: value };
+    console.log({ newData });
+    await sessionStorage.setItem("vehicleData", JSON.stringify(newData));
     setFormData(newData);
-
 
     // Disable TP No if PO No is entered and vice versa
     // if (name === "poNo") {
@@ -418,13 +414,13 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     // }
   };
   const handleAddVehicle = async (selectedOption) => {
-    console.log({ vehicleNo: selectedOption.value })
+    console.log({ vehicleNo: selectedOption.value });
     const newData = { ...formData, vehicleNo: selectedOption?.value };
-    setFormData(newData)
-    await sessionStorage.setItem('vehicleData', JSON.stringify(newData));
+    setFormData(newData);
+    await sessionStorage.setItem("vehicleData", JSON.stringify(newData));
     setVehicleNo(selectedOption);
     handleVehicleNoKeyPress(selectedOption.value);
-  }
+  };
 
   const handleSave = async () => {
     console.log(formData);
@@ -439,8 +435,8 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       !formData.vehicleNo ||
       !formData.supplier ||
       !formData.driverDLNo ||
-      !formData.driverName
-
+      !formData.driverName ||
+      !formData.supplierAddressLine1
     ) {
       Swal.fire({
         icon: "error",
@@ -457,7 +453,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       challanDate: formData.challanDate,
       supplier: formData.supplier,
       supplierAddressLine1: formData.supplierAddressLine1,
-      transporter: Array.isArray(transporter) ? transporter.toString() : '',
+      transporter: Array.isArray(transporter) ? transporter.toString() : "",
       // transporter: transporterString,
       material: formData.material,
       materialType: formData.materialType,
@@ -473,8 +469,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       transactionType: formData.transactionType,
     };
 
-    console.log({ gateData, formData })
-
+    console.log({ gateData, formData });
 
     // return false
     // Create JSON payload for saving Inbound details
@@ -492,7 +487,11 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     const fetchAndAppendBlob = async (capturedImage, name) => {
       if (capturedImage) {
         const blob = await fetch(capturedImage).then((res) => res.blob());
-        return formD.append(name, blob, `${name}_GATE_USER_${userId}_${Date.now()}.jpg`);
+        return formD.append(
+          name,
+          blob,
+          `${name}_GATE_USER_${userId}_${Date.now()}.jpg`
+        );
       }
     };
 
@@ -512,12 +511,16 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
     console.log("FormData:", formD);
     // return false;
     try {
-      const response = await axios.post(`http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${'GATE_USER'}`, formD, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${"GATE_USER"}`,
+        formD,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
       console.log({ response });
 
       Swal.fire({
@@ -604,8 +607,6 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   //     });
   //   });
 
-
-
   // };
 
   const handleClear = () => {
@@ -655,24 +656,25 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   //Code for close icon
   const goBack = () => {
     navigate(-1);
-  }
+  };
 
   useEffect(() => {
     if (formData.material) {
-      const newMaterial = materials.filter((item) => item.value === formData.material)
+      const newMaterial = materials.filter(
+        (item) => item.value === formData.material
+      );
       getMaterialType(formData.material);
       setSelectedMaterial(newMaterial);
       console.log(formData.material, newMaterial, materials);
-
     }
     if (formData.supplier) {
-      const newSupplier = suppliers.filter((item) => item.value === formData.supplier)
+      const newSupplier = suppliers.filter(
+        (item) => item.value === formData.supplier
+      );
       setSelectedSupplier(newSupplier);
       console.log(formData.supplier, newSupplier, suppliers);
-
     }
-
-  }, [formData.material, formData.supplier])
+  }, [formData.material, formData.supplier]);
 
   const canvasTopRef = useRef(null);
   const canvasRearRef = useRef(null);
@@ -686,29 +688,27 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   return (
     <SideBar2>
       <div>
-
         <div className="VehicleEntryDetailsMainContent">
           <button
             className="close-button"
             onClick={goBack}
             style={{
-              position: 'absolute',
+              position: "absolute",
               marginRight: 10,
-              backgroundColor: 'transparent',
-              color: '#f11212',
-              border: 'none',
-              cursor: 'pointer',
+              backgroundColor: "transparent",
+              color: "#f11212",
+              border: "none",
+              cursor: "pointer",
               fontSize: 30,
-              outline: 'none',
+              outline: "none",
             }}
           >
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
-          <h2 className="text-center mb-4">Vehicle Entry Inbound Details</h2>
+          <h2 className="text-center my-3">Vehicle Entry Inbound Details</h2>
           {isScanning && (
             <ScannerDisplay setScannedDataArray={setScannedDataArray} />
           )}
-
 
           {/* 
           <pre>
@@ -720,8 +720,11 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           <div className="row">
             <div className="row">
               <div className="col-lg-12">
-                <div className="card mb-3 p-2 border shadow-lg">
+                <div className="card m-3 p-2 border shadow-lg">
                   <div className="card-body">
+                    <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                     <div className="row">
                       <div className="col-md-6">
                         <div className="row">
@@ -731,7 +734,13 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               htmlFor="challanDate"
                               className="user-form-label"
                             >
-                              Challan Date:
+                              Challan Date :
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                                className="mx-1"
+                              >
+                                *
+                              </span>{" "}
                             </label>
                             <input
                               type="date"
@@ -757,7 +766,6 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="challanNo"
                               value={formData.challanNo}
                               onChange={handleChange}
-
                               className="form-control"
                             />
                           </div>
@@ -766,23 +774,28 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                             <label htmlFor="tpNo" className="user-form-label">
                               TP No:
                             </label>
-                            <div className="input-group d-flex align-items-center" >
+                            <div className="input-group d-flex align-items-center">
                               <input
                                 type="text"
                                 id="tpNo"
                                 name="tpNo"
                                 value={formData.tpNo}
                                 onChange={handleChange}
-
                                 className="form-control tpscanner"
                                 // disabled={!!formData.poNo}
                                 style={{ flexGrow: 1 }}
                               />
                               <button
                                 className="scanner_button1"
-                                style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                style={{
+                                  marginLeft: "2px",
+                                  padding: "5px 10px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
                                 onClick={handleScanButtonClick}
-                              // disabled={!!formData.poNo}
+                                // disabled={!!formData.poNo}
                               >
                                 <img src={ScannImage_IB} alt="Scanner" />
                               </button>
@@ -799,9 +812,8 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               name="poNo"
                               value={formData.poNo}
                               onChange={handleChange}
-
                               className="form-control"
-                            // disabled={!!formData.tpNo}
+                              // disabled={!!formData.tpNo}
                             />
                           </div>
                           {/* Code of Material */}
@@ -812,11 +824,16 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               className="user-form-label"
                             >
                               Material:
-                              <span style={{ color: "red", fontWeight: "bold" }} > *{" "} </span>
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                              >
+                                {" "}
+                                *{" "}
+                              </span>
                             </label>
                             <button
                               type="button"
-                              className="btn btn-sm border btn-success-1 btn-hover"
+                              className="btn btn-sm border btn-success-1 btn-hover mb-2"
                               style={{
                                 borderRadius: "5px",
                                 marginLeft: "5px",
@@ -833,7 +850,6 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 }}
                               >
                                 <FontAwesomeIcon icon={faPlus} /> Add
-
                               </div>
                             </button>
                             <Select
@@ -858,24 +874,27 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                           <div className="col-md-6 mb-3">
                             <label
                               htmlFor="materialType"
-                              className="user-form-label"
+                              className="user-form-label mb-3"
                             >
                               Material Type:
                             </label>
                             <Select
-
                               options={materialType}
                               value={selectedMaterialType}
                               onChange={(selectedOption) => {
                                 setSelectedMaterialType(selectedOption);
-                                const newData = { ...formData, materialType: selectedOption.value };
-                                sessionStorage.setItem('vehicleData', JSON.stringify(newData))
-                                setFormData(newData)
-                              }
-                              }
+                                const newData = {
+                                  ...formData,
+                                  materialType: selectedOption.value,
+                                };
+                                sessionStorage.setItem(
+                                  "vehicleData",
+                                  JSON.stringify(newData)
+                                );
+                                setFormData(newData);
+                              }}
                               placeholder="Select MaterialType"
                             />
-
                           </div>
                           {/* Code Of E-Way Bill No */}
                           <div className="col-md-6 col-sm-12">
@@ -885,7 +904,10 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                             >
                               E-way Bill No:
                             </label>
-                            <div className="input-group" style={{ display: "flex", alignItems: "center" }}>
+                            <div
+                              className="input-group"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
                               <input
                                 type="text"
                                 id="eWayBillNo"
@@ -929,11 +951,16 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               className="user-form-label"
                             >
                               Vehicle No:
-                              <span style={{ color: "red", fontWeight: "bold" }}>  *{" "} </span>
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                              >
+                                {" "}
+                                *{" "}
+                              </span>
                             </label>
                             <button
                               type="button"
-                              className="btn btn-sm border btn-success-1 btn-hover"
+                              className="btn btn-sm border btn-success-1 btn-hover mb-2"
                               style={{
                                 borderRadius: "5px",
                                 marginLeft: "5px",
@@ -963,9 +990,8 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               options={vehicleNumbers}
                               value={vehicleNo}
                               onChange={(selectedOption) => {
-                                console.log(selectedOption)
+                                console.log(selectedOption);
                                 handleAddVehicle(selectedOption);
-
                               }}
                               id="vehicleNo"
                               placeholder="Select Vehicle No"
@@ -980,12 +1006,18 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               htmlFor="supplier"
                               className="user-form-label"
                             >
-                              Supplier:  <span style={{ color: "red", fontWeight: "bold" }} > *{" "} </span>
+                              Supplier:{" "}
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                              >
+                                {" "}
+                                *{" "}
+                              </span>
                             </label>
 
                             <button
                               type="button"
-                              className="btn btn-sm border btn-success-1 btn-hover"
+                              className="btn btn-sm border btn-success-1 btn-hover mb-2"
                               style={{
                                 borderRadius: "5px",
                                 marginLeft: "5px",
@@ -1022,9 +1054,17 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               className="user-form-label"
                             >
                               Driver DL No:
-                              <span style={{ color: "red", fontWeight: "bold" }}> * </span>
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                              >
+                                {" "}
+                                *{" "}
+                              </span>
                             </label>
-                            <div className="input-group" style={{ display: "flex", alignItems: "center" }}>
+                            <div
+                              className="input-group"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
                               <input
                                 type="text"
                                 id="driverDLNo"
@@ -1079,26 +1119,22 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 <tr>
                                   <td>
                                     <div className="row">
-                                      <div className="col-md-3">
-                                        <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame3"}
-                                          imageRef={canvasTopRef}
-                                          setCapturedImage={setCapturedTopImage}
-                                          capturedImage={capturedTopImage}
-                                        />
-                                      </div>
+                                      <CameraLiveVideo
+                                        wsUrl={"ws://localhost:8080/ws/frame3"}
+                                        imageRef={canvasTopRef}
+                                        setCapturedImage={setCapturedTopImage}
+                                        capturedImage={capturedTopImage}
+                                      />
                                     </div>
                                   </td>
                                   <td>
                                     <div className="row">
-                                      <div className="col-md-3">
-                                        <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame4"}
-                                          imageRef={canvasRearRef}
-                                          setCapturedImage={setCapturedRearImage}
-                                          capturedImage={capturedRearImage}
-                                        />
-                                      </div>
+                                      <CameraLiveVideo
+                                        wsUrl={"ws://localhost:8080/ws/frame4"}
+                                        imageRef={canvasRearRef}
+                                        setCapturedImage={setCapturedRearImage}
+                                        capturedImage={capturedRearImage}
+                                      />
                                     </div>
                                   </td>
                                 </tr>
@@ -1106,26 +1142,22 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                                 <tr>
                                   <td>
                                     <div className="row">
-                                      <div className="col-md-3">
-                                        <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame11"}
-                                          imageRef={canvasFrontRef}
-                                          setCapturedImage={setCapturedFrontImage}
-                                          capturedImage={capturedFrontImage}
-                                        />
-                                      </div>
+                                      <CameraLiveVideo
+                                        wsUrl={"ws://localhost:8080/ws/frame11"}
+                                        imageRef={canvasFrontRef}
+                                        setCapturedImage={setCapturedFrontImage}
+                                        capturedImage={capturedFrontImage}
+                                      />
                                     </div>
                                   </td>
                                   <td>
                                     <div className="row">
-                                      <div className="col-md-3">
-                                        <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame12"}
-                                          imageRef={canvasSideRef}
-                                          setCapturedImage={setCapturedSideImage}
-                                          capturedImage={capturedSideImage}
-                                        />
-                                      </div>
+                                      <CameraLiveVideo
+                                        wsUrl={"ws://localhost:8080/ws/frame12"}
+                                        imageRef={canvasSideRef}
+                                        setCapturedImage={setCapturedSideImage}
+                                        capturedImage={capturedSideImage}
+                                      />
                                     </div>
                                   </td>
                                 </tr>
@@ -1182,7 +1214,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
             {/* Code Of Last Section which is coming from Backend */}
             <div className="row">
               <div className="col-lg-12">
-                <div className="card mb-3 p-2 border shadow-lg">
+                <div className="card m-3 p-2 border shadow-lg">
                   <div className="card-body">
                     <div className="row">
                       <div className="col-md-3">
@@ -1226,30 +1258,50 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                         />
                       </div>
                       <div className="col-md-3 mb-3">
-  <label htmlFor="supplierAddressLine1" className="user-form-label">
-    Supplier's Address:
-  </label>
-  <Select
-    id="supplierAddressLine1"
-    name="supplierAddressLine1"
-    options={supplierAddresses}
-    value={supplierAddresses.find(option => option.value === formData.supplierAddressLine1)}
-    onChange={(selectedOption) => {
-      const newData = { ...formData, supplierAddressLine1: selectedOption.value };
-      setFormData(newData);
-      sessionStorage.setItem('vehicleData', JSON.stringify(newData));
-    }}
-    placeholder="Select Supplier Address"
-    // isDisabled={!formData.supplier}
-    styles={{
-      control: (provided) => ({
-        ...provided,
-        backgroundColor: formData.supplier ? "white" : "#efefef",
-        color: formData.supplier ? "black" : "#818181",
-      })
-    }}
-  />
-</div>
+                        <label
+                          htmlFor="supplierAddressLine1"
+                          className="user-form-label"
+                        >
+                          Supplier's Address:
+                          <span
+                            style={{ color: "red", fontWeight: "bold" }}
+                            className="mx-1"
+                          >
+                            *
+                          </span>{" "}
+                        </label>
+                        <Select
+                          id="supplierAddressLine1"
+                          name="supplierAddressLine1"
+                          options={supplierAddresses}
+                          value={supplierAddresses.find(
+                            (option) =>
+                              option.value === formData.supplierAddressLine1
+                          )}
+                          onChange={(selectedOption) => {
+                            const newData = {
+                              ...formData,
+                              supplierAddressLine1: selectedOption.value,
+                            };
+                            setFormData(newData);
+                            sessionStorage.setItem(
+                              "vehicleData",
+                              JSON.stringify(newData)
+                            );
+                          }}
+                          placeholder="Select Supplier Address"
+                          // isDisabled={!formData.supplier}
+                          styles={{
+                            control: (provided) => ({
+                              ...provided,
+                              backgroundColor: formData.supplier
+                                ? "white"
+                                : "#efefef",
+                              color: formData.supplier ? "black" : "#818181",
+                            }),
+                          }}
+                        />
+                      </div>
                       {/* Rc fitness UpTo */}
                       <div className="col-md-3">
                         <label
@@ -1303,8 +1355,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           </div>
         </div>
       </div>
-
-    </SideBar2 >
+    </SideBar2>
   );
 }
 
