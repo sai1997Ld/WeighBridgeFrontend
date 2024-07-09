@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import "./SalesOrder.css";
 import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -285,7 +285,7 @@ function SalesOrder() {
                               color: "black",
                             }}
                           >
-                            Add customer
+                            Add <FontAwesomeIcon icon={faUser} />
                           </div>
                         </button>
                       </div>

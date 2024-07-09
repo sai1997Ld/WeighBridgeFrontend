@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import "./SalesVehicle.css";
 import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faRectangleXmark, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faRectangleXmark, faExchangeAlt, faCarAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -219,7 +219,7 @@ function SalesVehicle() {
                           color: "black",
                         }}
                       >
-                        Add Transporter
+                        Add <FontAwesomeIcon icon={faCarAlt} />
                       </div>
                     </button>
                     <Select

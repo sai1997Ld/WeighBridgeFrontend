@@ -203,7 +203,7 @@ const Completed_Transaction = () => {
 
 
   const debouncedSearch = useCallback(
-    () => debounce((page) => handleSearch(page), 500),
+    debounce((page) => handleSearch(page), 500),
     [searchValue, searchOption]
   );
 

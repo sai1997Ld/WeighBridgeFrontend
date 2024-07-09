@@ -161,8 +161,7 @@ const OperatorTransaction2 = () => {
       case "materialName":
         apiUrl += `?materialName=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
 
-      default:
-        break;
+
     }
 
     try {

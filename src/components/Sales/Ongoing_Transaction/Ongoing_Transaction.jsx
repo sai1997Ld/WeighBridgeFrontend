@@ -256,7 +256,8 @@ const Ongoing_Transaction = () => {
 
       case "materialName":
         apiUrl += `?materialName=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
-        break; 
+        break;
+        
     }
 
     try {
@@ -298,9 +299,10 @@ const Ongoing_Transaction = () => {
   };
 
   const debouncedSearch = useCallback(
-    () => debounce((page) => handleSearch(page), 500),
+    debounce((page) => handleSearch(page), 500),
     [searchValue, searchOption]
   );
+
 
   
   useEffect(() => {
