@@ -63,7 +63,7 @@ const SalesDisplay = () => {
     <SideBar6>
       <div className="sales-display-page container-fluid">
         <div className="d-flex justify-content-between align-items-center">
-          <h2 className="text-center mx-auto">Sales Process Details</h2>
+          <h2 className="text-center mx-auto">Sales Pass Details</h2>
           <Link to={"/sales-dashboard"}>
             <FontAwesomeIcon
               icon={faHome}

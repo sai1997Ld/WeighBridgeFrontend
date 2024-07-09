@@ -7,6 +7,7 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import "./index.css";
+import Spinner from "./Spinner";
 
 const HomePage1 = lazy(() => import("./components/HomePages/HomePage1.jsx"));
 const HomePage2 = lazy(() => import("./components/HomePages/HomePage2.jsx"));
@@ -14,7 +15,7 @@ const HomePage3 = lazy(() => import("./components/HomePages/HomePage3.jsx"));
 const HomePage4 = lazy(() => import("./components/HomePages/HomePage4.jsx"));
 const HomePage5 = lazy(() => import("./components/HomePages/HomePage5.jsx"));
 const HomePage6 = lazy(() => import("./components/HomePages/HomePage6.jsx"));
-const Spinner = lazy(() => import("./Spinner"));
+
 
 const LoginUser = lazy(() => import("./components/Login/LoginUser.jsx"));
 const ResetPassword = lazy(() =>
@@ -347,8 +348,6 @@ const router = createBrowserRouter(
       <Route path="/new-transporter" element={<NewTransporter />} />
       <Route path="/Sales-Details" element={<SalesDetails />} />
       <Route path="/reports" element={<Report />} />
-      {/* <Route path="/Print" element={<Print />} /> */}
-      {/* <Route path="/camera" element={<Camera />} /> */}
       <Route path="/DailyReport" element={<DailyReport />} />
       <Route path="/WeeklyReport" element={<WeeklyReport />} />
       <Route path="/MonthlyReport" element={<MonthlyReport />} />

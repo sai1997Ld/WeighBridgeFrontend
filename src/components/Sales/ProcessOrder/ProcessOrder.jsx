@@ -185,7 +185,7 @@ function ProcessOrder() {
       .then((data) => {
         console.log("Response from the API:", data);
         Swal.fire({
-          title: "Sales process added successfully",
+          title: "Sales pass created successfully",
           icon: "success",
           confirmButtonText: "OK",
           customClass: {
@@ -251,6 +251,7 @@ function ProcessOrder() {
                         value={formsaleOrderNo}
                         onChange={(e) => setFormsaleOrderNo(e.target.value)}
                         required
+                        disabled
                       />
                     </div>
                     <div className="col-md-4">
@@ -264,6 +265,8 @@ function ProcessOrder() {
                         placeholder="Enter Product Name"
                         value={formProductName}
                         onChange={(e) => setFormProductName(e.target.value)}
+                        required
+                        disabled
                       />
                     </div>
                     <div className="col-md-4">

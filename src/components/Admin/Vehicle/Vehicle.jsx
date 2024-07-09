@@ -17,7 +17,6 @@ function Vehicle() {
   const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState(0);
   const [loadCapacityUnit, setLoadCapacityUnit] = useState("kg");
   const [transporters, setTransporters] = useState([]);
-  const [error, setError] = useState("");
 
   const handleClear = () => {
     setVehicleNo("");
@@ -70,13 +69,12 @@ function Vehicle() {
       body: JSON.stringify(vehicleData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
@@ -93,7 +91,6 @@ function Vehicle() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -133,7 +130,7 @@ function Vehicle() {
         <div className="vehicle-content container-fluid">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Vehicle Registration</h2>
-            <Link to={"/home1"}>
+            <Link to={"/admin-dashboard"}>
               <FontAwesomeIcon icon={faHome} style={{float: "right", fontSize: "1.5em"}} className="mb-3"/>
             </Link>
           </div>

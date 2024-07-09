@@ -79,14 +79,11 @@ function SalesCustomer() {
 
     if (
       customerName.trim() === "" ||
-      customerContactNo.trim() === "" ||
       customerAddressLine1.trim() === "" ||
       customerAddressLine2.trim() === "" ||
-      customerEmail.trim() === "" ||
       !selectedCountry ||
       !selectedState ||
-      !selectedCity ||
-      zip.trim() === ""
+      !selectedCity 
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -214,7 +211,6 @@ function SalesCustomer() {
                     <label htmlFor="customerEmail" className="form-label">
                       Customer Email
                     </label>
-                    <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                     <input
                       type="email"
                       className={`form-control ${
@@ -224,7 +220,6 @@ function SalesCustomer() {
                       placeholder="Enter Customer Email"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      required
                     />
                     {emailError && (
                       <div className="invalid-feedback">{emailError}</div>
@@ -235,9 +230,6 @@ function SalesCustomer() {
                   <div className="col-md-6">
                     <label htmlFor="customerContactNo" className="form-label">
                       Contact Number{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
                     </label>
                     <input
                       type="tel"
@@ -248,7 +240,6 @@ function SalesCustomer() {
                       placeholder="Enter Contact Number"
                       value={customerContactNo}
                       onChange={(e) => setCustomerContactNo(e.target.value)}
-                      required
                       pattern="\d{10}"
                       title="Please enter 10 numbers"
                       maxLength="10"
@@ -372,9 +363,6 @@ function SalesCustomer() {
                   <div className="col-md-6">
                     <label htmlFor="zip" className="form-label">
                       ZIP{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
                     </label>
                     <input
                       type="text"

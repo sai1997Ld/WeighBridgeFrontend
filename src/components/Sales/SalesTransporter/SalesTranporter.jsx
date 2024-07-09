@@ -34,9 +34,7 @@ function SalesTransporter() {
     let phoneIsValid = true;
   
     if (
-      transporterName.trim() === "" ||
-      transporterAddress.trim() === "" ||
-      transporterContactNo.trim() === ""
+      transporterName.trim() === "" 
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -59,7 +57,7 @@ function SalesTransporter() {
     }
   
     const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(transporterContactNo)) {
+    if (transporterContactNo.trim() !== "" && !phoneRegex.test(transporterContactNo)) {
       setPhoneError("Please enter a valid 10-digit phone number.");
       phoneIsValid = false;
     } else {
@@ -104,6 +102,7 @@ function SalesTransporter() {
           },
         });
         handleClear();
+        navigate("/SalesVehicle");
       })
       .catch((error) => {
         Swal.fire({
@@ -160,9 +159,6 @@ function SalesTransporter() {
                       className="form-label"
                     >
                       Contact Number
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}*
-                      </span>
                     </label>
                     <input
                       type="tel"
@@ -173,7 +169,6 @@ function SalesTransporter() {
                       placeholder="Enter Contact Number"
                       value={transporterContactNo}
                       onChange={(e) => setTransporterContactNo(e.target.value)}
-                      required
                       pattern="\d{10}"
                       onInput={(e) =>
                         (e.target.value = e.target.value.replace(/\D/g, ""))
@@ -207,10 +202,7 @@ function SalesTransporter() {
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="transporterAddress" className="form-label">
-                      Address{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Address
                     </label>
                     <input
                       type="text"
@@ -219,7 +211,6 @@ function SalesTransporter() {
                       placeholder="Enter Address"
                       value={transporterAddress}
                       onChange={(e) => setTransporterAddress(e.target.value)}
-                      required
                     />
                   </div>
                 </div>
@@ -232,10 +223,7 @@ function SalesTransporter() {
                       backgroundColor: "white",
                       color: "black",
                       border: "1px solid #cccccc",
-                       
                       width: "100px",
-
-                      // transition: "transform 0.3s ease-in-out",
                     }}
                     onClick={handleClear}
                   >
@@ -247,12 +235,9 @@ function SalesTransporter() {
                     className="btn btn-success-1 btn-hover"
                     style={{
                       backgroundColor: "white",
-                      color: "black",
-                       
+                      color: "black",  
                       border: "1px solid #cccccc",
                       width: "100px",
-
-                      // transition: "transform 0.3s ease-in-out",
                     }}
                     onClick={handleSave}
                   >
