@@ -6,11 +6,14 @@ import { Typography } from "antd";
 import moment from "moment";
 import SideBar2 from "../../../../SideBar/SideBar2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleXmark, faDownload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRectangleXmark,
+  faDownload,
+} from "@fortawesome/free-solid-svg-icons";
 import * as XLSX from "xlsx";
- 
+
 const { Text } = Typography;
- 
+
 const WeeklyReport = () => {
   // Initialize with the current week's start and end date
   const [startDate, setStartDate] = useState(
@@ -21,25 +24,24 @@ const WeeklyReport = () => {
   );
   const [weighments, setWeighments] = useState([]);
   const navigate = useNavigate();
- 
+
   const handleStartDateChange = (event) => {
     const start = event.target.value;
     setStartDate(start);
     const end = moment(start).add(6, "days").format("YYYY-MM-DD");
     setEndDate(end);
   };
- 
-  const [userId, setUserId] = useState('');
+
+  const [userId, setUserId] = useState("");
   useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem("userId");
     setUserId(userId);
   }, []);
- 
- 
+
   useEffect(() => {
     fetchData(startDate, endDate);
   }, [startDate, endDate]);
- 
+
   const fetchData = (start, end) => {
     if (start && end) {
       axios
@@ -57,14 +59,14 @@ const WeeklyReport = () => {
         });
     }
   };
- 
+
   const goBack = () => {
     navigate(-1);
   };
- 
+
   const downloadExcel = () => {
     const fileName = "Weekly_Report.xlsx";
- 
+
     // Prepare data for Excel export
     const data = weighments.flatMap((material) =>
       material.weighbridgeResponse2List.map((response) => ({
@@ -77,13 +79,15 @@ const WeeklyReport = () => {
         CH_Qty: response.supplyConsignmentWeight,
         Weigh_Qty: response.weighQuantity,
         Differences: response.excessQty,
+        "In Time": response?.inTime?.split(" ")[1],
+        "Out Time": response?.outTime?.split(" ")[1],
       }))
     );
- 
+
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Weekly Report");
- 
+
     // Save the file
     XLSX.writeFile(wb, fileName);
   };
@@ -140,12 +144,16 @@ const WeeklyReport = () => {
                 readOnly
               />
             </Col>
-            <Button style={{ backgroundColor: "#0077b6", color: "white" }} icon={<FontAwesomeIcon icon={faDownload} />} onClick={downloadExcel}>
+            <Button
+              style={{ backgroundColor: "#0077b6", color: "white" }}
+              icon={<FontAwesomeIcon icon={faDownload} />}
+              onClick={downloadExcel}
+            >
               Download
             </Button>
           </Row>
         </div>
- 
+
         {weighments.map((material, index) => (
           <div key={index} className="table-responsive">
             <h5>
@@ -238,29 +246,115 @@ const WeeklyReport = () => {
                   >
                     Differences
                   </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                      textAlign: "center",
+                    }}
+                  >
+                    In Time
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                      textAlign: "center",
+                    }}
+                  >
+                    Out Time
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {material.weighbridgeResponse2List.map((response, idx) => (
                   <tr key={idx}>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.transactionDate}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>{response.vehicleNo}</td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>{response.tpNo}</td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>{response.challanDate}</td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response.vehicleNo}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response.tpNo}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response.challanDate}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
                       {response.supplyConsignmentWeight}
                     </td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>{response.weighQuantity}</td>
-                    <td className="ant-table-cell" style={{ textAlign: "center" }}>{response.excessQty}</td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response.weighQuantity}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response.excessQty}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response?.inTime?.split(" ")[1]}
+                    </td>
+                    <td
+                      className="ant-table-cell"
+                      style={{ textAlign: "center" }}
+                    >
+                      {response?.outTime?.split(" ")[1]}
+                    </td>
                   </tr>
                 ))}
                 <tr>
-                  <td colSpan="4" className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}></td>
-                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.ch_SumQty}</td>
-                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.weight_SumQty}</td>
-                  <td className="ant-table-cell" style={{ textAlign: "center", fontWeight: "bold" }}>{material.shtExcess_SumQty}</td>
+                  <td
+                    colSpan="4"
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  ></td>
+                  <td
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  >
+                    {material.ch_SumQty}
+                  </td>
+                  <td
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  >
+                    {material.weight_SumQty}
+                  </td>
+                  <td
+                    className="ant-table-cell"
+                    style={{ textAlign: "center", fontWeight: "bold" }}
+                  >
+                    {material.shtExcess_SumQty}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -270,5 +364,5 @@ const WeeklyReport = () => {
     </SideBar2>
   );
 };
- 
+
 export default WeeklyReport;
