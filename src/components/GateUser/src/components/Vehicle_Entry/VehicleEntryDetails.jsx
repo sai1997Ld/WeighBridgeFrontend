@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement } from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import QrCodeIcon from "@mui/icons-material/QrCode";
 // import Header from "../../../../Header/Header";
 import SideBar2 from "../../../../SideBar/SideBar2";
 // import camView from "../../assets/weighbridgeCam.webp";
@@ -718,491 +718,471 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
           </pre> */}
 
           <div className="row">
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="card m-3 p-2 border shadow-lg">
-                  <div className="card-body">
-                    <p style={{ color: "red" }}>
-                      Please fill all * marked fields.
-                    </p>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="row">
-                          {/* Code of Challan Date */}
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="challanDate"
-                              className="user-form-label"
+            <div className="col-lg-12">
+              <div className="card m-3 p-2 border shadow-lg">
+                <div className="card-body">
+                  <p style={{ color: "red" }}>
+                    Please fill all * marked fields.
+                  </p>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="row">
+                        {/* Code of Challan Date */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor="challanDate"
+                            className="user-form-label"
+                          >
+                            Challan Date :
+                            <span
+                              style={{ color: "red", fontWeight: "bold" }}
+                              className="mx-1"
                             >
-                              Challan Date :
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                                className="mx-1"
-                              >
-                                *
-                              </span>{" "}
-                            </label>
-                            <input
-                              type="date"
-                              id="challanDate"
-                              name="challanDate"
-                              value={formData.challanDate}
-                              onChange={handleChange}
-                              // required
-                              className="form-control"
-                            />
-                          </div>
-                          {/* Code Of Challan No */}
-                          <div className="col-md-6">
-                            <label
-                              htmlFor="challanNo"
-                              className="user-form-label"
-                            >
-                              Challan No:
-                            </label>
-                            <input
-                              type="text"
-                              id="challanNo"
-                              name="challanNo"
-                              value={formData.challanNo}
-                              onChange={handleChange}
-                              className="form-control"
-                            />
-                          </div>
-                          {/* Code of TP NO */}
-                          <div className="col-md-6 col-sm-12">
-                            <label htmlFor="tpNo" className="user-form-label">
-                              TP No:
-                            </label>
-                            <div className="input-group d-flex align-items-center">
-                              <input
-                                type="text"
-                                id="tpNo"
-                                name="tpNo"
-                                value={formData.tpNo}
-                                onChange={handleChange}
-                                className="form-control tpscanner"
-                                // disabled={!!formData.poNo}
-                                style={{ flexGrow: 1 }}
-                              />
-                              <button
-                                className="scanner_button1"
-                                style={{
-                                  marginLeft: "2px",
-                                  padding: "5px 10px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                                onClick={handleScanButtonClick}
-                                // disabled={!!formData.poNo}
-                              >
-                                <img src={ScannImage_IB} alt="Scanner" />
-                              </button>
-                            </div>
-                          </div>
-                          {/* Code of PO NO */}
-                          <div className="col-md-6 mb-3">
-                            <label htmlFor="poNo" className="user-form-label">
-                              PO No:
-                            </label>
+                              *
+                            </span>{" "}
+                          </label>
+                          <input
+                            type="date"
+                            id="challanDate"
+                            name="challanDate"
+                            value={formData.challanDate}
+                            onChange={handleChange}
+                            // required
+                            className="form-control"
+                          />
+                        </div>
+                        {/* Code Of Challan No */}
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="challanNo"
+                            className="user-form-label"
+                          >
+                            Challan No:
+                          </label>
+                          <input
+                            type="text"
+                            id="challanNo"
+                            name="challanNo"
+                            value={formData.challanNo}
+                            onChange={handleChange}
+                            className="form-control"
+                          />
+                        </div>
+                        {/* Code of TP NO */}
+                        <div className="col-md-6 col-sm-12">
+                          <label htmlFor="tpNo" className="user-form-label">
+                            TP No:
+                          </label>
+                          <div className="input-group d-flex align-items-center">
                             <input
                               type="text"
-                              id="poNo"
-                              name="poNo"
-                              value={formData.poNo}
+                              id="tpNo"
+                              name="tpNo"
+                              value={formData.tpNo}
                               onChange={handleChange}
-                              className="form-control"
-                              // disabled={!!formData.tpNo}
+                              className="form-control tpscanner"
+                              // disabled={!!formData.poNo}
+                              style={{ flexGrow: 1 }}
                             />
-                          </div>
-                          {/* Code of Material */}
-
-                          <div className="col-md-6">
-                            <label
-                              htmlFor="material"
-                              className="user-form-label"
-                            >
-                              Material:
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                              >
-                                {" "}
-                                *{" "}
-                              </span>
-                            </label>
                             <button
-                              type="button"
-                              className="btn btn-sm border btn-success-1 btn-hover mb-2"
+                              className="scanner_button1"
                               style={{
-                                borderRadius: "5px",
-                                marginLeft: "5px",
-                                backgroundColor: "lightblue",
-                                // width: "200px",
+                                marginLeft: "2px",
+                                padding: "5px 10px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
                               }}
+                              onClick={handleScanButtonClick}
+                              // disabled={!!formData.poNo}
                             >
-                              <div
-                                onClick={handleNewMaterial}
-                                style={{
-                                  display: "block",
-                                  textDecoration: "none",
-                                  color: "black",
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faPlus} /> Add
-                              </div>
+                              <QrCodeIcon />
+                              {/* <img src={ScannImage_IB} alt="Scanner" /> */}
                             </button>
-                            <Select
-                              id="material"
-                              name="material"
-                              options={materials}
-                              value={selectedMaterial}
-                              onChange={handleMaterialChange}
-                              // onChange={(selectedOption) => {
-                              //   setSelectedMaterial(selectedOption);
-                              //   const newData = { ...formData, material: selectedOption.value };
-                              //   sessionStorage.setItem('vehicleData', JSON.stringify(newData))
-                              //   setFormData(newData)
-                              // }
-                              // }
-                              placeholder="Select Material"
-                              required
-                            />
                           </div>
+                        </div>
+                        {/* Code of PO NO */}
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="poNo" className="user-form-label">
+                            PO No:
+                          </label>
+                          <input
+                            type="text"
+                            id="poNo"
+                            name="poNo"
+                            value={formData.poNo}
+                            onChange={handleChange}
+                            className="form-control"
+                            // disabled={!!formData.tpNo}
+                          />
+                        </div>
+                        {/* Code of Material */}
 
-                          {/* Code of Material Type */}
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="materialType"
-                              className="user-form-label mb-3"
-                            >
-                              Material Type:
-                            </label>
-                            <Select
-                              options={materialType}
-                              value={selectedMaterialType}
-                              onChange={(selectedOption) => {
-                                setSelectedMaterialType(selectedOption);
-                                const newData = {
-                                  ...formData,
-                                  materialType: selectedOption.value,
-                                };
-                                sessionStorage.setItem(
-                                  "vehicleData",
-                                  JSON.stringify(newData)
-                                );
-                                setFormData(newData);
-                              }}
-                              placeholder="Select MaterialType"
-                            />
-                          </div>
-                          {/* Code Of E-Way Bill No */}
-                          <div className="col-md-6 col-sm-12">
-                            <label
-                              htmlFor="eWayBillNo"
-                              className="user-form-label"
-                            >
-                              E-way Bill No:
-                            </label>
+                        <div className="col-md-6">
+                          <label htmlFor="material" className="user-form-label">
+                            Material:
+                            <span style={{ color: "red", fontWeight: "bold" }}>
+                              {" "}
+                              *{" "}
+                            </span>
+                          </label>
+                          <button
+                            type="button"
+                            className="btn btn-sm border btn-success-1 btn-hover mb-2"
+                            style={{
+                              borderRadius: "5px",
+                              marginLeft: "5px",
+                              backgroundColor: "lightblue",
+                              // width: "200px",
+                            }}
+                          >
                             <div
-                              className="input-group"
-                              style={{ display: "flex", alignItems: "center" }}
+                              onClick={handleNewMaterial}
+                              style={{
+                                display: "block",
+                                textDecoration: "none",
+                                color: "black",
+                              }}
                             >
-                              <input
-                                type="text"
-                                id="eWayBillNo"
-                                name="eWayBillNo"
-                                value={formData.eWayBillNo}
-                                onChange={handleChange}
-                                className="form-control tpscanner"
-                                style={{ flexGrow: 1 }}
-                              />
-                              {/* <button
+                              <FontAwesomeIcon icon={faPlus} /> Add
+                            </div>
+                          </button>
+                          <Select
+                            id="material"
+                            name="material"
+                            options={materials}
+                            value={selectedMaterial}
+                            onChange={handleMaterialChange}
+                            // onChange={(selectedOption) => {
+                            //   setSelectedMaterial(selectedOption);
+                            //   const newData = { ...formData, material: selectedOption.value };
+                            //   sessionStorage.setItem('vehicleData', JSON.stringify(newData))
+                            //   setFormData(newData)
+                            // }
+                            // }
+                            placeholder="Select Material"
+                            required
+                          />
+                        </div>
+
+                        {/* Code of Material Type */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor="materialType"
+                            className="user-form-label mb-3"
+                          >
+                            Material Type:
+                          </label>
+                          <Select
+                            options={materialType}
+                            value={selectedMaterialType}
+                            onChange={(selectedOption) => {
+                              setSelectedMaterialType(selectedOption);
+                              const newData = {
+                                ...formData,
+                                materialType: selectedOption.value,
+                              };
+                              sessionStorage.setItem(
+                                "vehicleData",
+                                JSON.stringify(newData)
+                              );
+                              setFormData(newData);
+                            }}
+                            placeholder="Select MaterialType"
+                          />
+                        </div>
+                        {/* Code Of E-Way Bill No */}
+                        <div className="col-md-6 col-sm-12">
+                          <label
+                            htmlFor="eWayBillNo"
+                            className="user-form-label"
+                          >
+                            E-way Bill No:
+                          </label>
+                          <div
+                            className="input-group"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <input
+                              type="text"
+                              id="eWayBillNo"
+                              name="eWayBillNo"
+                              value={formData.eWayBillNo}
+                              onChange={handleChange}
+                              className="form-control tpscanner"
+                              style={{ flexGrow: 1 }}
+                            />
+                            {/* <button
                                 className="scanner_button4"
                                 style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 onClick={() => alert("Scan E-WayBill No")}
                               >
                                 <img src={ScannImage_IB} alt="Scanner" />
                               </button> */}
-                            </div>
                           </div>
-                          {/* Code of TP Net Weight */}
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="tpNetWeight"
-                              className="user-form-label"
-                            >
-                              TP Net Weight(Ton):
-                            </label>
-                            <input
-                              type="text"
-                              id="tpNetWeight"
-                              name="tpNetWeight"
-                              value={formData.tpNetWeight}
-                              onChange={handleChange}
-                              className="form-control"
-                            />
-                          </div>
-                          {/* Code of Vehicle No */}
+                        </div>
+                        {/* Code of TP Net Weight */}
+                        <div className="col-md-6 mb-3">
+                          <label
+                            htmlFor="tpNetWeight"
+                            className="user-form-label"
+                          >
+                            TP Net Weight(Ton):
+                          </label>
+                          <input
+                            type="text"
+                            id="tpNetWeight"
+                            name="tpNetWeight"
+                            value={formData.tpNetWeight}
+                            onChange={handleChange}
+                            className="form-control"
+                          />
+                        </div>
+                        {/* Code of Vehicle No */}
 
-                          <div className="col-md-6">
-                            <label
-                              htmlFor="vehicleNo"
-                              className="user-form-label"
-                            >
-                              Vehicle No:
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                              >
-                                {" "}
-                                *{" "}
-                              </span>
-                            </label>
-                            <button
-                              type="button"
-                              className="btn btn-sm border btn-success-1 btn-hover mb-2"
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="vehicleNo"
+                            className="user-form-label"
+                          >
+                            Vehicle No:
+                            <span style={{ color: "red", fontWeight: "bold" }}>
+                              {" "}
+                              *{" "}
+                            </span>
+                          </label>
+                          <button
+                            type="button"
+                            className="btn btn-sm border btn-success-1 btn-hover mb-2"
+                            style={{
+                              borderRadius: "5px",
+                              marginLeft: "5px",
+                              backgroundColor: "lightblue",
+                              // width: "200px",
+                            }}
+                          >
+                            <div
+                              onClick={handleNewVehicle}
                               style={{
-                                borderRadius: "5px",
-                                marginLeft: "5px",
-                                backgroundColor: "lightblue",
-                                // width: "200px",
+                                display: "block",
+                                textDecoration: "none",
+                                color: "black",
                               }}
                             >
-                              <div
-                                onClick={handleNewVehicle}
-                                style={{
-                                  display: "block",
-                                  textDecoration: "none",
-                                  color: "black",
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faCar} /> Add
-                                {/* <button
+                              <FontAwesomeIcon icon={faCar} /> Add
+                              {/* <button
                                   className="scanner_button2"
                                   style={{ marginLeft: "15px" }}
                                   onClick={() => alert("Scan Vehicle No")}
                                 >
                                   <img src={ScannImage_IB} alt="Scanner" />
                                 </button> */}
-                              </div>
-                            </button>
-                            <Select
-                              options={vehicleNumbers}
-                              value={vehicleNo}
-                              onChange={(selectedOption) => {
-                                console.log(selectedOption);
-                                handleAddVehicle(selectedOption);
-                              }}
-                              id="vehicleNo"
-                              placeholder="Select Vehicle No"
-                              isSearchable
-                              required
-                            />
-                          </div>
+                            </div>
+                          </button>
+                          <Select
+                            options={vehicleNumbers}
+                            value={vehicleNo}
+                            onChange={(selectedOption) => {
+                              console.log(selectedOption);
+                              handleAddVehicle(selectedOption);
+                            }}
+                            id="vehicleNo"
+                            placeholder="Select Vehicle No"
+                            isSearchable
+                            required
+                          />
+                        </div>
 
-                          {/* Code of  Supplier */}
-                          <div className="col-md-6 mb-3">
-                            <label
-                              htmlFor="supplier"
-                              className="user-form-label"
-                            >
-                              Supplier:{" "}
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                              >
-                                {" "}
-                                *{" "}
-                              </span>
-                            </label>
+                        {/* Code of  Supplier */}
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="supplier" className="user-form-label">
+                            Supplier:{" "}
+                            <span style={{ color: "red", fontWeight: "bold" }}>
+                              {" "}
+                              *{" "}
+                            </span>
+                          </label>
 
-                            <button
-                              type="button"
-                              className="btn btn-sm border btn-success-1 btn-hover mb-2"
-                              style={{
-                                borderRadius: "5px",
-                                marginLeft: "5px",
-                                backgroundColor: "lightblue",
-                                // width: "200px",
-                              }}
-                            >
-                              <div
-                                onClick={handleNewSupplier}
-                                style={{
-                                  display: "block",
-                                  textDecoration: "none",
-                                  color: "black",
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faPlus} /> Add
-                              </div>
-                            </button>
-
-                            <Select
-                              id="supplier"
-                              name="supplier"
-                              options={suppliers}
-                              value={selectedSupplier}
-                              onChange={handleSupplierChange}
-                              placeholder="Select Supplier"
-                              required
-                            />
-                          </div>
-                          {/* Code of Driver DL No */}
-                          <div className="col-md-6 col-sm-12">
-                            <label
-                              htmlFor="driverDLNo"
-                              className="user-form-label"
-                            >
-                              Driver DL No:
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                              >
-                                {" "}
-                                *{" "}
-                              </span>
-                            </label>
+                          <button
+                            type="button"
+                            className="btn btn-sm border btn-success-1 btn-hover mb-2"
+                            style={{
+                              borderRadius: "5px",
+                              marginLeft: "5px",
+                              backgroundColor: "lightblue",
+                              // width: "200px",
+                            }}
+                          >
                             <div
-                              className="input-group"
-                              style={{ display: "flex", alignItems: "center" }}
+                              onClick={handleNewSupplier}
+                              style={{
+                                display: "block",
+                                textDecoration: "none",
+                                color: "black",
+                              }}
                             >
-                              <input
-                                type="text"
-                                id="driverDLNo"
-                                name="driverDLNo"
-                                value={formData.driverDLNo}
-                                onChange={handleChange}
-                                required
-                                className="form-control tpscanner"
-                                style={{ flexGrow: 1 }}
-                              />
-                              {/* <button
+                              <FontAwesomeIcon icon={faPlus} /> Add
+                            </div>
+                          </button>
+
+                          <Select
+                            id="supplier"
+                            name="supplier"
+                            options={suppliers}
+                            value={selectedSupplier}
+                            onChange={handleSupplierChange}
+                            placeholder="Select Supplier"
+                            required
+                          />
+                        </div>
+                        {/* Code of Driver DL No */}
+                        <div className="col-md-6 col-sm-12">
+                          <label
+                            htmlFor="driverDLNo"
+                            className="user-form-label"
+                          >
+                            Driver DL No:
+                            <span style={{ color: "red", fontWeight: "bold" }}>
+                              {" "}
+                              *{" "}
+                            </span>
+                          </label>
+                          <div
+                            className="input-group"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <input
+                              type="text"
+                              id="driverDLNo"
+                              name="driverDLNo"
+                              value={formData.driverDLNo}
+                              onChange={handleChange}
+                              required
+                              className="form-control tpscanner"
+                              style={{ flexGrow: 1 }}
+                            />
+                            {/* <button
                                 className="scanner_button3"
                                 style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 onClick={() => alert("Scan Driver DL No")}
                               >
                                 <img src={ScannImage_IB} alt="Scanner" />
                               </button> */}
-                            </div>
                           </div>
-                          {/* Code Of Driver Name */}
-                          <div className="col-md-6">
-                            <label
-                              htmlFor="driverName"
-                              className="user-form-label"
-                            >
-                              Driver Name:
-                              <span
-                                style={{ color: "red", fontWeight: "bold" }}
-                              >
-                                *
-                              </span>
-                            </label>
-                            <input
-                              type="text"
-                              id="driverName"
-                              name="driverName"
-                              value={formData.driverName}
-                              onChange={handleChange}
-                              required
-                              className="form-control"
-                            />
-                          </div>
-                          <div className="col-md-6 mb-3"></div>
+                        </div>
+                        {/* Code Of Driver Name */}
+                        <div className="col-md-6">
+                          <label
+                            htmlFor="driverName"
+                            className="user-form-label"
+                          >
+                            Driver Name:
+                            <span style={{ color: "red", fontWeight: "bold" }}>
+                              *
+                            </span>
+                          </label>
+                          <input
+                            type="text"
+                            id="driverName"
+                            name="driverName"
+                            value={formData.driverName}
+                            onChange={handleChange}
+                            required
+                            className="form-control"
+                          />
+                        </div>
+                        <div className="col-md-6 mb-3"></div>
+                      </div>
+                    </div>
+                    {/* Code of Camera View  */}
+                    <div className="col-md-6" style={{ marginTop: "-16px" }}>
+                      <div className="mb-0">
+                        <div>
+                          <table className="camview1 table">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <div className="row">
+                                    <CameraLiveVideo
+                                      wsUrl={"ws://localhost:8080/ws/frame3"}
+                                      imageRef={canvasTopRef}
+                                      setCapturedImage={setCapturedTopImage}
+                                      capturedImage={capturedTopImage}
+                                    />
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="row">
+                                    <CameraLiveVideo
+                                      wsUrl={"ws://localhost:8080/ws/frame4"}
+                                      imageRef={canvasRearRef}
+                                      setCapturedImage={setCapturedRearImage}
+                                      capturedImage={capturedRearImage}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr></tr>
+                              <tr>
+                                <td>
+                                  <div className="row">
+                                    <CameraLiveVideo
+                                      wsUrl={"ws://localhost:8080/ws/frame11"}
+                                      imageRef={canvasFrontRef}
+                                      setCapturedImage={setCapturedFrontImage}
+                                      capturedImage={capturedFrontImage}
+                                    />
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="row">
+                                    <CameraLiveVideo
+                                      wsUrl={"ws://localhost:8080/ws/frame12"}
+                                      imageRef={canvasSideRef}
+                                      setCapturedImage={setCapturedSideImage}
+                                      capturedImage={capturedSideImage}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr></tr>
+                            </tbody>
+                          </table>
                         </div>
                       </div>
-                      {/* Code of Camera View  */}
-                      <div className="col-md-6" style={{ marginTop: "-16px" }}>
-                        <div className="mb-0">
-                          <div>
-                            <table className="camview1 table">
-                              <tbody>
-                                <tr>
-                                  <td>
-                                    <div className="row">
-                                      <CameraLiveVideo
-                                        wsUrl={"ws://localhost:8080/ws/frame3"}
-                                        imageRef={canvasTopRef}
-                                        setCapturedImage={setCapturedTopImage}
-                                        capturedImage={capturedTopImage}
-                                      />
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div className="row">
-                                      <CameraLiveVideo
-                                        wsUrl={"ws://localhost:8080/ws/frame4"}
-                                        imageRef={canvasRearRef}
-                                        setCapturedImage={setCapturedRearImage}
-                                        capturedImage={capturedRearImage}
-                                      />
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr></tr>
-                                <tr>
-                                  <td>
-                                    <div className="row">
-                                      <CameraLiveVideo
-                                        wsUrl={"ws://localhost:8080/ws/frame11"}
-                                        imageRef={canvasFrontRef}
-                                        setCapturedImage={setCapturedFrontImage}
-                                        capturedImage={capturedFrontImage}
-                                      />
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div className="row">
-                                      <CameraLiveVideo
-                                        wsUrl={"ws://localhost:8080/ws/frame12"}
-                                        imageRef={canvasSideRef}
-                                        setCapturedImage={setCapturedSideImage}
-                                        capturedImage={capturedSideImage}
-                                      />
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr></tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                        <div style={{ height: 20 }}></div>
-                        <div className="row justify-content-end mt-6 mb-2">
-                          <div className="col-md-6 col-sm-12 d-flex justify-content-center">
-                            <button
-                              type="button"
-                              className="btn btn-danger me-4 btn-hover"
-                              style={{
-                                backgroundColor: "white",
-                                color: "#d63031",
-                                border: "1px solid #cccccc",
-                                width: "150px",
-                                height: "50px",
-                              }}
-                              onClick={handleClear}
-                            >
-                              <FontAwesomeIcon
-                                icon={faEraser}
-                                className="me-1"
-                              />{" "}
-                              Clear
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-success-1 btn-hover"
-                              style={{
-                                backgroundColor: "white",
-                                color: "#008060",
-                                width: "150px",
-                                height: "50px",
-                                border: "1px solid #cccccc",
-                              }}
-                              onClick={handleSave}
-                            >
-                              <FontAwesomeIcon icon={faSave} className="me-1" />{" "}
-                              Save
-                            </button>
-                          </div>
+                      <div style={{ height: 20 }}></div>
+                      <div className="row justify-content-end mt-6 mb-2">
+                        <div className="col-md-6 col-sm-12 d-flex justify-content-center">
+                          <button
+                            type="button"
+                            className="btn btn-danger me-4 btn-hover"
+                            style={{
+                              backgroundColor: "white",
+                              color: "#d63031",
+                              border: "1px solid #cccccc",
+                              width: "150px",
+                              height: "50px",
+                            }}
+                            onClick={handleClear}
+                          >
+                            <FontAwesomeIcon icon={faEraser} className="me-1" />{" "}
+                            Clear
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-success-1 btn-hover"
+                            style={{
+                              backgroundColor: "white",
+                              color: "#008060",
+                              width: "150px",
+                              height: "50px",
+                              border: "1px solid #cccccc",
+                            }}
+                            onClick={handleSave}
+                          >
+                            <FontAwesomeIcon icon={faSave} className="me-1" />{" "}
+                            Save
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -1212,141 +1192,134 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
             </div>
 
             {/* Code Of Last Section which is coming from Backend */}
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="card m-3 p-2 border shadow-lg">
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-3">
-                        <label htmlFor="noOfWheels" className="user-form-label">
-                          No of Wheels:
-                        </label>
-                        <input
-                          type="text"
-                          id="noOfWheels"
-                          name="noOfWheels"
-                          value={formData.noOfWheels}
-                          onChange={handleChange}
-                          className="form-control"
-                          disabled={!formData.vehicleNo}
-                          style={{
-                            backgroundColor: "#efefef",
-                            color: "#818181",
-                          }}
-                        />
-                      </div>
-                      {/* Vehicle Type */}
-                      <div className="col-md-3">
-                        <label
-                          htmlFor="vehicleType"
-                          className="user-form-label"
-                        >
-                          Vehicle Type:
-                        </label>
-                        <input
-                          type="text"
-                          id="vehicleType"
-                          name="vehicleType"
-                          value={formData.vehicleType}
-                          onChange={handleChange}
-                          className="form-control"
-                          disabled={!formData.vehicleNo}
-                          style={{
-                            backgroundColor: "#efefef",
-                            color: "#818181",
-                          }}
-                        />
-                      </div>
-                      <div className="col-md-3 mb-3">
-                        <label
-                          htmlFor="supplierAddressLine1"
-                          className="user-form-label"
-                        >
-                          Supplier's Address:
-                          <span
-                            style={{ color: "red", fontWeight: "bold" }}
-                            className="mx-1"
-                          >
-                            *
-                          </span>{" "}
-                        </label>
-                        <Select
-                          id="supplierAddressLine1"
-                          name="supplierAddressLine1"
-                          options={supplierAddresses}
-                          value={supplierAddresses.find(
-                            (option) =>
-                              option.value === formData.supplierAddressLine1
-                          )}
-                          onChange={(selectedOption) => {
-                            const newData = {
-                              ...formData,
-                              supplierAddressLine1: selectedOption.value,
-                            };
-                            setFormData(newData);
-                            sessionStorage.setItem(
-                              "vehicleData",
-                              JSON.stringify(newData)
-                            );
-                          }}
-                          placeholder="Select Supplier Address"
-                          // isDisabled={!formData.supplier}
-                          styles={{
-                            control: (provided) => ({
-                              ...provided,
-                              backgroundColor: formData.supplier
-                                ? "white"
-                                : "#efefef",
-                              color: formData.supplier ? "black" : "#818181",
-                            }),
-                          }}
-                        />
-                      </div>
-                      {/* Rc fitness UpTo */}
-                      <div className="col-md-3">
-                        <label
-                          htmlFor="rcFitnessUpto"
-                          className="user-form-label"
-                        >
-                          RC Fitness Upto:
-                        </label>
-                        <input
-                          type="text"
-                          id="rcFitnessUpto"
-                          name="rcFitnessUpto"
-                          value={formData.rcFitnessUpto}
-                          onChange={handleChange}
-                          className="form-control"
-                          disabled={!formData.vehicleNo}
-                          style={{
-                            backgroundColor: "#efefef",
-                            color: "#818181",
-                          }}
-                        />
-                      </div>
 
-                      {/* Transporter */}
-                      <div className="col-md-3">
-                        <label
-                          htmlFor="transporter"
-                          className="user-form-label"
+            <div className="col-lg-12">
+              <div className="card m-3 p-2 border shadow-lg">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <label htmlFor="noOfWheels" className="user-form-label">
+                        No of Wheels:
+                      </label>
+                      <input
+                        type="text"
+                        id="noOfWheels"
+                        name="noOfWheels"
+                        value={formData.noOfWheels}
+                        onChange={handleChange}
+                        className="form-control"
+                        disabled={!formData.vehicleNo}
+                        style={{
+                          backgroundColor: "#efefef",
+                          color: "#818181",
+                        }}
+                      />
+                    </div>
+                    {/* Vehicle Type */}
+                    <div className="col-md-3">
+                      <label htmlFor="vehicleType" className="user-form-label">
+                        Vehicle Type:
+                      </label>
+                      <input
+                        type="text"
+                        id="vehicleType"
+                        name="vehicleType"
+                        value={formData.vehicleType}
+                        onChange={handleChange}
+                        className="form-control"
+                        disabled={!formData.vehicleNo}
+                        style={{
+                          backgroundColor: "#efefef",
+                          color: "#818181",
+                        }}
+                      />
+                    </div>
+                    <div className="col-md-3 mb-3">
+                      <label
+                        htmlFor="supplierAddressLine1"
+                        className="user-form-label"
+                      >
+                        Supplier's Address:
+                        <span
+                          style={{ color: "red", fontWeight: "bold" }}
+                          className="mx-1"
                         >
-                          Transporter:
-                        </label>
-                        <input
-                          type="text"
-                          id="transporter"
-                          name="transporter"
-                          value={formData.transporter}
-                          onChange={handleChange}
-                          className="form-control"
-                          disabled={!formData.vehicleNo}
-                          style={{
-                            backgroundColor: "#efefef",
-                            color: "#818181",
-                          }}
-                        />
-                      </div>
+                          *
+                        </span>{" "}
+                      </label>
+                      <Select
+                        id="supplierAddressLine1"
+                        name="supplierAddressLine1"
+                        options={supplierAddresses}
+                        value={supplierAddresses.find(
+                          (option) =>
+                            option.value === formData.supplierAddressLine1
+                        )}
+                        onChange={(selectedOption) => {
+                          const newData = {
+                            ...formData,
+                            supplierAddressLine1: selectedOption.value,
+                          };
+                          setFormData(newData);
+                          sessionStorage.setItem(
+                            "vehicleData",
+                            JSON.stringify(newData)
+                          );
+                        }}
+                        placeholder="Select Supplier Address"
+                        // isDisabled={!formData.supplier}
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            backgroundColor: formData.supplier
+                              ? "white"
+                              : "#efefef",
+                            color: formData.supplier ? "black" : "#818181",
+                          }),
+                        }}
+                      />
+                    </div>
+                    {/* Rc fitness UpTo */}
+                    <div className="col-md-3">
+                      <label
+                        htmlFor="rcFitnessUpto"
+                        className="user-form-label"
+                      >
+                        RC Fitness Upto:
+                      </label>
+                      <input
+                        type="text"
+                        id="rcFitnessUpto"
+                        name="rcFitnessUpto"
+                        value={formData.rcFitnessUpto}
+                        onChange={handleChange}
+                        className="form-control"
+                        disabled={!formData.vehicleNo}
+                        style={{
+                          backgroundColor: "#efefef",
+                          color: "#818181",
+                        }}
+                      />
+                    </div>
+
+                    {/* Transporter */}
+                    <div className="col-md-3">
+                      <label htmlFor="transporter" className="user-form-label">
+                        Transporter:
+                      </label>
+                      <input
+                        type="text"
+                        id="transporter"
+                        name="transporter"
+                        value={formData.transporter}
+                        onChange={handleChange}
+                        className="form-control"
+                        disabled={!formData.vehicleNo}
+                        style={{
+                          backgroundColor: "#efefef",
+                          color: "#818181",
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
