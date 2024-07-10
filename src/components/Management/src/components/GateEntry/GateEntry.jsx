@@ -5,7 +5,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Chart, ArcElement } from "chart.js/auto";
 import Swal from 'sweetalert2';
-import { Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
+import { Button, Input, Select, DatePicker, Menu, Dropdown, Pagination } from "antd";
 import { FilterOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
@@ -47,7 +47,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageNumber, setStartPageNumber] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
   const [totalEntries, setTotalEntries] = useState(0);
   const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
   const [materialOptions, setMaterialOptions] = useState([]);
@@ -321,6 +321,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
       .then(data => {
         setVehicleEntryDetails(data.transactions);
         setTotalPage(data.totalPages);
+        setTotalEntries(data.totalElements); // Make sure this line is present
         console.log("total Page " + data.totalPages);
 
         // Set the current page to 0 to trigger the paginated fetch
@@ -576,112 +577,21 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         </div>
       </div>
 
-      {/* Code for Pagination: */}
-      <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-        <span>
-          Showing {currentPage * itemsPerPage + 1} to{" "}
-          {Math.min((currentPage + 1) * itemsPerPage, ((currentPage) * itemsPerPage) + vehicleEntryDetails.length)} of{" "}
-          {totalEntries} entries
+     {/* Pagination */}
+     <div className="d-flex justify-content-center mt-3">
 
+     <Pagination
+  current={currentPage + 1}
+  total={totalEntries} // Use totalEntries instead of filteredData.length
+  pageSize={itemsPerPage}
+  showSizeChanger={false}
+  showQuickJumper
+  showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
+  onChange={(page) => setCurrentPage(page - 1)}
+  style={{ marginBottom: '20px' }}
+/>
+</div>
 
-        </span>
-        <div className="ml-auto">
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
-            disabled={currentPage === 0}
-          >
-            &lt;&lt;
-          </button>
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 0}
-          >
-            &lt;
-          </button>
-
-          {Array.from({ length: 3 }, (_, index) => {
-            const pageNumber = currentPage + index;
-            if (pageNumber >= pageCount) return null;
-            return (
-              <button
-                key={pageNumber}
-                className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
-                  }`}
-                style={{
-                  color: currentPage === pageNumber ? "#fff" : "#0077B6",
-                  backgroundColor:
-                    currentPage === pageNumber ? "#0077B6" : "transparent",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                //onClick={() => setCurrentPage(pageNumber)}
-                onClick={() => setCurrentPage(pageNumber)}
-
-              >
-                {pageNumber + 1}
-              </button>
-            );
-          })}
-          {currentPage + 3 < pageCount && <span>...</span>}
-          {currentPage + 3 < pageCount && (
-            <button
-              className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
-                }`}
-              style={{
-                color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
-                backgroundColor:
-                  currentPage === pageCount - 1 ? "#0077B6" : "transparent",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() => setCurrentPage(pageCount - 1)}
-            >
-
-
-
-              {pageCount}
-            </button>
-          )}
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === pageCount - 1}
-          >
-            &gt;
-          </button>
-          <button
-            className="btn btn-outline-primary btn-sm"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() =>
-              setCurrentPage(Math.min(pageCount - 1, currentPage + 5))
-            }
-            disabled={currentPage === pageCount - 1}
-          >
-            &gt;&gt;
-          </button>
-        </div>
-      </div>
     </SideBar4>
   );
 };
