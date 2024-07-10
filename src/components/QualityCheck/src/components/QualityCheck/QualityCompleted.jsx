@@ -29,9 +29,9 @@ function QualityCompleted() {
   const [selectedDate, setSelectedDate] = useState(moment());
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
-  const navigate = useNavigate();
+
   const componentRef = useRef();
-  const [ticketData, setTicketData] = useState(null);
+
   const [filteredData, setFilteredData] = useState([]);
   const [allData, setAllData] = useState([]);
   // const [transactionType, setTransactionType] = useState("inbound"); // Default to 'inbound', adjust as necessary
@@ -85,7 +85,7 @@ function QualityCompleted() {
     }
   }, [searchQuery, allData]);
 
-  const homeMainContentRef = useRef(null);
+
 
   const fetchAllTransactions = async () => {
     try {
@@ -236,7 +236,7 @@ function QualityCompleted() {
 
 
 
-  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
+
   const handleSearch = async () => {
     if (searchQuery === "") {
       setFilteredData(allData);
@@ -401,7 +401,7 @@ function QualityCompleted() {
     }
   };
   const [showPrintModal, setShowPrintModal] = useState(false);
-  const [selectedPrintFormat, setSelectedPrintFormat] = useState(null);
+
 
   const handlePrint = async (ticketNo) => {
     try {
