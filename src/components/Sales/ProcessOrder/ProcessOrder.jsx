@@ -140,6 +140,8 @@ function ProcessOrder() {
   const handleSave = () => {
     if (
       !formsaleOrderNo ||
+      !formProductName ||
+      !productType ||
       !vehicleNo ||
       !transporterName 
       // !purchaseProcessDate
@@ -254,12 +256,15 @@ function ProcessOrder() {
                         value={formsaleOrderNo}
                         onChange={(e) => setFormsaleOrderNo(e.target.value)}
                         required
-                        disabled
+                        readOnly
                       />
                     </div>
                     <div className="col-md-4">
                       <label htmlFor="productName" className="form-label">
                         Product Name
+                        <span style={{ color: "red", fontWeight: "bold" }}>
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -269,17 +274,21 @@ function ProcessOrder() {
                         value={formProductName}
                         onChange={(e) => setFormProductName(e.target.value)}
                         required
-                        disabled
+                        readOnly
                       />
                     </div>
                     <div className="col-md-4">
                       <label htmlFor="productType" className="form-label">
                         Product Type
+                        <span style={{ color: "red", fontWeight: "bold" }}>
+                          *
+                        </span>
                       </label>
                       <select
                         className="form-select"
                         id="productType"
                         value={productType}
+                        required
                         onChange={(e) => setProductType(e.target.value)}
                         disabled={!productTypes.length}
                       >
