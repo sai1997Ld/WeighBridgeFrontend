@@ -348,6 +348,9 @@ function HomePage5() {
                 <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", width: "100%" }}>
                   <div className="card-body p-4">
                     <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                       <div className="row mb-3">
                         <div className="col-md-6 col-sm-12">
                           <label htmlFor="company" className="form-label">
@@ -430,6 +433,9 @@ function HomePage5() {
             <div className="card" style={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)", width: "100%" }}>
               <div className="card-body p-4">
                 <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                   <div className="row mb-3">
                     <div className="col-md-12 col-sm-12">
                       <label htmlFor="supplierName" className="form-label">

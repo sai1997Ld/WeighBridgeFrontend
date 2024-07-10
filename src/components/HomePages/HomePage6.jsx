@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Pagination, Input } from 'antd';
+import { Table, Button, Pagination, Input, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SideBar6 from '../SideBar/Sidebar6';
@@ -61,12 +61,14 @@ const HomePage6 = () => {
       dataIndex: 'saleOrderNo',
       key: 'saleOrderNo',
       render: (text, record) => (
+        <Tooltip title="Create Sales Pass">
         <Button
           onClick={() => handleRowClick(record)}
           style={{ backgroundColor: "#88CCFA" }}
         >
           {text}
         </Button>
+      </Tooltip>
       ),
     },
     {
@@ -108,10 +110,12 @@ const HomePage6 = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
+        <Tooltip title="View Sales Pass">
         <Button
           icon={<VisibilityIcon />}
           onClick={() => handleViewClick(record.saleOrderNo)}
         />
+      </Tooltip>
       ),
     },
   ];

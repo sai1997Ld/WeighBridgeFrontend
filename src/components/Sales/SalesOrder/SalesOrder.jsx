@@ -205,6 +205,9 @@ function SalesOrder() {
             >
               <div className="card-body p-4">
                 <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                   <div className="row mb-2">
                     <div className="col-md-4">
                       <label

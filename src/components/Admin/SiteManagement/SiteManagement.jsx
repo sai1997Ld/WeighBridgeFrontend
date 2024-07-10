@@ -119,6 +119,9 @@ function SiteManagement() {
             >
               <div className="card-body p-4">
                 <form>
+  <p style={{ color: "red", justifyContent: "center" , display: "flex" }}>
+                      Please fill all * marked fields.
+                    </p>
                   <div className="row mb-3 justify-content-center">
                     <div className="col-md-8">
                       <label htmlFor="companyName" className="form-label">

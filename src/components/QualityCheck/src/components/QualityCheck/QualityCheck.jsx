@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
 import { Input, InputNumber, DatePicker, Select } from "antd";
 import moment from "moment";
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, Pagination } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
@@ -79,7 +79,7 @@ const StyledTable = styled.table`
 
 function QualityCheck() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("select"); // State for search type
   const [selectedDate, setSelectedDate] = useState(moment());
@@ -860,105 +860,20 @@ function QualityCheck() {
               </StyledTable>
             </div>
           </div>
-          {/* Pagination */}
-          <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-            <span>
-              Showing {currentPage * itemsPerPage + 1} to{" "}
-              {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of{" "}
-              {filteredData.length} {" "}entries
-            </span>
-            <div className="ml-auto">
-              <button
-                className="btn btn-outline-primary btn-sm me-2"
-                style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
-                disabled={currentPage === 0}
-              >
-                &lt;&lt;
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm me-2"
-                style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 0}
-              >
-                &lt;
-              </button>
 
-              {Array.from({ length: 3 }, (_, index) => {
-                const pageNumber = currentPage + index;
-                if (pageNumber >= pageCount) return null;
-                return (
-                  <button
-                    key={pageNumber}
-                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""
-                      }`}
-                    style={{
-                      color: currentPage === pageNumber ? "#fff" : "#0077B6",
-                      backgroundColor:
-                        currentPage === pageNumber ? "#0077B6" : "transparent",
-                      borderColor: "#0077B6",
-                      marginRight: "2px",
-                    }}
-                    onClick={() => setCurrentPage(pageNumber)}
-                  >
-                    {pageNumber + 1}
-                  </button>
-                );
-              })}
-              {currentPage + 3 < pageCount && <span>...</span>}
-              {currentPage + 3 < pageCount && (
-                <button
-                  className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""
-                    }`}
-                  style={{
-                    color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
-                    backgroundColor:
-                      currentPage === pageCount - 1 ? "#0077B6" : "transparent",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() => setCurrentPage(pageCount - 1)}
-                >
-                  {pageCount}
-                </button>
-              )}
-              <button
-                className="btn btn-outline-primary btn-sm me-2"
-                style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === pageCount - 1}
-              >
-                &gt;
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                style={{
-                  color: "#0077B6",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() =>
-                  setCurrentPage(Math.min(pageCount - 1, currentPage + 5))
-                }
-                disabled={currentPage === pageCount - 1}
-              >
-                &gt;&gt;
-              </button>
-            </div>
-          </div>
+          <div className="d-flex justify-content-center mt-3">
+
+        <Pagination
+          current={currentPage + 1}
+          total={filteredData.length}
+          pageSize={itemsPerPage}
+          showSizeChanger={false}
+          showQuickJumper
+          showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
+          onChange={(page) => setCurrentPage(page - 1)}
+          style={{ marginBottom: '20px' }}
+        />
+      </div>
         </div>
       </div>
       <Modal

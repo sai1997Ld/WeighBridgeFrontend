@@ -12,7 +12,7 @@ import SideBar6 from "../../SideBar/Sidebar6";
 import { Button} from "antd";
 
 import { SearchOutlined } from "@ant-design/icons";
-import { Select, Input } from "antd";
+import { Select, Input, Pagination } from "antd";
 import { Row, Col } from "antd";
 import TicketComponent from "../../Operator/src/components/transaction/TicketPrintComponent";
 import { useReactToPrint } from "react-to-print";
@@ -881,175 +881,23 @@ const Completed_Transaction = () => {
           </div>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-          <span>
-            Showing{" "}
-            {Math.min(
-              (searchOption ? searchPageNumber : pageNumber) * itemsPerPage + 1,
-              searchOption ? searchPager : pager
-            )}{" "}
-            to{" "}
-            {Math.min(
-              (searchOption ? searchPageNumber : pageNumber) * itemsPerPage +
-                itemsPerPage,
-              searchOption ? searchPager : pager
-            )}{" "}
-            of {searchOption ? searchPager : pager} entries
-          </span>
-
-          <div className="ml-auto">
-            <button
-              className="btn btn-outline-primary btn-sm me-2"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  Math.max(
-                    0,
-                    (searchOption ? searchPageNumber : pageNumber) - 5
-                  )
-                )
-              }
-              disabled={(searchOption ? searchPageNumber : pageNumber) === 0}
-            >
-              &lt;&lt;
-            </button>
-            <button
-              className="btn btn-outline-primary btn-sm me-2"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  (searchOption ? searchPageNumber : pageNumber) - 1
-                )
-              }
-              disabled={(searchOption ? searchPageNumber : pageNumber) === 0}
-            >
-              &lt;
-            </button>
-
-            {Array.from({ length: 3 }, (_, index) => {
-              const pageIndex =
-                (searchOption ? searchPageNumber : pageNumber) + index;
-              if (pageIndex >= (searchOption ? totalSearchPages : totalPages))
-                return null;
-              return (
-                <button
-                  key={pageIndex}
-                  className={`btn btn-outline-primary btn-sm me-2 ${
-                    pageIndex === (searchOption ? searchPageNumber : pageNumber)
-                      ? "active"
-                      : ""
-                  }`}
-                  style={{
-                    color:
-                      pageIndex ===
-                      (searchOption ? searchPageNumber : pageNumber)
-                        ? "#fff"
-                        : "#0077B6",
-                    backgroundColor:
-                      pageIndex ===
-                      (searchOption ? searchPageNumber : pageNumber)
-                        ? "#0077B6"
-                        : "transparent",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() =>
-                    (searchOption ? setSearchPageNumber : setPageNumber)(
-                      pageIndex
-                    )
-                  }
-                >
-                  {pageIndex + 1}
-                </button>
-              );
-            })}
-            {(searchOption ? searchPageNumber : pageNumber) + 3 <
-              (searchOption ? totalSearchPages : totalPages) && (
-              <span>...</span>
-            )}
-            {(searchOption ? searchPageNumber : pageNumber) + 3 <
-              (searchOption ? totalSearchPages : totalPages) && (
-              <button
-                className={`btn btn-outline-primary btn-sm me-2 ${
-                  (searchOption ? searchPageNumber : pageNumber) ===
-                  (searchOption ? totalSearchPages : totalPages) - 1
-                    ? "active"
-                    : ""
-                }`}
-                style={{
-                  color:
-                    (searchOption ? searchPageNumber : pageNumber) ===
-                    (searchOption ? totalSearchPages : totalPages) - 1
-                      ? "#fff"
-                      : "#0077B6",
-                  backgroundColor:
-                    (searchOption ? searchPageNumber : pageNumber) ===
-                    (searchOption ? totalSearchPages : totalPages) - 1
-                      ? "#0077B6"
-                      : "transparent",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() =>
-                  (searchOption ? setSearchPageNumber : setPageNumber)(
-                    (searchOption ? totalSearchPages : totalPages) - 1
-                  )
-                }
-              >
-                {searchOption ? totalSearchPages : totalPages}
-              </button>
-            )}
-            <button
-              className="btn btn-outline-primary btn-sm me-2"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  (searchOption ? searchPageNumber : pageNumber) + 1
-                )
-              }
-              disabled={
-                (searchOption ? searchPageNumber : pageNumber) ===
-                (searchOption ? totalSearchPages : totalPages) - 1
-              }
-            >
-              &gt;
-            </button>
-            <button
-              className="btn btn-outline-primary btn-sm"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  Math.min(
-                    (searchOption ? totalSearchPages : totalPages) - 1,
-                    (searchOption ? searchPageNumber : pageNumber) + 5
-                  )
-                )
-              }
-              disabled={
-                (searchOption ? searchPageNumber : pageNumber) ===
-                (searchOption ? totalSearchPages : totalPages) - 1
-              }
-            >
-              &gt;&gt;
-            </button>
-          </div>
-        </div>
+        <div className="d-flex justify-content-center mt-3">
+        <Pagination
+          current={(searchOption ? searchPageNumber : pageNumber) + 1}
+          total={searchOption ? searchPager : pager}
+          pageSize={itemsPerPage}
+          showSizeChanger={false}
+          showQuickJumper
+          showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
+          onChange={(page) => {
+            if (searchOption) {
+              setSearchPageNumber(page - 1);
+            } else {
+              setPageNumber(page - 1);
+            }
+          }}
+        />
+      </div>
       </div>
       <div style={{ display: "none" }}>
         <TicketComponent ref={componentRef} data={ticketData} />

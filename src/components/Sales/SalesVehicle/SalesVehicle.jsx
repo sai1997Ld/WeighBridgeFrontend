@@ -112,13 +112,12 @@ function SalesVehicle() {
       body: JSON.stringify(vehicleData),
       credentials: "include",
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
@@ -132,6 +131,7 @@ function SalesVehicle() {
           },
         });
         handleClear();
+        navigate("/ProcessOrder")
         sessionStorage.removeItem('salesVehicleData');
       })
       .catch((error) => {
@@ -183,6 +183,9 @@ function SalesVehicle() {
           <div className="vehicle-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
             <div className="card-body p-4">
               <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleNo" className="form-label">

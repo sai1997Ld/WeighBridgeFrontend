@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import "./ProcessOrder.css";
 import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faTruck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -235,6 +235,9 @@ function ProcessOrder() {
             >
               <div className="card-body p-4">
                 <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                   <div className="row mb-2">
                     <div className="col-md-4">
                       <label htmlFor="purchaseOrderNo" className="form-label">
@@ -313,7 +316,7 @@ function ProcessOrder() {
                             color: "black",
                           }}
                         >
-                          Add Vehicle
+                          Add <FontAwesomeIcon icon={faTruck} />
                         </div>
                       </button>
                       <Select

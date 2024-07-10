@@ -219,6 +219,9 @@ function UpdateSupplier() {
           >
             <div className="card-body p-4">
               <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="supplierName" className="form-label">

@@ -232,6 +232,9 @@ function UpdateUser() {
             >
               <div className="card-body">
                 <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                   <div className="row mb-3">
                     <div className="col-md-6">
                       <label htmlFor="userId" className="form-label">
