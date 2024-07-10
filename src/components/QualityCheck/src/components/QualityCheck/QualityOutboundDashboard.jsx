@@ -23,7 +23,7 @@ const StyledTable = styled.table`
 
 function QualityOutboundTransaction() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("select"); // State for search type
   const [selectedDate, setSelectedDate] = useState(moment());
