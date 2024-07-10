@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import  { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SideBar3 from "../../../../SideBar/SideBar3";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
 import { Input, InputNumber, DatePicker, Select, Modal } from "antd";
 import moment from "moment";
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, Pagination } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -23,7 +23,7 @@ const StyledTable = styled.table`
 
 function QualityCompleted() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("select"); // State for search type
   const [selectedDate, setSelectedDate] = useState(moment());
@@ -598,7 +598,7 @@ function QualityCompleted() {
             </div>
             <div className="row justify-content-center mb-3">
               <div className="col-12 col-md-3 d-flex align-items-center mb-2 mb-md-0">
-                Show
+                Show{" "}
                 <InputNumber
                   min={1}
                   value={itemsPerPage}
@@ -609,7 +609,7 @@ function QualityCompleted() {
                     borderRadius: "5px",
                     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                   }} />
-                entries
+                &nbsp;entries
               </div>
               <div className="col-12 col-md-6 mb-2 mb-md-0">
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -826,98 +826,19 @@ function QualityCompleted() {
               </div>
             </div>
             {/* Pagination */}
-            <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-              <span>
-                Showing {currentPage * itemsPerPage + 1} to{" "}
-                {Math.min((currentPage + 1) * itemsPerPage, filteredData.length)} of{" "}
-                {filteredData.length} entries
-              </span>
-              <div className="ml-auto">
-                <button
-                  className="btn btn-outline-primary btn-sm me-2"
-                  style={{
-                    color: "#0077B6",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
-                  disabled={currentPage === 0}
-                >
-                  &lt;&lt;
-                </button>
-                <button
-                  className="btn btn-outline-primary btn-sm me-2"
-                  style={{
-                    color: "#0077B6",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 0}
-                >
-                  &lt;
-                </button>
+            <div className="d-flex justify-content-center mt-3">
 
-                {Array.from({ length: 3 }, (_, index) => {
-                  const pageNumber = currentPage + index;
-                  if (pageNumber >= pageCount) return null;
-                  return (
-                    <button
-                      key={pageNumber}
-                      className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageNumber ? "active" : ""}`}
-                      style={{
-                        color: currentPage === pageNumber ? "#fff" : "#0077B6",
-                        backgroundColor: currentPage === pageNumber ? "#0077B6" : "transparent",
-                        borderColor: "#0077B6",
-                        marginRight: "2px",
-                      }}
-                      onClick={() => setCurrentPage(pageNumber)}
-                    >
-                      {pageNumber + 1}
-                    </button>
-                  );
-                })}
-                {currentPage + 3 < pageCount && <span>...</span>}
-                {currentPage + 3 < pageCount && (
-                  <button
-                    className={`btn btn-outline-primary btn-sm me-2 ${currentPage === pageCount - 1 ? "active" : ""}`}
-                    style={{
-                      color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
-                      backgroundColor: currentPage === pageCount - 1 ? "#0077B6" : "transparent",
-                      borderColor: "#0077B6",
-                      marginRight: "2px",
-                    }}
-                    onClick={() => setCurrentPage(pageCount - 1)}
-                  >
-                    {pageCount}
-                  </button>
-                )}
-                <button
-                  className="btn btn-outline-primary btn-sm me-2"
-                  style={{
-                    color: "#0077B6",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === pageCount - 1}
-                >
-                  &gt;
-                </button>
-                <button
-                  className="btn btn-outline-primary btn-sm"
-                  style={{
-                    color: "#0077B6",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() => setCurrentPage(Math.min(pageCount - 1, currentPage + 5))}
-                  disabled={currentPage === pageCount - 1}
-                >
-                  &gt;&gt;
-                </button>
-              </div>
-            </div>
+<Pagination
+  current={currentPage + 1}
+  total={filteredData.length}
+  pageSize={itemsPerPage}
+  showSizeChanger={false}
+  showQuickJumper
+  showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
+  onChange={(page) => setCurrentPage(page - 1)}
+  style={{ marginBottom: '20px' }}
+/>
+</div>
           </div>
         </div>
         <Modal
