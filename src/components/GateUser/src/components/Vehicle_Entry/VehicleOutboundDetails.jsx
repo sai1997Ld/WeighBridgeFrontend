@@ -6,22 +6,25 @@ import SideBar2 from "../../../../SideBar/SideBar2";
 import "./VehicleOutboundDetails.css";
 import ScannImage_IB from "../../assets/ScannImage_IB.jpg";
 import CameraIcon_IB from "../../assets/CameraIcon_IB.jpg";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faEraser, faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSave,
+  faEraser,
+  faRectangleXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import axios from 'axios';
-import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx"
-
+import axios from "axios";
+import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx";
+import { Spin } from "antd";
 
 function VehicleOutboundDetails() {
-
   const navigate = useNavigate();
   const chartRef = useRef(null);
   const chartRef2 = useRef(null);
   const homeMainContentRef = useRef(null);
   const [Customers, setCustomers] = useState([]);
-  const [CustomersAddressLine1, setCustomersAddressLine1] = useState();
+  const [isSaving, setIsSaving] = useState(false);
   const [transporter, setTransporter] = useState();
   const [Products, setProducts] = useState([]);
   // const [transactionType, setTransactionType] = useState();
@@ -29,14 +32,7 @@ function VehicleOutboundDetails() {
   const queryParams = new URLSearchParams(window.location.search);
   const [saleDetails, setSaleDetails] = useState([]);
 
-
-
   const sale = queryParams.get("sales");
-
-
-
-
-
 
   // Get API for Customer
   useEffect(() => {
@@ -46,7 +42,7 @@ function VehicleOutboundDetails() {
           `http://localhost:8080/api/v1/Customer/get/list`,
           {
             method: "GET",
-            credentials: "include"
+            credentials: "include",
           }
         );
         if (!response.ok) {
@@ -81,7 +77,7 @@ function VehicleOutboundDetails() {
           // Set the first element of the array as the Customer address
           setFormData((prevData) => ({
             ...prevData,
-            CustomerAddressLine1: data[0]
+            CustomerAddressLine1: data[0],
           }));
         }
       })
@@ -89,8 +85,6 @@ function VehicleOutboundDetails() {
         console.error("Error fetching Customer Address:", error);
       });
   };
-
-
 
   // Get API for Product:
 
@@ -101,7 +95,7 @@ function VehicleOutboundDetails() {
           `http://localhost:8080/api/v1/Products/names`,
           {
             method: "GET",
-            credentials: "include"
+            credentials: "include",
           }
         );
         if (!response.ok) {
@@ -157,7 +151,6 @@ function VehicleOutboundDetails() {
       });
   };
 
-
   // Get API Vehicle No.
 
   // const handleVehicleNoKeyPress = (e) => {
@@ -188,9 +181,11 @@ function VehicleOutboundDetails() {
 
   const handleVehicleNoBlur = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo} `);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo} `
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
       setFormData((prevFormData) => ({
@@ -202,10 +197,9 @@ function VehicleOutboundDetails() {
         rcFitnessUpto: data.vehicleFitnessUpTo || prevFormData.rcFitnessUpto,
       }));
     } catch (error) {
-      console.error('Error fetching vehicle data:', error);
+      console.error("Error fetching vehicle data:", error);
     }
   };
-
 
   useEffect(() => {
     Chart.register(ArcElement);
@@ -248,10 +242,8 @@ function VehicleOutboundDetails() {
     rcFitnessUpto: "",
     department: "",
     eWayBillNo: "",
-    transactionType: "Inbound"
+    transactionType: "Inbound",
   });
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -274,13 +266,12 @@ function VehicleOutboundDetails() {
     }
   };
 
-
   // To add session userid in frontend
 
   const userId = sessionStorage.getItem("userId");
 
   const handleSave = async () => {
-
+    setIsSaving(true);
     const gateData = {
       // userId,
       // saleOrderDate: saleDetails.saleOrderDate,
@@ -299,14 +290,18 @@ function VehicleOutboundDetails() {
       challanNo: saleDetails.saleOrderNo,
       // ewayBillNo: formData.eWayBillNo,
       // department: formData.department,
-      transactionType: "Outbound"
+      transactionType: "Outbound",
     };
 
     // Create JSON payload
     const fetchAndAppendBlob = async (capturedImage, name) => {
       if (capturedImage) {
         const blob = await fetch(capturedImage).then((res) => res.blob());
-        return formD.append(name, blob, `${name}_GATE_USER_${userId}_${Date.now()}.jpg`);
+        return formD.append(
+          name,
+          blob,
+          `${name}_GATE_USER_${userId}_${Date.now()}.jpg`
+        );
       }
     };
 
@@ -321,15 +316,18 @@ function VehicleOutboundDetails() {
     // Append gateData fields to formD
     formD.append("requestBody", JSON.stringify(gateData));
 
-
     console.log("FormData:", formD);
     try {
-      const response = await axios.post(`http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${'GATE_USER'}`, formD, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/gate/saveTransaction?userId=${userId}&role=${"GATE_USER"}`,
+        formD,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
       console.log({ response });
 
       Swal.fire({
@@ -337,7 +335,7 @@ function VehicleOutboundDetails() {
         title: "Success!",
         text: `Transaction with id ${response.data} created Successfully!`,
       });
-
+      setIsSaving(false);
       // Reset form data and navigate
       sessionStorage.removeItem("vehicleData");
       // handleClear();
@@ -350,14 +348,13 @@ function VehicleOutboundDetails() {
         title: "Oops...",
         text: "Something went wrong!",
       });
+      setIsSaving(false);
     }
   };
-
 
   // const payload = JSON.stringify(gateData);
   // console.log("payload", payload);
   // Fetch API
-
 
   // fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
   //   method: "POST",
@@ -376,7 +373,6 @@ function VehicleOutboundDetails() {
   //       title: "Success!",
   //       text: `Transaction with id ${data} created Successfully!`,
   //     });
-
 
   // Reset form data after 3 seconds and navigate to VehicleEntry page
   //       setTimeout(() => {
@@ -446,22 +442,24 @@ function VehicleOutboundDetails() {
       title: "Picture will be coming from backend",
       text: "Please wait...",
       customClass: {
-        popup: 'my-popup-class',
-        title: 'my-title-class',
-        content: 'my-content-class'
-      }
+        popup: "my-popup-class",
+        title: "my-title-class",
+        content: "my-content-class",
+      },
     });
   };
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/v1/sales/getBySalePassNo?salePassNo=${sale}&userId=${userId} `, {
-        withCredentials: true,
-      })
+      .get(
+        `http://localhost:8080/api/v1/sales/getBySalePassNo?salePassNo=${sale}&userId=${userId} `,
+        {
+          withCredentials: true,
+        }
+      )
       .then((response) => {
         setSaleDetails(response.data);
         console.log(response.data);
-
       })
       .catch((error) => {
         console.error("Error fetching sale details:", error);
@@ -471,8 +469,7 @@ function VehicleOutboundDetails() {
   // Code for Close icon
   const goBack = () => {
     navigate(-1);
-  }
-
+  };
 
   const canvasTopRef = useRef(null);
   const canvasRearRef = useRef(null);
@@ -483,23 +480,22 @@ function VehicleOutboundDetails() {
   const [capturedFrontImage, setCapturedFrontImage] = useState(null);
   const [capturedSideImage, setCapturedSideImage] = useState(null);
 
-
   return (
     <SideBar2>
       <>
-        <div className="VehicleoutboundDetailsMainContent"  >
+        <div className="VehicleoutboundDetailsMainContent">
           <button
             className="close-button"
             onClick={goBack}
             style={{
-              position: 'absolute',
+              position: "absolute",
               marginRight: 10,
-              backgroundColor: 'transparent',
-              color: '#f11212',
-              border: 'none',
-              cursor: 'pointer',
+              backgroundColor: "transparent",
+              color: "#f11212",
+              border: "none",
+              cursor: "pointer",
               fontSize: 30,
-              outline: 'none',
+              outline: "none",
             }}
           >
             <FontAwesomeIcon icon={faRectangleXmark} />
@@ -510,12 +506,18 @@ function VehicleOutboundDetails() {
               <div className="col-lg-12">
                 <div className="card mb-3 p-2 border shadow-lg">
                   <div className="card-body">
+                    <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                     <div className="row">
                       <div className="col-md-6">
                         <div className="row">
                           {/* Code of Challan Date */}
                           <div className="col-md-6 mb-3">
-                            <label htmlFor="saleOrderDate" className="outbound-form-label">
+                            <label
+                              htmlFor="saleOrderDate"
+                              className="outbound-form-label"
+                            >
                               Sale Order Date:
                             </label>
                             <input
@@ -532,7 +534,10 @@ function VehicleOutboundDetails() {
                           </div>
                           {/* Code Of Challan No */}
                           <div className="col-md-6">
-                            <label htmlFor="SaleOrderNo" className="outbound-form-label ">
+                            <label
+                              htmlFor="SaleOrderNo"
+                              className="outbound-form-label "
+                            >
                               Sale Order No:
                               {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
                             </label>
@@ -550,7 +555,10 @@ function VehicleOutboundDetails() {
                           </div>
                           {/* Code of TP NO */}
                           <div className="col-md-6 ">
-                            <label htmlFor="poNo" className="outbound-form-label ">
+                            <label
+                              htmlFor="poNo"
+                              className="outbound-form-label "
+                            >
                               PO No:
                               {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
                             </label>
@@ -568,7 +576,10 @@ function VehicleOutboundDetails() {
                           </div>
                           {/* Code of PO NO */}
                           <div className="col-md-6 mb-3">
-                            <label htmlFor="salePassNo" className="outbound-form-label ">
+                            <label
+                              htmlFor="salePassNo"
+                              className="outbound-form-label "
+                            >
                               Sale Pass No:
                               {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
                             </label>
@@ -584,12 +595,14 @@ function VehicleOutboundDetails() {
                                 className="form-control tpscanner"
                                 disabled
                               />
-                             
                             </div>
                           </div>
                           {/* Code of Material */}
                           <div className="col-md-6">
-                            <label htmlFor="Product" className="outbound-form-label">
+                            <label
+                              htmlFor="Product"
+                              className="outbound-form-label"
+                            >
                               Product:
                             </label>
                             <input
@@ -605,7 +618,10 @@ function VehicleOutboundDetails() {
                           </div>
                           {/* Code of Material Type */}
                           <div className="col-md-6 mb-3">
-                            <label htmlFor="ProductType" className="outbound-form-label">
+                            <label
+                              htmlFor="ProductType"
+                              className="outbound-form-label"
+                            >
                               Product Type:
                             </label>
                             <input
@@ -623,7 +639,10 @@ function VehicleOutboundDetails() {
 
                           {/* Code of TP Net Weight */}
                           <div className="col-md-6 mb-3">
-                            <label htmlFor="quantity" className="outbound-form-label">
+                            <label
+                              htmlFor="quantity"
+                              className="outbound-form-label"
+                            >
                               Quantity (MT):
                             </label>
                             <input
@@ -640,7 +659,10 @@ function VehicleOutboundDetails() {
                           {/* Code of Vehicle No */}
 
                           <div className="col-md-6">
-                            <label htmlFor="vehicleType" className="outbound-form-label">
+                            <label
+                              htmlFor="vehicleType"
+                              className="outbound-form-label"
+                            >
                               Vehicle Type:
                             </label>
                             <input
@@ -651,13 +673,19 @@ function VehicleOutboundDetails() {
                               onChange={handleChange}
                               className="form-control"
                               disabled={!formData.vehicleNo}
-                              style={{ backgroundColor: '#efefef', color: '#818181' }}
+                              style={{
+                                backgroundColor: "#efefef",
+                                color: "#818181",
+                              }}
                             />
                           </div>
 
                           {/* Code of Driver DL No */}
                           <div className="col-md-6">
-                            <label htmlFor="transporter" className="outbound-form-label ">
+                            <label
+                              htmlFor="transporter"
+                              className="outbound-form-label "
+                            >
                               Transporter:
                             </label>
                             <input
@@ -669,12 +697,18 @@ function VehicleOutboundDetails() {
                               className="form-control"
                               // placeholder="Enter Transporter"
                               disabled={!formData.vehicleNo}
-                              style={{ backgroundColor: '#efefef', color: '#818181' }}
+                              style={{
+                                backgroundColor: "#efefef",
+                                color: "#818181",
+                              }}
                             />
                           </div>
                           {/* Code Of RC Fitness Upto */}
                           <div className="col-md-6 mb-3">
-                            <label htmlFor="rcFitnessUpto" className="outbound-form-label">
+                            <label
+                              htmlFor="rcFitnessUpto"
+                              className="outbound-form-label"
+                            >
                               RC Fitness Upto:
                               {/* <span style={{ color: "red", fontWeight: "bold" }}>*</span> */}
                             </label>
@@ -687,12 +721,18 @@ function VehicleOutboundDetails() {
                               // required
                               className="form-control"
                               disabled={!formData.vehicleNo}
-                              style={{ backgroundColor: '#efefef', color: '#818181' }}
+                              style={{
+                                backgroundColor: "#efefef",
+                                color: "#818181",
+                              }}
                             />
                           </div>
 
                           <div className="col-md-6">
-                            <label htmlFor="Customer" className="outbound-form-label ">
+                            <label
+                              htmlFor="Customer"
+                              className="outbound-form-label "
+                            >
                               Customer:
                             </label>
                             <input
@@ -708,7 +748,10 @@ function VehicleOutboundDetails() {
                           </div>
 
                           <div className="col-md-6 mb-3">
-                            <label htmlFor="CustomerContactNo" className="outbound-form-label">
+                            <label
+                              htmlFor="CustomerContactNo"
+                              className="outbound-form-label"
+                            >
                               Customer's Address:
                             </label>
                             <input
@@ -719,14 +762,24 @@ function VehicleOutboundDetails() {
                               onChange={handleChange}
                               className="form-control"
                               disabled={!formData.Customer}
-                              style={{ backgroundColor: '#efefef', color: '#818181' }}
+                              style={{
+                                backgroundColor: "#efefef",
+                                color: "#818181",
+                              }}
                             />
                           </div>
 
                           <div className="col-md-6 col-sm-12">
-                            <label htmlFor="driverDLNo" className="outbound-form-label ">
+                            <label
+                              htmlFor="driverDLNo"
+                              className="outbound-form-label "
+                            >
                               Driver DL No:
-                              <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                              >
+                                *
+                              </span>
                             </label>
                             <div className="input-group">
                               <input
@@ -739,13 +792,19 @@ function VehicleOutboundDetails() {
                                 className="form-control tpscanner"
                                 style={{ flexGrow: 1 }}
                               />
-                              
                             </div>
                           </div>
                           <div className="col-md-6">
-                            <label htmlFor="driverName" className="outbound-form-label">
+                            <label
+                              htmlFor="driverName"
+                              className="outbound-form-label"
+                            >
                               Driver Name:
-                              <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                              <span
+                                style={{ color: "red", fontWeight: "bold" }}
+                              >
+                                *
+                              </span>
                             </label>
                             <input
                               type="text"
@@ -772,7 +831,9 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame3"}
+                                          wsUrl={
+                                            "ws://localhost:8080/ws/frame3"
+                                          }
                                           imageRef={canvasTopRef}
                                           setCapturedImage={setCapturedTopImage}
                                           capturedImage={capturedTopImage}
@@ -784,9 +845,13 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame4"}
+                                          wsUrl={
+                                            "ws://localhost:8080/ws/frame4"
+                                          }
                                           imageRef={canvasRearRef}
-                                          setCapturedImage={setCapturedRearImage}
+                                          setCapturedImage={
+                                            setCapturedRearImage
+                                          }
                                           capturedImage={capturedRearImage}
                                         />
                                       </div>
@@ -799,9 +864,13 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame51"}
+                                          wsUrl={
+                                            "ws://localhost:8080/ws/frame51"
+                                          }
                                           imageRef={canvasFrontRef}
-                                          setCapturedImage={setCapturedFrontImage}
+                                          setCapturedImage={
+                                            setCapturedFrontImage
+                                          }
                                           capturedImage={capturedFrontImage}
                                         />
                                       </div>
@@ -811,9 +880,13 @@ function VehicleOutboundDetails() {
                                     <div className="row">
                                       <div className="col-md-3">
                                         <CameraLiveVideo
-                                          wsUrl={"ws://localhost:8080/ws/frame51"}
+                                          wsUrl={
+                                            "ws://localhost:8080/ws/frame51"
+                                          }
                                           imageRef={canvasSideRef}
-                                          setCapturedImage={setCapturedSideImage}
+                                          setCapturedImage={
+                                            setCapturedSideImage
+                                          }
                                           capturedImage={capturedSideImage}
                                         />
                                       </div>
@@ -852,8 +925,19 @@ function VehicleOutboundDetails() {
                                 border: "1px solid #cccccc",
                               }}
                               onClick={handleSave}
+                              disabled={isSaving}
                             >
-                              <FontAwesomeIcon icon={faSave} className="me-1" /> Save
+                              {isSaving ? (
+                                <Spin size="small" />
+                              ) : (
+                                <>
+                                  <FontAwesomeIcon
+                                    icon={faSave}
+                                    className="me-1"
+                                  />{" "}
+                                  Save
+                                </>
+                              )}
                             </button>
                           </div>
                         </div>
@@ -867,7 +951,6 @@ function VehicleOutboundDetails() {
         </div>
       </>
     </SideBar2>
-
   );
 }
 

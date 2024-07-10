@@ -11,6 +11,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import SideBar2 from "../../../../SideBar/SideBar2";
+import { Spin } from "antd";
 
 function NewVehicleRegistration() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ function NewVehicleRegistration() {
   const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState("");
   const [transporters, setTransporters] = useState([]);
   const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // To add session userid in frontend
 
@@ -46,6 +48,7 @@ function NewVehicleRegistration() {
   };
 
   const handleSave = () => {
+    setIsSaving(true);
     if (
       vehicleNo.trim() === "" ||
       transporter.trim() === ""
@@ -60,6 +63,8 @@ function NewVehicleRegistration() {
           confirmButton: "btn btn-warning",
         },
       });
+      setIsSaving(false);
+
       return;
     }
 
@@ -107,6 +112,8 @@ function NewVehicleRegistration() {
             confirmButton: "btn btn-success",
           },
         });
+        setIsSaving(false);
+
         handleClear();
         navigate("/VehicleEntryDetails"); // Navigate to VehicleEntryDetails page
       })
@@ -122,6 +129,7 @@ function NewVehicleRegistration() {
             confirmButton: "btn btn-danger",
           },
         });
+        setIsSaving(false);
       });
   };
 
@@ -164,6 +172,7 @@ function NewVehicleRegistration() {
             }}
           >
             <div className="card-body p-4">
+              <p style={{ color: "red" }}>Please fill all * marked fields.</p>
               <form>
                 <div className="row mb-2">
                   <div className="col-md-6">
@@ -186,7 +195,10 @@ function NewVehicleRegistration() {
                   <div className="col-md-6">
                     <label htmlFor="transporter" className="form-label">
                       Transporter{" "}
-                      {/* <span style={{ color: "red", fontWeight: "bold" }}>  * </span> */}
+                      <span style={{ color: "red", fontWeight: "bold" }}>
+                        {" "}
+                        *{" "}
+                      </span>
                     </label>
                     <button
                       type="button"
@@ -355,9 +367,15 @@ function NewVehicleRegistration() {
                       border: "1px solid #cccccc",
                     }}
                     onClick={handleSave}
+                    disabled={isSaving}
                   >
-                    <FontAwesomeIcon icon={faSave} className="me-1" />
-                    Save
+                    {isSaving ? (
+                      <Spin size="small" />
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faSave} className="me-1" /> Save
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
