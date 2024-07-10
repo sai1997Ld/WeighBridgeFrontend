@@ -1,6 +1,11 @@
 import React, { useEffect, useRef } from "react";
 
-const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl }) => {
+const CameraLiveVideo = ({
+  imageRef,
+  capturedImage,
+  setCapturedImage,
+  wsUrl,
+}) => {
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -76,4 +81,4 @@ const CaptureFrame = ({ imageRef, capturedImage, setCapturedImage, wsUrl }) => {
   );
 };
 
-export default CaptureFrame;
+export default CameraLiveVideo;
