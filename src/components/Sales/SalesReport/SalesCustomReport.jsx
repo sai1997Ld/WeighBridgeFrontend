@@ -122,10 +122,7 @@ const SalesCustomReport = () => {
     weighments,
   ]);
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
+  
   const downloadExcel = () => {
     const fileName = "Customized_Report.xlsx";
 
@@ -170,12 +167,13 @@ const SalesCustomReport = () => {
     <Sidebar6>
       <div className="container-fluid mt-0">
         <div className="mb-3 mt-1 text-center">
-          <button className="close-button" onClick={goBack}>
-            <FontAwesomeIcon icon={faRectangleXmark} />
-          </button>
-          <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-            Customized Transaction Report
-          </h2>
+        <div className="d-flex justify-content-between align-items-center">
+              <h2 className="text-center mx-auto">Custom Transaction Report</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
+
           <Row gutter={[16, 16]} justify="start" align="top">
             <Col xs={24} sm={12} md={6} style={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
               <label htmlFor="startDate">Start Date: </label>
