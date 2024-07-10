@@ -155,6 +155,7 @@ function SalesCustomer() {
           },
         });
         handleClear();
+        navigate("/SalesOrder");
       })
       .catch((error) => {
         console.error("Error:", error);

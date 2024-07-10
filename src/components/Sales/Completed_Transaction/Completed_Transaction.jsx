@@ -9,7 +9,7 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 import SideBar6 from "../../SideBar/Sidebar6";
-import { Button} from "antd";
+import { Button } from "antd";
 
 import { SearchOutlined } from "@ant-design/icons";
 import { Select, Input, Pagination } from "antd";
@@ -91,11 +91,11 @@ const Completed_Transaction = () => {
         setWeighments(response.data.weighmentTransactionResponses);
         setTotalPages(response.data.totalPages);
         setPager(response.data.totalElements);
-      
+
         setIsLoading(false);
         const materials = response.data.map((transaction) => transaction.materialName);
         setAllMaterials([...new Set(materials)]);
-        
+
       })
       .catch((error) => {
         console.error("Error fetching weighments:", error);
@@ -160,7 +160,7 @@ const Completed_Transaction = () => {
       case "materialName":
         apiUrl += `?materialName=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
         break;
-      
+
     }
 
     try {
@@ -271,7 +271,7 @@ const Completed_Transaction = () => {
       }
       const data = await response.json();
       console.log(data);
-      
+
       const doc = new jsPDF();
 
       const text = data.companyName;
@@ -426,19 +426,19 @@ const Completed_Transaction = () => {
                         <Select.Option value="">
                           Select Transaction Type
                         </Select.Option>
-                        <Select.Option value=" Inbound ">Inbound</Select.Option>
-                        <Select.Option value=" Outbound ">Outbound</Select.Option>
+                        <Select.Option value="Inbound">Inbound</Select.Option>
+                        <Select.Option value="Outbound">Outbound</Select.Option>
                       </Select>
-                    ) : searchOption === "materialName" ?(
-                      <Select 
-                      value = {searchValue}
-                      onChange={(value) =>{
-                        setSearchValue(value);
-                        setSearchPageNumber(0);
-                      }}
-                      style={{width : "100%"}}
+                    ) : searchOption === "materialName" ? (
+                      <Select
+                        value={searchValue}
+                        onChange={(value) => {
+                          setSearchValue(value);
+                          setSearchPageNumber(0);
+                        }}
+                        style={{ width: "100%" }}
                       >
-                        <Select.Option value ="">Select Material Name</Select.Option>
+                        <Select.Option value="">Select Material Name</Select.Option>
                         {
                           allMaterials.map((material) => (
                             <Select.Option key={material} value={material}>
@@ -448,7 +448,7 @@ const Completed_Transaction = () => {
                         }
                       </Select>
 
-                    ) :(
+                    ) : (
                       <Input
                         value={searchValue}
                         onChange={handleInputChange}
@@ -601,157 +601,157 @@ const Completed_Transaction = () => {
                       Print
                     </th>
                     <th
-                    className="ant-table-cell"
-                    style={{
-                      whiteSpace: "nowrap",
-                      color: "white",
-                      backgroundColor: "#0077b6",
-                      borderRight: "1px solid white",
-                    }}
-                  >
-                    Quality Report
-                  </th>
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                      }}
+                    >
+                      Quality Report
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {searchValue
                     ? searchWeighments.map((weighment) => (
-                        <tr key={weighment.id}>
-                          <td
-                            className="ant-table-cell"
-                            style={{ textAlign: "center" }}
-                          >
-                            <Button
-                              onClick={() => {
-                                goToTransForm(
-                                  weighment.ticketNo,
-                                  weighment.transactionType,
-                                  weighment.grossWeight,
-                                  weighment.tareWeight
-                                );
-                              }}
-                              style={{ background: "#88CCFA" }}
-                            >
-                              {weighment.ticketNo}
-                            </Button>
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
+                      <tr key={weighment.id}>
+                        <td
+                          className="ant-table-cell"
+                          style={{ textAlign: "center" }}
+                        >
+                          <Button
+                            onClick={() => {
+                              goToTransForm(
+                                weighment.ticketNo,
+                                weighment.transactionType,
+                                weighment.grossWeight,
+                                weighment.tareWeight
+                              );
                             }}
+                            style={{ background: "#88CCFA" }}
                           >
-                            {weighment.transactionType}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.vehicleNo}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.transporterName}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.supplierName || weighment.customerName}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.grossWeight}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.tareWeight}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.netWeight}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.materialName}
-                          </td>
+                            {weighment.ticketNo}
+                          </Button>
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.transactionType}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.vehicleNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.transporterName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.supplierName || weighment.customerName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.grossWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.tareWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.netWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.materialName}
+                        </td>
 
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() => {
+                              handlePrint(weighment.ticketNo);
                             }}
                           >
-                            <button
-                              className="btn btn-success btn-sm"
-                              style={{ padding: "3px 6px" }}
-                              onClick={() => {
-                                handlePrint(weighment.ticketNo);
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faPrint} />
-                            </button>
-                            <div style={{ display: "none" }}>
-                              <TicketComponent
-                                ref={componentRef}
-                                ticketData={ticketData}
-                              />
-                            </div>
-                          </td>
-                          <td
+                            <FontAwesomeIcon icon={faPrint} />
+                          </button>
+                          <div style={{ display: "none" }}>
+                            <TicketComponent
+                              ref={componentRef}
+                              ticketData={ticketData}
+                            />
+                          </div>
+                        </td>
+                        <td
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
                         >
                           <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
                             onClick={() => handleQualityReportDownload(weighment.ticketNo)}
-                            // disabled={!entry.qualityParameters}
-                            // disabled={!entry.quality}
+                          // disabled={!entry.qualityParameters}
+                          // disabled={!entry.quality}
                           >
                             <FontAwesomeIcon icon={faFileWord} />
                           </button>
                         </td>
-                        </tr>
-                      ))
+                      </tr>
+                    ))
                     : weighments.map((weighment) => (
-                        <tr key={weighment.id}>
-                          <td
-                            className="ant-table-cell"
-                            style={{ textAlign: "center" }}
-                          >
-                            {/* <Button
+                      <tr key={weighment.id}>
+                        <td
+                          className="ant-table-cell"
+                          style={{ textAlign: "center" }}
+                        >
+                          {/* <Button
                               onClick={() => {
                                 goToTransForm(
                                   weighment.ticketNo,
@@ -762,119 +762,119 @@ const Completed_Transaction = () => {
                               }}
                               style={{ background: "#88CCFA" }}
                             > */}
-                              {weighment.ticketNo}
-                            {/* </Button> */}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.transactionType}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.vehicleNo}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.transporterName}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.supplierName || weighment.customerName}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.grossWeight}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.tareWeight}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.netWeight}
-                          </td>
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            {weighment.materialName}
-                          </td>
+                          {weighment.ticketNo}
+                          {/* </Button> */}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.transactionType}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.vehicleNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.transporterName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.supplierName || weighment.customerName}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.grossWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.tareWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.netWeight}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {weighment.materialName}
+                        </td>
 
-                          <td
-                            className="ant-table-cell"
-                            style={{
-                              whiteSpace: "nowrap",
-                              textAlign: "center",
+                        <td
+                          className="ant-table-cell"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() => {
+                              handlePrint(weighment.ticketNo);
                             }}
                           >
-                            <button
-                              className="btn btn-success btn-sm"
-                              style={{ padding: "3px 6px" }}
-                              onClick={() => {
-                                handlePrint(weighment.ticketNo);
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faPrint} />
-                            </button>
-                            <div style={{ display: "none" }}>
-                              <TicketComponent
-                                ref={componentRef}
-                                ticketData={ticketData}
-                              />
-                            </div>
-                          </td>
-                          <td
+                            <FontAwesomeIcon icon={faPrint} />
+                          </button>
+                          <div style={{ display: "none" }}>
+                            <TicketComponent
+                              ref={componentRef}
+                              ticketData={ticketData}
+                            />
+                          </div>
+                        </td>
+                        <td
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
                         >
                           <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
                             onClick={() => handleQualityReportDownload(weighment.ticketNo)}
-                            // disabled={!entry.qualityParameters}
-                            // disabled={!entry.quality}
+                          // disabled={!entry.qualityParameters}
+                          // disabled={!entry.quality}
                           >
                             <FontAwesomeIcon icon={faFileWord} />
                           </button>
                         </td>
-                        </tr>
-                      ))}
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             )}
@@ -882,22 +882,22 @@ const Completed_Transaction = () => {
         </div>
 
         <div className="d-flex justify-content-center mt-3">
-        <Pagination
-          current={(searchOption ? searchPageNumber : pageNumber) + 1}
-          total={searchOption ? searchPager : pager}
-          pageSize={itemsPerPage}
-          showSizeChanger={false}
-          showQuickJumper
-          showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
-          onChange={(page) => {
-            if (searchOption) {
-              setSearchPageNumber(page - 1);
-            } else {
-              setPageNumber(page - 1);
-            }
-          }}
-        />
-      </div>
+          <Pagination
+            current={(searchOption ? searchPageNumber : pageNumber) + 1}
+            total={searchOption ? searchPager : pager}
+            pageSize={itemsPerPage}
+            showSizeChanger={false}
+            showQuickJumper
+            showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
+            onChange={(page) => {
+              if (searchOption) {
+                setSearchPageNumber(page - 1);
+              } else {
+                setPageNumber(page - 1);
+              }
+            }}
+          />
+        </div>
       </div>
       <div style={{ display: "none" }}>
         <TicketComponent ref={componentRef} data={ticketData} />
