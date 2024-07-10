@@ -492,6 +492,20 @@ function InboundComp() {
                   readOnly
                 />
               </div>
+              <div className="grid-item-op">
+                <label htmlFor="material" className="form-label">
+                  Material Type:
+                </label>
+                <input
+                  type="text"
+                  id="material"
+                  name="material"
+                  value={ticket.materialType}
+                  onChange={handleChange}
+                  className="abcv"
+                  readOnly
+                />
+              </div>
             </div>
           </div>
         </div>

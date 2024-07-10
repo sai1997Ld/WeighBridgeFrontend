@@ -523,13 +523,27 @@ function OutboundComp() {
               </div>
               <div className="grid-item-op">
                 <label htmlFor="material" className="form-label">
-                  Material:
+                  Product:
                 </label>
                 <input
                   type="text"
                   id="material"
                   name="material"
                   value={ticket.material}
+                  onChange={handleChange}
+                  className="abcv"
+                  readOnly
+                />
+              </div>
+              <div className="grid-item-op">
+                <label htmlFor="product" className="form-label">
+                  Product Type:
+                </label>
+                <input
+                  type="text"
+                  id="product"
+                  name="product"
+                  value={ticket.materialType}
                   onChange={handleChange}
                   className="abcv"
                   readOnly
