@@ -607,6 +607,18 @@ const OperatorTransaction2 = () => {
                         textAlign:"center",
                       }}
                     >
+                      Type
+                    </th>
+                    <th
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                        textAlign:"center",
+                      }}
+                    >
                       Print
                     </th>
                     <th
@@ -715,7 +727,16 @@ const OperatorTransaction2 = () => {
                               textAlign: "center",
                             }}
                           >
-                            {weighment.materialName}
+                            {weighment.materialName || weighment.productName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}
+                          >
+                            {weighment.materialType || weighment.productType}
                           </td>
 
                           <td
@@ -845,7 +866,16 @@ const OperatorTransaction2 = () => {
                               textAlign: "center",
                             }}
                           >
-                            {weighment.materialName}
+                            {weighment.materialName || weighment.productName}
+                          </td>
+                          <td
+                            className="ant-table-cell"
+                            style={{
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}
+                          >
+                            {weighment.materialType || weighment.productType}
                           </td>
 
                           <td
