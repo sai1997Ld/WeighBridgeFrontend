@@ -27,6 +27,8 @@ import axios from "axios";
 import Modal from "antd/es/modal/Modal";
 import NewVehicleRegistration from "./NewVehicleRegistration";
 import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx";
+import { Spin } from "antd";
+// import "../antd/dist/antd.css";
 
 function VehicleEntryDetails() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -35,7 +37,7 @@ function VehicleEntryDetails() {
   const chartRef2 = useRef(null);
   const homeMainContentRef = useRef(null);
   const [suppliers, setSuppliers] = useState([]);
-  const [suppliersAddressLine1, setSuppliersAddressLine1] = useState();
+  const [isSaving, setIsSaving] = useState(false);
   const [transporter, setTransporter] = useState();
   const [materials, setMaterials] = useState([]);
   // const [transactionType, setTransactionType] = useState();
@@ -423,6 +425,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
   };
 
   const handleSave = async () => {
+    setIsSaving(true);
     console.log(formData);
     // Check if any mandatory field is missing
     if (
@@ -443,6 +446,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         title: "Oops...",
         text: "Please fill out all mandatory fields.",
       });
+      setIsSaving(false);
       return;
     }
     // Ensure transporter is defined and not null/undefined before calling toString()
@@ -522,6 +526,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
         }
       );
       console.log({ response });
+      setIsSaving(false);
 
       Swal.fire({
         icon: "success",
@@ -535,7 +540,7 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
       navigate("/VehicleEntry");
     } catch (error) {
       console.error("Error:", error);
-
+      setIsSaving(false);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -1179,9 +1184,19 @@ http://localhost:8080/api/v1/vehicles/vehicle/${selectedVehicleNo}`)
                               border: "1px solid #cccccc",
                             }}
                             onClick={handleSave}
+                            disabled={isSaving}
                           >
-                            <FontAwesomeIcon icon={faSave} className="me-1" />{" "}
-                            Save
+                            {isSaving ? (
+                              <Spin size="small" />
+                            ) : (
+                              <>
+                                <FontAwesomeIcon
+                                  icon={faSave}
+                                  className="me-1"
+                                />{" "}
+                                Save
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>

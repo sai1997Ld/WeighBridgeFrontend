@@ -192,3 +192,16 @@
 }
 
 }
+
+.abcv[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+  margin: 0 !important;
+}
+
+.abcv[type="number"]::-webkit-outer-spin-button,
+.abcv[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+}
