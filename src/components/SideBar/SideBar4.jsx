@@ -66,24 +66,12 @@ const Sidebar4 = ({ children }) => {
   const open = Boolean(anchorEl);
 
   const handleSignOut = () => {
-    // Clear session storage
     sessionStorage.clear();
-
-    // Clear browser history and redirect
     window.location.href = "/";
-
-    // Additional history manipulation to prevent users from navigating back
     if (window.history && window.history.pushState) {
-      // Use replaceState to clear the existing history
       window.history.replaceState(null, null, "/");
-
-      // Add a dummy entry to the history to replace current entry
       window.history.pushState(null, null, "/");
-
-      // Prevent users from navigating back to the previous state
-      window.onpopstate = function (event) {
-        window.history.go(1);
-      };
+      window.onpopstate = () => window.history.go(1);
     }
   };
 
@@ -99,25 +87,7 @@ const Sidebar4 = ({ children }) => {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Clear session storage
-        sessionStorage.clear();
-
-        // Clear browser history and redirect
-        window.location.href = "/";
-
-        // Additional history manipulation to prevent users from navigating back
-        if (window.history && window.history.pushState) {
-          // Use replaceState to clear the existing history
-          window.history.replaceState(null, null, "/");
-
-          // Add a dummy entry to the history to replace current entry
-          window.history.pushState(null, null, "/");
-
-          // Prevent users from navigating back to the previous state
-          window.onpopstate = function (event) {
-            window.history.go(1);
-          };
-        }
+        handleSignOut();
       }
     });
   };
