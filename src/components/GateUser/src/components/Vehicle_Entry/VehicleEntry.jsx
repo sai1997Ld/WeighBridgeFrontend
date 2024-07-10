@@ -1,43 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlus,
   faPrint,
   faFileWord,
   faPencilAlt,
   faTruck,
 } from "@fortawesome/free-solid-svg-icons";
-import OutTimeVehicle from "../../assets/OutTimeVehicle.jpg";
-import { Link } from "react-router-dom";
 import { Chart, ArcElement } from "chart.js/auto";
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./VehicleEntry.css";
 import Swal from "sweetalert2";
-import {
-  Table,
-  Tag,
-  Button,
-  Input,
-  Select,
-  DatePicker,
-  Menu,
-  Dropdown,
-} from "antd";
-import {
-  SearchOutlined,
-  PrinterOutlined,
-  FilterOutlined,
-} from "@ant-design/icons";
+import { Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 import moment from "moment";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { Modal, Typography } from "antd";
+import { Typography } from "antd";
 import styled from "styled-components";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import PendingIcon from "@mui/icons-material/Pending";
-import QRious from "qrious";
+
+const GateUserExitModal = lazy(() => import("../Modals/GateUserExitModal"));
 
 const { Option } = Select;
 const api = axios.create({
@@ -77,7 +61,8 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
   const [inboundPending, setInboundPending] = useState(null);
   const [outboundPending, setOutboundPending] = useState(null);
   const [Completed, setCompleted] = useState(null);
-  // const [isEditDisabled, setIsEditDisabled] = useState(false);
+  const [isExitModalVisible, setIsExitModalVisible] = useState(false);
+  const [ticketNo, setTicketNo] = useState(null);
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
@@ -812,7 +797,10 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                 <FontAwesomeIcon icon={faTruck} flip="horizontal" />
                 <Text>
                   Inbound Pending:
-                  <span style={{ fontWeight: "bold" }}> {inboundPending} </span>{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {" "}
+                    {inboundPending}{" "}
+                  </span>{" "}
                 </Text>
               </TransactionUpdateBox>
               <TransactionUpdateBox bgColor="#9FC0EF">
@@ -1150,7 +1138,11 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                             </Button>
                             <Button
                               style={{ margin: "0 5px" }}
-                              onClick={() => handleVehicleExit(entry.ticketNo)}
+                              onClick={() => {
+                                setIsExitModalVisible(true);
+                                setTicketNo(entry.ticketNo);
+                                // handleVehicleExit(entry.ticketNo);
+                              }}
                             >
                               {/* <img src={OutTimeVehicle} alt="Out" className="time-image" /> */}
                               <FontAwesomeIcon
@@ -1170,7 +1162,13 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
           </div>
         </div>
       </div>
-
+      {/* Exit Modal Start */}
+      <GateUserExitModal
+        modalOpen={isExitModalVisible}
+        toggleModal={() => setIsExitModalVisible(!isExitModalVisible)}
+        ticketNo={ticketNo}
+      />
+      {/* Exit Modal End */}
       {/* Code for Pagination: */}
       <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
         <span>
