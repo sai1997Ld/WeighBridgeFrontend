@@ -258,6 +258,7 @@ const ProcessOrder = lazy(() =>
   import("./components/Sales/ProcessOrder/ProcessOrder.jsx")
 );
 
+
 const SideBar = lazy(() => import("./components/SideBar/SideBar.jsx"));
 const SideBar2 = lazy(() => import("./components/SideBar/SideBar2.jsx"));
 const SideBar3 = lazy(() => import("./components/SideBar/SideBar3.jsx"));
@@ -284,7 +285,22 @@ const Ongoing_Transaction = lazy(() =>
 const Completed_Transaction = lazy(() =>
   import("./components/Sales/Completed_Transaction/Completed_Transaction.jsx")
 );
+const SalesReport = lazy(() =>
+  import("./components/Sales/SalesReport/SalesReport.jsx")
+);
+const SalesDailyReport = lazy(() =>
+  import("./components/Sales/SalesReport/SalesDailyReport.jsx")
+);
 
+const SalesWeeklyReport = lazy(() =>
+  import("./components/Sales/SalesReport/SailyWeeklyReport.jsx")
+);
+const SalesMonthlyReport = lazy(() =>
+  import("./components/Sales/SalesReport/SalesMonthlyReport.jsx")
+);
+const SalesCustomReport = lazy(() =>
+  import("./components/Sales/SalesReport/SalesCustomReport.jsx")
+);
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -444,6 +460,12 @@ const router = createBrowserRouter(
       <Route path="/view-camera" element={<ViewCamera />} />
       <Route path="/CompletedTransaction" element={<Completed_Transaction />} />
       <Route path="/OnGoingTransaction" element={<Ongoing_Transaction />} />
+      <Route path="/SalesReport" element={<SalesReport />} />
+      <Route path="/SalesDailyReport" element={<SalesDailyReport />} />
+      <Route path="/SalesWeeklyReport" element={<SalesWeeklyReport />} />
+      <Route path="/SalesMonthlyReport" element={<SalesMonthlyReport />} />
+      <Route path="/SalesCustomReport" element={<SalesCustomReport />} />
+      
     </Route>
   )
 );

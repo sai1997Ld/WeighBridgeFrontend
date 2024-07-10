@@ -21,6 +21,7 @@ import {
   Assignment,
   PowerSettingsNewOutlined,
 } from "@mui/icons-material";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -333,6 +334,32 @@ const SideBar6 = ({ children }) => {
               <Assignment />
             </ListItemIcon>
             <ListItemText primary="Sales Order" />
+          </ListItemButton>
+
+          <ListItemButton
+            component={Link}
+            to="/SalesReport"
+            onClick={() => handleItemClick("reports")}
+            selected={selectedItem === "reports"}
+            sx={{
+              "&.Mui-selected": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
+              },
+              "&:hover": {
+                backgroundColor: "#3e8ee6",
+                color: "white",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "#2c74d1",
+                color: "white",
+              },
+            }}
+          >
+            <ListItemIcon>
+              <SummarizeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Reports" />
           </ListItemButton>
           <ListItemButton
             onClick={handleSignOut2}
