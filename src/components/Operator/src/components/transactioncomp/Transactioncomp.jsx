@@ -6,14 +6,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { faPrint, faFileWord } from "@fortawesome/free-solid-svg-icons";
 
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button, Dropdown } from "antd";
 
 import { SearchOutlined } from "@ant-design/icons";
-import { Select, Input } from "antd";
+import { Select, Input, Pagination } from "antd";
 import { Row, Col } from "antd";
 import TicketComponent from "./PrintCompleted";
 import { useReactToPrint } from "react-to-print";
@@ -50,9 +50,13 @@ const OperatorTransaction2 = () => {
 
   const goToTransForm = (ticketNo, transactionType) => {
     if (transactionType === "Inbound") {
-      navigate(`/OperatorCompletedTransactionFromInbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`);
+      navigate(
+        `/OperatorCompletedTransactionFromInbound/?ticketNumber=${ticketNo}&truckStatus=ENTRY`
+      );
     } else {
-      navigate(`/OperatorCompletedTransactionFromOutbound/?ticketNumber=${ticketNo}&truckStatus=EXIT`);
+      navigate(
+        `/OperatorCompletedTransactionFromOutbound/?ticketNumber=${ticketNo}&truckStatus=EXIT`
+      );
     }
   };
 
@@ -70,9 +74,12 @@ const OperatorTransaction2 = () => {
 
   const fetchMaterials = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/materials`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/materials`,
+        {
+          withCredentials: true,
+        }
+      );
       const materials = response.data.map((material) => material.materialName);
       setAllMaterials([...new Set(materials)]);
     } catch (error) {
@@ -92,11 +99,12 @@ const OperatorTransaction2 = () => {
         setWeighments(response.data.weighmentTransactionResponses);
         setTotalPages(response.data.totalPages);
         setPager(response.data.totalElements);
-      
+
         setIsLoading(false);
-        const materials = response.data.map((transaction) => transaction.materialName);
+        const materials = response.data.map(
+          (transaction) => transaction.materialName
+        );
         setAllMaterials([...new Set(materials)]);
-        
       })
       .catch((error) => {
         console.error("Error fetching weighments:", error);
@@ -160,8 +168,6 @@ const OperatorTransaction2 = () => {
 
       case "materialName":
         apiUrl += `?materialName=${searchValue}&page=${searchPageNumber}&userId=${userId}`;
-
-
     }
 
     try {
@@ -264,13 +270,15 @@ const OperatorTransaction2 = () => {
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
       console.log(data);
-      
+
       const doc = new jsPDF();
 
       const text = data.companyName;
@@ -290,10 +298,10 @@ const OperatorTransaction2 = () => {
         const year = d.getFullYear();
 
         if (day < 10) {
-          day = '0' + day;
+          day = "0" + day;
         }
         if (month < 10) {
-          month = '0' + month;
+          month = "0" + month;
         }
         return `${day}-${month}-${year}`;
       };
@@ -314,12 +322,12 @@ const OperatorTransaction2 = () => {
         `Material/Product Type: ${data.materialTypeOrProductType}`,
         `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
         `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-        `Transaction Type: ${data.transactionType}`
+        `Transaction Type: ${data.transactionType}`,
       ];
 
       doc.setFontSize(14);
       let yPosition = 50; // Initial Y position for the details
-      details.forEach(detail => {
+      details.forEach((detail) => {
         doc.text(detail, 20, yPosition);
         yPosition += 10; // Increment Y position for each detail line
       });
@@ -425,29 +433,28 @@ const OperatorTransaction2 = () => {
                         <Select.Option value="">
                           Select Transaction Type
                         </Select.Option>
-                        <Select.Option value=" Inbound ">Inbound</Select.Option>
-                        <Select.Option value=" Outbound ">Outbound</Select.Option>
+                        <Select.Option value="Inbound">Inbound</Select.Option>
+                        <Select.Option value="Outbound">Outbound</Select.Option>
                       </Select>
-                    ) : searchOption === "materialName" ?(
-                      <Select 
-                      value = {searchValue}
-                      onChange={(value) =>{
-                        setSearchValue(value);
-                        setSearchPageNumber(0);
-                      }}
-                      style={{width : "100%"}}
+                    ) : searchOption === "materialName" ? (
+                      <Select
+                        value={searchValue}
+                        onChange={(value) => {
+                          setSearchValue(value);
+                          setSearchPageNumber(0);
+                        }}
+                        style={{ width: "100%" }}
                       >
-                        <Select.Option value ="">Select Material Name</Select.Option>
-                        {
-                          allMaterials.map((material) => (
-                            <Select.Option key={material} value={material}>
-                              {material}
-                            </Select.Option>
-                          ))
-                        }
+                        <Select.Option value="">
+                          Select Material Name
+                        </Select.Option>
+                        {allMaterials.map((material) => (
+                          <Select.Option key={material} value={material}>
+                            {material}
+                          </Select.Option>
+                        ))}
                       </Select>
-
-                    ) :(
+                    ) : (
                       <Input
                         value={searchValue}
                         onChange={handleInputChange}
@@ -495,7 +502,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Ticket No.
@@ -507,7 +514,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Transaction Type
@@ -519,7 +526,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Vehicle No.
@@ -531,11 +538,10 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
-                     Transporter
-                      
+                      Transporter
                     </th>
                     <th
                       className="ant-table-cell"
@@ -544,7 +550,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Supplier/Customer
@@ -556,7 +562,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Gross Wt.
@@ -568,7 +574,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Tare Wt.
@@ -580,7 +586,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Net Wt.
@@ -592,7 +598,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Material/Product
@@ -604,7 +610,7 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Type
@@ -616,23 +622,23 @@ const OperatorTransaction2 = () => {
                         color: "white",
                         backgroundColor: "#0077b6",
                         borderRight: "1px solid white",
-                        textAlign:"center",
+                        textAlign: "center",
                       }}
                     >
                       Print
                     </th>
                     <th
-                    className="ant-table-cell"
-                    style={{
-                      whiteSpace: "nowrap",
-                      color: "white",
-                      backgroundColor: "#0077b6",
-                      borderRight: "1px solid white",
-                      textAlign:"center",
-                    }}
-                  >
-                    Quality Report
-                  </th>
+                      className="ant-table-cell"
+                      style={{
+                        whiteSpace: "nowrap",
+                        color: "white",
+                        backgroundColor: "#0077b6",
+                        borderRight: "1px solid white",
+                        textAlign: "center",
+                      }}
+                    >
+                      Quality Report
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -763,17 +769,24 @@ const OperatorTransaction2 = () => {
                             </div>
                           </td>
                           <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                        >
-                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
-                            onClick={() => handleQualityReportDownload(weighment.ticketNo)}
-                            // disabled={!entry.qualityParameters}
-                            // disabled={!entry.quality}
+                            className="ant-table-cell"
+                            style={{
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}
                           >
-                            <FontAwesomeIcon icon={faFileWord} />
-                          </button>
-                        </td>
+                            <button
+                              className="btn btn-success btn-sm"
+                              style={{ padding: "3px 6px" }}
+                              onClick={() =>
+                                handleQualityReportDownload(weighment.ticketNo)
+                              }
+                              // disabled={!entry.qualityParameters}
+                              // disabled={!entry.quality}
+                            >
+                              <FontAwesomeIcon icon={faFileWord} />
+                            </button>
+                          </td>
                         </tr>
                       ))
                     : weighments.map((weighment) => (
@@ -902,17 +915,24 @@ const OperatorTransaction2 = () => {
                             </div>
                           </td>
                           <td
-                          className="ant-table-cell"
-                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
-                        >
-                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
-                            onClick={() => handleQualityReportDownload(weighment.ticketNo)}
-                            // disabled={!entry.qualityParameters}
-                            // disabled={!entry.quality}
+                            className="ant-table-cell"
+                            style={{
+                              whiteSpace: "nowrap",
+                              textAlign: "center",
+                            }}
                           >
-                            <FontAwesomeIcon icon={faFileWord} />
-                          </button>
-                        </td>
+                            <button
+                              className="btn btn-success btn-sm"
+                              style={{ padding: "3px 6px" }}
+                              onClick={() =>
+                                handleQualityReportDownload(weighment.ticketNo)
+                              }
+                              // disabled={!entry.qualityParameters}
+                              // disabled={!entry.quality}
+                            >
+                              <FontAwesomeIcon icon={faFileWord} />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                 </tbody>
@@ -921,174 +941,24 @@ const OperatorTransaction2 = () => {
           </div>
         </div>
 
-        <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-          <span>
-            Showing{" "}
-            {Math.min(
-              (searchOption ? searchPageNumber : pageNumber) * itemsPerPage + 1,
-              searchOption ? searchPager : pager
-            )}{" "}
-            to{" "}
-            {Math.min(
-              (searchOption ? searchPageNumber : pageNumber) * itemsPerPage +
-                itemsPerPage,
-              searchOption ? searchPager : pager
-            )}{" "}
-            of {searchOption ? searchPager : pager} entries
-          </span>
-
-          <div className="ml-auto">
-            <button
-              className="btn btn-outline-primary btn-sm me-2"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  Math.max(
-                    0,
-                    (searchOption ? searchPageNumber : pageNumber) - 5
-                  )
-                )
+        <div className="d-flex justify-content-center mt-3">
+          <Pagination
+            current={(searchOption ? searchPageNumber : pageNumber) + 1}
+            total={searchOption ? searchPager : pager}
+            pageSize={itemsPerPage}
+            showSizeChanger={false}
+            showQuickJumper
+            showTotal={(total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} entries`
+            }
+            onChange={(page) => {
+              if (searchOption) {
+                setSearchPageNumber(page - 1);
+              } else {
+                setPageNumber(page - 1);
               }
-              disabled={(searchOption ? searchPageNumber : pageNumber) === 0}
-            >
-              &lt;&lt;
-            </button>
-            <button
-              className="btn btn-outline-primary btn-sm me-2"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  (searchOption ? searchPageNumber : pageNumber) - 1
-                )
-              }
-              disabled={(searchOption ? searchPageNumber : pageNumber) === 0}
-            >
-              &lt;
-            </button>
-
-            {Array.from({ length: 3 }, (_, index) => {
-              const pageIndex =
-                (searchOption ? searchPageNumber : pageNumber) + index;
-              if (pageIndex >= (searchOption ? totalSearchPages : totalPages))
-                return null;
-              return (
-                <button
-                  key={pageIndex}
-                  className={`btn btn-outline-primary btn-sm me-2 ${
-                    pageIndex === (searchOption ? searchPageNumber : pageNumber)
-                      ? "active"
-                      : ""
-                  }`}
-                  style={{
-                    color:
-                      pageIndex ===
-                      (searchOption ? searchPageNumber : pageNumber)
-                        ? "#fff"
-                        : "#0077B6",
-                    backgroundColor:
-                      pageIndex ===
-                      (searchOption ? searchPageNumber : pageNumber)
-                        ? "#0077B6"
-                        : "transparent",
-                    borderColor: "#0077B6",
-                    marginRight: "2px",
-                  }}
-                  onClick={() =>
-                    (searchOption ? setSearchPageNumber : setPageNumber)(
-                      pageIndex
-                    )
-                  }
-                >
-                  {pageIndex + 1}
-                </button>
-              );
-            })}
-            {(searchOption ? searchPageNumber : pageNumber) + 3 <
-              (searchOption ? totalSearchPages : totalPages) && (
-              <span>...</span>
-            )}
-            {(searchOption ? searchPageNumber : pageNumber) + 3 <
-              (searchOption ? totalSearchPages : totalPages) && (
-              <button
-                className={`btn btn-outline-primary btn-sm me-2 ${
-                  (searchOption ? searchPageNumber : pageNumber) ===
-                  (searchOption ? totalSearchPages : totalPages) - 1
-                    ? "active"
-                    : ""
-                }`}
-                style={{
-                  color:
-                    (searchOption ? searchPageNumber : pageNumber) ===
-                    (searchOption ? totalSearchPages : totalPages) - 1
-                      ? "#fff"
-                      : "#0077B6",
-                  backgroundColor:
-                    (searchOption ? searchPageNumber : pageNumber) ===
-                    (searchOption ? totalSearchPages : totalPages) - 1
-                      ? "#0077B6"
-                      : "transparent",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                onClick={() =>
-                  (searchOption ? setSearchPageNumber : setPageNumber)(
-                    (searchOption ? totalSearchPages : totalPages) - 1
-                  )
-                }
-              >
-                {searchOption ? totalSearchPages : totalPages}
-              </button>
-            )}
-            <button
-              className="btn btn-outline-primary btn-sm me-2"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  (searchOption ? searchPageNumber : pageNumber) + 1
-                )
-              }
-              disabled={
-                (searchOption ? searchPageNumber : pageNumber) ===
-                (searchOption ? totalSearchPages : totalPages) - 1
-              }
-            >
-              &gt;
-            </button>
-            <button
-              className="btn btn-outline-primary btn-sm"
-              style={{
-                color: "#0077B6",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() =>
-                (searchOption ? setSearchPageNumber : setPageNumber)(
-                  Math.min(
-                    (searchOption ? totalSearchPages : totalPages) - 1,
-                    (searchOption ? searchPageNumber : pageNumber) + 5
-                  )
-                )
-              }
-              disabled={
-                (searchOption ? searchPageNumber : pageNumber) ===
-                (searchOption ? totalSearchPages : totalPages) - 1
-              }
-            >
-              &gt;&gt;
-            </button>
-          </div>
+            }}
+          />
         </div>
       </div>
       <div style={{ display: "none" }}>
