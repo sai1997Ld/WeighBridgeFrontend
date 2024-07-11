@@ -13,6 +13,7 @@ import {
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import LiveVideo from "./LiveVideo";
+import { Spin } from "antd";
 
 function TransactionFrom() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -27,6 +28,7 @@ function TransactionFrom() {
   const [netWeight, setNetWeight] = useState(0);
 
   const [ticket, setTicket] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const ticketNumber = queryParams.get("ticketNumber");
   const ENTRY = queryParams.get("truckStatus");
@@ -100,67 +102,82 @@ function TransactionFrom() {
   };
 
   const handleSave = async () => {
-    if (inputValue <= 0 || isNaN(inputValue)) {
-      Swal.fire({
-        title: "Invalid weight",
-        text: "Please enter a valid weight greater than 0",
-        icon: "warning",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-warning",
-        },
-      });
-      return; // Exit the function without saving
-    }
-    if (tareWeight == 0) {
-      Swal.fire({
-        title: "Gross weight saved to the database",
-        icon: "success",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-success",
-        },
-      });
-    } else {
-      Swal.fire({
-        title: "Tare weight saved to the database",
-        icon: "success",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-success",
-        },
-      });
-    }
-    window.location.reload();
-    goBack();
-    setInputValue("");
+    try {
+      setIsSaving(true);
 
-    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
-    const payload = {
-      machineId: "1",
-      ticketNo: ticketNumber,
-      weight: inputValue,
-    };
-    const formD = new FormData();
-    formD.append("frontImg1", blobFront, Date.now());
-    formD.append("backImg2", blobRear, Date.now());
-    formD.append("leftImg5", blobSide, Date.now());
-    formD.append("topImg3", blobTop, Date.now());
-    formD.append("weighmentRequest", JSON.stringify(payload));
+      if (inputValue <= 0 || isNaN(inputValue)) {
+        Swal.fire({
+          title: "Invalid weight",
+          text: "Please enter a valid weight greater than 0",
+          icon: "warning",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "btn btn-warning",
+          },
+        });
+        setIsSaving(false);
+        return; // Exit the function without saving
+      }
 
-    const response = await axios({
-      method: "post",
-      url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
-      data: formD,
-      headers: {
-        withCredentials: true,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log({ response });
+      // window.location.reload();
+
+      setInputValue("");
+
+      const blobFront = await fetch(capturedFrontImage).then((res) =>
+        res.blob()
+      );
+      const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+      const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+      const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+      const payload = {
+        machineId: "1",
+        ticketNo: ticketNumber,
+        weight: inputValue,
+      };
+      const formD = new FormData();
+      formD.append("frontImg1", blobFront, Date.now());
+      formD.append("backImg2", blobRear, Date.now());
+      formD.append("leftImg5", blobSide, Date.now());
+      formD.append("topImg3", blobTop, Date.now());
+      formD.append("weighmentRequest", JSON.stringify(payload));
+
+      const response = await axios({
+        method: "post",
+        url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
+        data: formD,
+        headers: {
+          withCredentials: true,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log({ response });
+      if (response.status === 200) {
+        if (tareWeight == 0) {
+          Swal.fire({
+            title: "Gross weight saved to the database",
+            icon: "success",
+            confirmButtonText: "OK",
+            customClass: {
+              confirmButton: "btn btn-success",
+            },
+          });
+        } else {
+          Swal.fire({
+            title: "Tare weight saved to the database",
+            icon: "success",
+            confirmButtonText: "OK",
+            customClass: {
+              confirmButton: "btn btn-success",
+            },
+          });
+        }
+        goBack();
+        setIsSaving(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsSaving(false);
+    }
   };
 
   const [formData, setFormData] = useState({
@@ -257,13 +274,12 @@ function TransactionFrom() {
         console.log("Received data:", receivedData);
         setWeight(receivedData);
 
-        // Extract and trim the weight
         const match = receivedData.match(/(\d+(\.\d+)?)/);
         if (match) {
           console.log(match[0]);
           handleChange1(match[0]);
-          // setTrimmedWeight(match[0]);
-          setInputValue(match[0]); // Update the input value
+
+          setInputValue(match[0]);
         }
       };
 
@@ -278,7 +294,7 @@ function TransactionFrom() {
           setWeight("Connection closed");
         } else {
           setWeight("Connection lost, attempting to reconnect...");
-          setTimeout(createWebSocket, 5000); // Attempt to reconnect after 5 seconds
+          setTimeout(createWebSocket, 5000);
         }
       };
 
@@ -287,20 +303,19 @@ function TransactionFrom() {
 
     createWebSocket();
 
-    // Cleanup on component unmount
     return () => {
       if (socket) {
         socket.close();
       }
     };
-  }, [ticket]); // Empty dependency array ensures useEffect runs only on mount
+  }, [ticket]);
   // useEffect(() => {
   //   const match = true;
   //   if (match) {
   //     setInputValue(90);
   //     handleChange1(90);
   //   }
-  // },[ticket])
+  // }, [ticket]);
 
   console.log(trimmedWeight);
 
@@ -327,26 +342,6 @@ function TransactionFrom() {
               />
             </div>
 
-            {/* commented for serial port and simulation */}
-            {/* <div className="col-md-6 mb-3">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={connectSerial}
-                style={{ float: "right" }}
-              >
-                Connect Serial Port
-              </button>
-              <button
-                onClick={toggleSimulation}
-                className="btn btn-success"
-                style={{ float: "right", marginRight: "10px" }}
-              >
-                <FontAwesomeIcon icon={simulate ? faRectangleXmark : faPlay} />{" "}
-                {simulate ? "Stop Simulation" : "Start Simulation"}
-              </button>
-              {!hasPermission && <button onClick={requestPermission}>Request Serial Port Permission</button>}
-            </div> */}
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-3 mb-3">
@@ -465,7 +460,7 @@ function TransactionFrom() {
                         {ticket.tareWeight === 0 && ticket.netWeight === 0 ? (
                           <button
                             type="button"
-                            className="btn btn-success-1 btn-hover"
+                            className="btn btn-success btn-hover"
                             style={{
                               backgroundColor: "white",
                               color: "#008060 ",
@@ -473,9 +468,19 @@ function TransactionFrom() {
                               border: "1px solid #cccccc",
                             }}
                             onClick={handleSave}
+                            disabled={isSaving}
                           >
-                            <FontAwesomeIcon icon={faSave} className="me-3" />
-                            Save
+                            {isSaving ? (
+                              <Spin size="small" />
+                            ) : (
+                              <>
+                                <FontAwesomeIcon
+                                  icon={faSave}
+                                  className="me-3"
+                                />
+                                Save
+                              </>
+                            )}
                           </button>
                         ) : null}
                       </div>
