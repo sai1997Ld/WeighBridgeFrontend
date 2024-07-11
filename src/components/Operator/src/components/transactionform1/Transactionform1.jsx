@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark, faSave } from "@fortawesome/free-solid-svg-icons";
 import LiveVideo from "../transactionform/LiveVideo";
+import {Spin} from "antd";
 
 function TransactionFrom2() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function TransactionFrom2() {
   const [consignmentWeight, setConsignmentWeight] = useState(0);
 
   const [isGrossWeightEnabled, setIsGrossWeightEnabled] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [ticket, setTicket] = useState([]);
   const [port, setPort] = useState(null);
@@ -81,93 +83,103 @@ function TransactionFrom2() {
   };
 
   const handleSave = async () => {
-    if (grossWeight == 0) {
-      Swal.fire({
-        title: "Tare weight saved to the database",
-        icon: "success",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-success",
+    try {
+      setIsSaving(true);
+      // window.location.reload();
+
+      const blobFront = await fetch(capturedFrontImage).then((res) =>
+        res.blob()
+      );
+      const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+      const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+      const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+      const payload = {
+        machineId: "1",
+        ticketNo: ticketNumber,
+        weight: inputValue,
+      };
+
+      const formD = new FormData();
+      formD.append("frontImg1", blobFront, Date.now());
+      formD.append("backImg2", blobRear, Date.now());
+      formD.append("leftImg5", blobSide, Date.now());
+      formD.append("topImg3", blobTop, Date.now());
+      formD.append("weighmentRequest", JSON.stringify(payload));
+      const response = await axios({
+        method: "post",
+        url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
+        data: formD,
+        headers: {
+          withCredentials: true,
+          "Content-Type": "multipart/form-data",
         },
       });
-    } else {
-      if (grossWeight < tareWeight) {
-        Swal.fire({
-          title: "Gross weight must be greater than tare weight",
-          icon: "error",
-          confirmButtonText: "OK",
-          customClass: {
-            confirmButton: "btn btn-danger",
-          },
-        });
-        return;
-      }
-
-      Swal.fire({
-        title: "Gross weight saved to the database",
-        icon: "success",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-success",
-        },
-      });
-    }
-
-    const consignment = parseFloat(ticket.consignmentWeight);
-    const lowerBound = parseFloat((consignment - 100).toFixed(3));
-    const upperBound = parseFloat((consignment + 100).toFixed(3));
-    if (netWeight) {
-      if (netWeight < lowerBound || netWeight > upperBound) {
-        const result = await Swal.fire({
-          title: "Net weight is out of the allowed range",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger",
-          },
-        });
-  
-        if (result.isConfirmed) {
-          // Proceed with saving
+      if (response.status === 200) {
+        if (grossWeight == 0) {
+          Swal.fire({
+            title: "Tare weight saved to the database",
+            icon: "success",
+            confirmButtonText: "OK",
+            customClass: {
+              confirmButton: "btn btn-success",
+            },
+          });
         } else {
-          // Cancel the save operation
-          return;
+          if (grossWeight < tareWeight) {
+            Swal.fire({
+              title: "Gross weight must be greater than tare weight",
+              icon: "error",
+              confirmButtonText: "OK",
+              customClass: {
+                confirmButton: "btn btn-danger",
+              },
+            });
+            return;
+          }
+
+          Swal.fire({
+            title: "Gross weight saved to the database",
+            icon: "success",
+            confirmButtonText: "OK",
+            customClass: {
+              confirmButton: "btn btn-success",
+            },
+          });
         }
+
+        const consignment = parseFloat(ticket.consignmentWeight);
+        const lowerBound = parseFloat((consignment - 100).toFixed(3));
+        const upperBound = parseFloat((consignment + 100).toFixed(3));
+        if (netWeight) {
+          if (netWeight < lowerBound || netWeight > upperBound) {
+            const result = await Swal.fire({
+              title: "Net weight is out of the allowed range",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonText: "OK",
+              cancelButtonText: "Cancel",
+              customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger",
+              },
+            });
+
+            if (result.isConfirmed) {
+              // Proceed with saving
+            } else {
+              // Cancel the save operation
+              return;
+            }
+          }
+        }
+        goBack();
+        setInputValue("");
+        setIsSaving(false);
+        
       }
+    } catch (error) {
+      setIsSaving(false);
     }
-    window.location.reload();
-    goBack();
-    setInputValue("");
-
-    const blobFront = await fetch(capturedFrontImage).then((res) => res.blob());
-    const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-    const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-    const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
-    const payload = {
-      machineId: "1",
-      ticketNo: ticketNumber,
-      weight: inputValue,
-    };
-
-    const formD = new FormData();
-    formD.append("frontImg1", blobFront , Date.now());
-    formD.append("backImg2", blobRear ,  Date.now());
-    formD.append("leftImg5", blobSide ,  Date.now());
-    formD.append("topImg3", blobTop ,  Date.now());
-    formD.append("weighmentRequest", JSON.stringify(payload));
-    const response = await axios({
-      method: "post",
-      url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
-      data: formD,
-      headers: {
-        withCredentials: true,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log({ response });
   };
 
   const [formData, setFormData] = useState({
@@ -213,7 +225,6 @@ function TransactionFrom2() {
     navigate(-1);
   };
 
-
   useEffect(() => {
     if (port) {
       readSerialData();
@@ -221,11 +232,14 @@ function TransactionFrom2() {
   }, [port]);
 
   const connectSerial = async () => {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !navigator.serial) {
+    if (
+      typeof window === "undefined" ||
+      typeof navigator === "undefined" ||
+      !navigator.serial
+    ) {
       console.error("Web Serial API is not supported in this environment.");
       return;
     }
-
 
     try {
       const port = await navigator.serial.requestPort();
@@ -282,10 +296,12 @@ function TransactionFrom2() {
     leftImg5: "",
     topImg3: "",
   });
-  useEffect(() =>{
+  useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/v1/camera/get?ticketNo=${ticketNumber}&userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}&truckStatus=${ENTRY}`)
-      .then((response)=>{
+      .get(
+        `http://localhost:8080/api/v1/camera/get?ticketNo=${ticketNumber}&userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}&truckStatus=${ENTRY}`
+      )
+      .then((response) => {
         setTareWeightImages({
           frontImg1: response.data.frontImg1,
           backImg2: response.data.backImg2,
@@ -293,12 +309,11 @@ function TransactionFrom2() {
           topImg3: response.data.topImg3,
         });
       })
-      .catch((error)=>{
+      .catch((error) => {
         console.error("Error fetching images:", error);
       });
-  },[ticketNumber,userId]);
+  }, [ticketNumber, userId]);
 
-  
   const [weight, setWeight] = useState("Connecting...");
   const [trimmedWeight, setTrimmedWeight] = useState("");
   const [socket, setSocket] = useState(null);
@@ -352,7 +367,7 @@ function TransactionFrom2() {
         socket.close();
       }
     };
-  }, [ticket]); 
+  }, [ticket]);
 
   // useEffect(() => {
   //    const match = true;
@@ -361,7 +376,6 @@ function TransactionFrom2() {
   //      handleChange1(90);
   //    }
   //  },[ticket])
-
 
   return (
     <SideBar5>
@@ -479,26 +493,26 @@ function TransactionFrom2() {
               <div className="row mb-2">
                 <div className="col-md-5">
                   <div className="sub">
-                  <input
-  type="number"
-  className="abcv"
-  placeholder="0"
-  style={{
-    height: "50px",
-    // Add these lines to ensure the appearance is consistently set
-    WebkitAppearance: 'none',
-    MozAppearance: 'textfield',
-    appearance: 'textfield'
-  }}
-  min="0"
-  value={inputValue}
-  onChange={(e) => {
-    console.log(e);
-    setInputValue(e.target.value);
-    handleChange1(e.target.value);
-  }}
-  inputMode="numeric"
-/>
+                    <input
+                      type="number"
+                      className="abcv"
+                      placeholder="0"
+                      style={{
+                        height: "50px",
+                        // Add these lines to ensure the appearance is consistently set
+                        WebkitAppearance: "none",
+                        MozAppearance: "textfield",
+                        appearance: "textfield",
+                      }}
+                      min="0"
+                      value={inputValue}
+                      onChange={(e) => {
+                        console.log(e);
+                        setInputValue(e.target.value);
+                        handleChange1(e.target.value);
+                      }}
+                      inputMode="numeric"
+                    />
                     <div className="icons-group">
                       <div>
                         {ticket.grossWeight === 0 && ticket.netWeight === 0 ? (
@@ -513,8 +527,17 @@ function TransactionFrom2() {
                             }}
                             onClick={handleSave}
                           >
-                            <FontAwesomeIcon icon={faSave} className="me-3" />
-                            Save
+                            {isSaving ? (
+                              <Spin size="small" />
+                            ) : (
+                              <>
+                                <FontAwesomeIcon
+                                  icon={faSave}
+                                  className="me-3"
+                                />
+                                Save
+                              </>
+                            )}
                           </button>
                         ) : null}
                       </div>

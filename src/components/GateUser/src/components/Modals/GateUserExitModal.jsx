@@ -1,6 +1,7 @@
 import React, { lazy, useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
+// import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
@@ -13,10 +14,8 @@ import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { defaultApiUrl } from "../../../../../Constants";
 import axios from "axios";
 import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo";
-
-const VehicleEntryInboundDetails = lazy(() =>
-  import("../Vehicle_Entry/VehicleEntryInboundDetails")
-);
+import Swal from "sweetalert2";
+import { Spin } from "antd";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />;
@@ -24,6 +23,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
   const descriptionElementRef = React.useRef(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     challanDate: "",
     poNo: "",
@@ -50,6 +50,7 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
   const [capturedRearImage, setCapturedRearImage] = useState(null);
   const [capturedFrontImage, setCapturedFrontImage] = useState(null);
   const [capturedSideImage, setCapturedSideImage] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xl"));
@@ -61,7 +62,10 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
 
   const handleUpdate = async () => {
     try {
+      setIsSaving(true);
+      // return;
       const userId = await sessionStorage.getItem("userId");
+      const role = JSON.parse(await sessionStorage.getItem("roles"))[0];
 
       const fetchAndAppendBlob = async (capturedImage, name) => {
         if (capturedImage) {
@@ -86,7 +90,7 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
 
       const config = {
         method: "post",
-        url: `${defaultApiUrl}/gate/out/${ticketNo}?userId=${userId}`,
+        url: `${defaultApiUrl}/gate/out/${ticketNo}?userId=${userId}&role=${role}`,
         data: formD,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -96,8 +100,71 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
       console.log({ config });
       const response = await axios(config);
       console.log({ response });
+      if (response.status === 200) {
+        setIsSaving(false);
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: response.data,
+          showClass: {
+            popup: `
+              animate__animated
+              animate__fadeInUp
+              animate__faster
+            `,
+          },
+          hideClass: {
+            popup: `
+              animate__animated
+              animate__fadeOutDown
+              animate__faster
+            `,
+          },
+        });
+        navigate(-1);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: response.data,
+          showClass: {
+            popup: `
+              animate__animated
+              animate__fadeInUp
+              animate__faster
+            `,
+          },
+          hideClass: {
+            popup: `
+              animate__animated
+              animate__fadeOutDown
+              animate__faster
+            `,
+          },
+        });
+      }
     } catch (error) {
       console.log(error);
+      setIsSaving(false);
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: error.message,
+        showClass: {
+          popup: `
+      animate__animated
+      animate__fadeInUp
+      animate__faster
+    `,
+        },
+        hideClass: {
+          popup: `
+      animate__animated
+      animate__fadeOutDown
+      animate__faster
+    `,
+        },
+      });
     }
   };
 
@@ -466,8 +533,16 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
                           border: "1px solid #cccccc",
                         }}
                         onClick={handleUpdate}
+                        disabled={isSaving}
                       >
-                        <FontAwesomeIcon icon={faSave} className="me-1" /> Exit
+                        {isSaving ? (
+                          <Spin size={"small"} />
+                        ) : (
+                          <>
+                            <FontAwesomeIcon icon={faSave} className="me-1" />{" "}
+                            Exit
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>

@@ -480,7 +480,7 @@ const OperatorTransaction2 = () => {
                   disabled
                 />
               </Col>
-              <Col
+              {/* <Col
                 xs={24}
                 sm={12}
                 md={6}
@@ -504,7 +504,7 @@ const OperatorTransaction2 = () => {
                   <FontAwesomeIcon icon={faSyncAlt} aria-hidden="true"  style={{ marginLeft: "8px" }}/>
                   
                 </button>
-              </Col>
+              </Col> */}
 
               <Col
                 xs={24}
