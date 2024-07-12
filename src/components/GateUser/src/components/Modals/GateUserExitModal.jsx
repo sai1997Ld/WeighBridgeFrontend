@@ -296,7 +296,6 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
                                 disabled
                                 required
                                 className="form-control tpscanner"
-                                disabled={!!formData.poNo}
                                 style={{ flexGrow: 1 }}
                               />
                               {/* <button className="scanner_button1" style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => alert("Scan TP No")} disabled={!!formData.poNo}>
