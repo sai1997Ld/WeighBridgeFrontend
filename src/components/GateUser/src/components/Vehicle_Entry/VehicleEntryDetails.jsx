@@ -1,10 +1,8 @@
 import { lazy, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
+
 
 import SideBar2 from "../../../../SideBar/SideBar2.jsx";
 import { Spin } from "antd";
-import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./VehicleEntryDetails.css";
 
@@ -13,13 +11,10 @@ const VehicleEntryInboundDetails = lazy(() =>
 );
 
 function VehicleEntryDetails() {
-  const navigate = useNavigate();
+
 
   //Code for close icon
-  const goBack = () => {
-    navigate(-1);
-  };
-
+  
   return (
     <SideBar2>
       <Suspense
@@ -29,7 +24,7 @@ function VehicleEntryDetails() {
           </div>
         }
       >
-        <button
+        {/* <button
           className="close-button"
           onClick={goBack}
           style={{
@@ -44,7 +39,7 @@ function VehicleEntryDetails() {
           }}
         >
           <FontAwesomeIcon icon={faRectangleXmark} />
-        </button>
+        </button> */}
         <VehicleEntryInboundDetails />
       </Suspense>
     </SideBar2>

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faSave, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import "./UpdateUser.css";
 import SideBar from "../../SideBar/SideBar";
 import Select from "react-select";
-import { Link } from "react-router-dom";
+
 
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 function UpdateUser() {
   const location = useLocation();
   const user = location.state;
-  // console.log(user);
   const [userId, setuserId] = useState(user.userId);
   const [firstName, setFirstName] = useState(user.firstName);
   const [middleName, setMiddleName] = useState(user.middleName);
@@ -80,9 +79,19 @@ function UpdateUser() {
     fetchSiteList(e.target.value);
   };
 
+  
   const handleClear = () => {
-    navigate("/manage-user");
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setRole([]);
+    setemailId("");
+    setcontactNo("");
+    setcompany("");
+    setsite("");
   };
+
+
 
   const handleSave = () => {
     let emailIsValid = true;
@@ -177,9 +186,9 @@ function UpdateUser() {
         });
       })
       .catch((error) => {
-        // Handle errors
+
         console.error("Error:", error);
-        // Optionally, show an error message to the user
+   
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -192,35 +201,17 @@ function UpdateUser() {
       });
   };
 
-  // const handleRoleChange = (selectedRole) => {
-  //   if (role.includes(selectedRole)) {
-  //     setRole(role.filter((r) => r !== selectedRole));
-  //   } else {
-  //     setRole([...role, selectedRole]);
-  //   }
-  // };
 
-  // const handleSelectAllRoles = () => {
-  //   if (role.length === roles.length) {
-  //     setRole([]);
-  //   } else {
-  //     setRole([...roles]);
-  //   }
-  // };
 
   return (
     <SideBar>
       <div className="update-user">
         <div className="update-main-content container-fluid">
-          <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Update User</h2>
-            <Link to={"/admin-dashboard"}>
-              <FontAwesomeIcon
-                icon={faHome}
-                style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-2"
-              />
-            </Link>
+
+            <FontAwesomeIcon icon={faRectangleXmark} style={{ float: "right", fontSize: "1.5em", color: "red", cursor: "pointer" }} className="mb-2" onClick={() => navigate(-1)} />
+
           </div>
           <div className="update-user-container">
             <div

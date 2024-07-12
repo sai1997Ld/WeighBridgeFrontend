@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./SalesDetails.css";
@@ -69,25 +69,12 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
             <div style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}>
                 <div className="container-fluid mt-0">
                     <div className="mb-3 text-center">
-                        <button
-                            className="close-button"
-                            onClick={goBack}
-                            style={{
-                                position: 'absolute',
-                                marginRight: 10,
-                                backgroundColor: 'transparent',
-                                color: '#f11212',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 30,
-                                outline: 'none',
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faRectangleXmark} />
-                        </button>
-                        <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-                            Vehicle Outbound Details
-                        </h2>
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+              <h2 className="text-center mx-auto">Outbound Details</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
                     </div>
                     <div className="table-responsive" style={{ overflowX: "auto", maxWidth: "100%", borderRadius: "10px" }}>
                         <table className="ant-table table table-striped" style={{ width: "100%" }}>

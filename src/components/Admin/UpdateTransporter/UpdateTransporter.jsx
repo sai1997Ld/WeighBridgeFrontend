@@ -4,7 +4,7 @@ import { faEraser, faSave, faRectangleXmark } from "@fortawesome/free-solid-svg-
 import Swal from "sweetalert2";
 import "./UpdateTransporter.css";
 import SideBar from "../../SideBar/SideBar";
-import { useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function UpdateTransporter() {
   const location = useLocation();
@@ -87,8 +87,7 @@ function UpdateTransporter() {
     };
 
     fetch(
-      `http://localhost:8080/api/v1/transporter/${
-        transporter.id
+      `http://localhost:8080/api/v1/transporter/${transporter.id
       }?userId=${sessionStorage.getItem("userId")}`,
       {
         method: "PUT",
@@ -137,7 +136,7 @@ function UpdateTransporter() {
     <SideBar>
       <div className="update-transporter">
         <div className="update-main-content container-fluid">
-        <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Update Transporter</h2>
 
             <FontAwesomeIcon icon={faRectangleXmark} style={{ float: "right", fontSize: "1.5em", color: "red", cursor: "pointer" }} className="mb-2" onClick={() => navigate(-1)} />
@@ -152,11 +151,11 @@ function UpdateTransporter() {
           >
             <div className="card-body p-4">
               <form>
-  <p style={{ color: "red" }}>
-                      Please fill all * marked fields.
-                    </p>
+                <p style={{ color: "red" }}>
+                  Please fill all * marked fields.
+                </p>
                 <div className="row mb-2">
-                  
+
                   <div className="col-md-6">
                     <label htmlFor="transporterName" className="form-label">
                       Transporter Name{" "}
@@ -187,9 +186,8 @@ function UpdateTransporter() {
                     </label>
                     <input
                       type="tel"
-                      className={`form-control ${
-                        phoneError ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${phoneError ? "is-invalid" : ""
+                        }`}
                       id="transporterContactNo"
                       placeholder="Enter Contact Number"
                       value={transporterContactNo}
@@ -214,9 +212,8 @@ function UpdateTransporter() {
                     </label>
                     <input
                       type="email"
-                      className={`form-control ${
-                        emailError ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${emailError ? "is-invalid" : ""
+                        }`}
                       id="transporterEmailId"
                       placeholder="Enter Email ID"
                       value={transporterEmailId}

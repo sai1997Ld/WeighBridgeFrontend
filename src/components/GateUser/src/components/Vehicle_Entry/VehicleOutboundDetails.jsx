@@ -1,34 +1,29 @@
 import { useState, useEffect, useRef } from "react";
-import { Chart, ArcElement } from "chart.js/auto";
+
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./VehicleOutboundDetails.css";
-import ScannImage_IB from "../../assets/ScannImage_IB.jpg";
-import CameraIcon_IB from "../../assets/CameraIcon_IB.jpg";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
-  faEraser,
   faRectangleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
-import Select from "react-select";
+
 import axios from "axios";
 import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx";
 import { Spin } from "antd";
 
 function VehicleOutboundDetails() {
   const navigate = useNavigate();
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
+
   const [Customers, setCustomers] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [transporter, setTransporter] = useState();
+
   const [Products, setProducts] = useState([]);
-  // const [transactionType, setTransactionType] = useState();
-  const [ProductType, setProductType] = useState([]);
+
   const queryParams = new URLSearchParams(window.location.search);
   const [saleDetails, setSaleDetails] = useState([]);
 
@@ -60,33 +55,7 @@ function VehicleOutboundDetails() {
     fetchCustomerList();
   }, []);
 
-  // onChangeCustomer
-  const handleCustomerChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
 
-    fetch(`http://localhost:8080/api/v1/Customer/get/${e.target.value}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        // Check if data is an array and has at least one element
-        if (Array.isArray(data) && data.length > 0) {
-          // Set the first element of the array as the Customer address
-          setFormData((prevData) => ({
-            ...prevData,
-            CustomerAddressLine1: data[0],
-          }));
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching Customer Address:", error);
-      });
-  };
-
-  // Get API for Product:
 
   useEffect(() => {
     const fetchProductList = async () => {
@@ -113,117 +82,7 @@ function VehicleOutboundDetails() {
     fetchProductList();
   }, []);
 
-  // Get API for Product Type:
-  const fetchProductType = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    //   try {
-    //     const response = await fetch(
-    //       `http://localhost:8080/api/v1/Products/${e.target.value}/types`,
-    //       {
-    //         method: "GET",
-    //         credentials: "include"
-    //       }
-    //     );
-    //     if (!response.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-    //     const data = await response.json();
-    //     // Assuming data is an array of Products, update state or handle data accordingly
-    //     console.log(data); // Log the data to see its structure
-    //     setProductType(data);
-    //   } catch (error) {
-    //     console.error("Error fetching Product Type:", error);
-    //   }
-    // };
-    fetch(`http://localhost:8080/api/v1/Products/${e.target.value}/types `)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        // Assuming data is an array of ProductType names
-        setProductType(data); // Update the state with the fetched Product types
-      })
-      .catch((error) => {
-        console.error("Error fetching Product types:", error);
-      });
-  };
-
-  // Get API Vehicle No.
-
-  // const handleVehicleNoKeyPress = (e) => {
-  //   if (e.key === "Enter") {
-  //     e.preventDefault(); // Prevent form submission
-  //     // Call API with the entered vehicle number
-  //     fetch(`http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo}`)
-  //       .then((response) => response.json())
-  //       .then((data) => {
-
-  //         // Set transporter state with the data from the API response
-  //         setTransporter(data.transporter);
-  //         // Update other form data fields with the received data
-  //         setFormData((prevData) => ({
-  //           ...prevData,
-  //           vehicleNo: data.vehicleNo,
-  //           noOfWheels: data.vehicleWheelsNo,
-  //           vehicleType: data.vehicleType,
-  //           transporter: data.transporter,
-  //           rcFitnessUpto: data.vehicleFitnessUpTo
-  //         }));
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching Customer Address:", error);
-  //       });
-  //   }
-  // };
-
-  const handleVehicleNoBlur = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/vehicles/vehicle/${formData.vehicleNo} `
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        vehicleNo: data.vehicleNo || prevFormData.vehicleNo,
-        noOfWheels: data.vehicleWheelsNo || prevFormData.noOfWheels,
-        vehicleType: data.vehicleType || prevFormData.vehicleType,
-        transporter: data.transporter || prevFormData.transporter,
-        rcFitnessUpto: data.vehicleFitnessUpTo || prevFormData.rcFitnessUpto,
-      }));
-    } catch (error) {
-      console.error("Error fetching vehicle data:", error);
-    }
-  };
-
-  useEffect(() => {
-    Chart.register(ArcElement);
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
-
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
+ 
   const [formData, setFormData] = useState({
     poNo: "",
     salePassNo: "",
@@ -252,7 +111,7 @@ function VehicleOutboundDetails() {
       [name]: value,
     });
 
-    // Disable TP No if PO No is entered and vice versa
+
     if (name === "poNo") {
       setFormData((prevData) => ({
         ...prevData,
@@ -266,15 +125,14 @@ function VehicleOutboundDetails() {
     }
   };
 
-  // To add session userid in frontend
+
 
   const userId = sessionStorage.getItem("userId");
 
   const handleSave = async () => {
     setIsSaving(true);
     const gateData = {
-      // userId,
-      // saleOrderDate: saleDetails.saleOrderDate,
+
       customer: saleDetails.customerName,
       customerAddressLine: saleDetails.customerAddress,
       transporter: saleDetails.transporterName,
@@ -288,12 +146,11 @@ function VehicleOutboundDetails() {
       challanDate: formData.saleOrderDate,
       tpNo: saleDetails.salePassNo,
       challanNo: saleDetails.saleOrderNo,
-      // ewayBillNo: formData.eWayBillNo,
-      // department: formData.department,
+  
       transactionType: "Outbound",
     };
 
-    // Create JSON payload
+   
     const fetchAndAppendBlob = async (capturedImage, name) => {
       if (capturedImage) {
         const blob = await fetch(capturedImage).then((res) => res.blob());
@@ -352,102 +209,8 @@ function VehicleOutboundDetails() {
     }
   };
 
-  // const payload = JSON.stringify(gateData);
-  // console.log("payload", payload);
-  // Fetch API
 
-  // fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
 
-  //   },
-  //   body: payload,
-  //   credentials: "include"
-  // })
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     // Show success message
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "Success!",
-  //       text: `Transaction with id ${data} created Successfully!`,
-  //     });
-
-  // Reset form data after 3 seconds and navigate to VehicleEntry page
-  //       setTimeout(() => {
-  //         setFormData({
-  //           poNo: "",
-  //           salePassNo: "",
-  //           saleOrderDate: "",
-  //           SaleOrderNo: "",
-  //           vehicleNo: "",
-  //           vehicleType: "",
-  //           noOfWheels: "",
-  //           Customer: "",
-  //           CustomerAddress: "",
-  //           transporter: "",
-  //           material: "",
-  //           materialType: "",
-  //           driverDLNo: "",
-  //           driverName: "",
-  //           quantity: "",
-  //           // rcFitnessUpto: "",
-  //           // eWayBillNo: "",
-  //           // transactionType: "Inbound"
-  //         });
-  //         navigate("/VehicleEntry");
-  //       },
-  //         // 3000
-  //       );
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error:", error);
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Oops...",
-  //         text: "Something went wrong!",
-  //       });
-  //     });
-  // };
-
-  // const handleClear = () => {
-  //   setFormData({
-  //     poNo: "",
-  //     salePassNo: "",
-  //     saleOrderDate: "",
-  //     SaleOrderNo: "",
-  //     vehicleNo: "",
-  //     vehicleType: "",
-  //     noOfWheels: "",
-  //     Customer: "",
-  //     CustomerAddress: "",
-  //     transporter: "",
-  //     material: "",
-  //     materialType: "",
-  //     driverDLNo: "",
-  //     driverName: "",
-  //     quantity: "",
-  //     rcFitnessUpto: "",
-  //     eWayBillNo: "",
-  //     transactionType: "Inbound "
-  //   });
-  // };
-
-  const handleCapturePicture = () => {
-    // Make a request to the backend to capture the picture
-    // Display a Swal modal indicating that the picture will be coming from the backend
-    Swal.fire({
-      icon: "info",
-      title: "Picture will be coming from backend",
-      text: "Please wait...",
-      customClass: {
-        popup: "my-popup-class",
-        title: "my-title-class",
-        content: "my-content-class",
-      },
-    });
-  };
 
   useEffect(() => {
     axios
@@ -466,10 +229,6 @@ function VehicleOutboundDetails() {
       });
   }, []);
 
-  // Code for Close icon
-  const goBack = () => {
-    navigate(-1);
-  };
 
   const canvasTopRef = useRef(null);
   const canvasRearRef = useRef(null);
@@ -483,25 +242,15 @@ function VehicleOutboundDetails() {
   return (
     <SideBar2>
       <>
-        <div className="VehicleoutboundDetailsMainContent">
-          <button
-            className="close-button"
-            onClick={goBack}
-            style={{
-              position: "absolute",
-              marginRight: 10,
-              backgroundColor: "transparent",
-              color: "#f11212",
-              border: "none",
-              cursor: "pointer",
-              fontSize: 30,
-              outline: "none",
-            }}
-          >
-            <FontAwesomeIcon icon={faRectangleXmark} />
-          </button>
-          <h2 className="text-center mb-4">Create Outbound Ticket </h2>
-          <div className="row">
+        <div className="VehicleoutboundDetailsMainContent container-fluid" >
+          
+      <div className="d-flex justify-content-between align-items-center mt-3">
+              <h2 className="text-center mx-auto">Create Outbound Ticket</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
+          {/* <div className="row"> */}
             <div className="row">
               <div className="col-lg-12">
                 <div className="card mb-3 p-2 border shadow-lg">
@@ -948,7 +697,7 @@ function VehicleOutboundDetails() {
               </div>
             </div>
           </div>
-        </div>
+
       </>
     </SideBar2>
   );

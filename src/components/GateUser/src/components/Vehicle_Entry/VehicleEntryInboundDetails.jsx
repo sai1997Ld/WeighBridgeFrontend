@@ -18,7 +18,7 @@ import Select from "react-select";
 import axios from "axios";
 import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx";
 import { Spin } from "antd";
-import { defaultApiUrl } from "../../../../../Constants/index.js";
+
 
 const VehicleEntryInboundDetails = ({ ticketNo }) => {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -183,7 +183,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
         const newData = {
           ...formData,
           supplier: selectedOption.value,
-          supplierAddressLine1: "", // Clear the previous address
+          supplierAddressLine1: "", 
         };
         setFormData(newData);
 
@@ -194,11 +194,11 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       });
   };
 
-  // Add New Supplier
+
   const handleNewSupplier = () => {
     navigate("/new-supplier");
   };
-  // Add New Material
+ 
   const handleNewMaterial = () => {
     navigate("/new-material");
   };
@@ -209,7 +209,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
     setSelectedMaterial(selectedOption);
   };
 
-  // Get API for Material:
+ 
 
   const fetchMaterialList = async () => {
     try {
@@ -224,8 +224,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      // Assuming data is an array of Materials, update state or handle data accordingly
-      console.log(data); // Log the data to see its structure
+
       setMaterials(
         data.map((material) => ({
           value: material,
@@ -253,9 +252,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
         );
         console.log({ newData });
         setSelectedMaterialType(newData);
-        // Assuming data is an array of materialType names
-        setMaterialType(newMaterialTypes); // Update the state with the fetched material types
-        // setMaterialType(data); // Update the state with the fetched material types
+        setMaterialType(newMaterialTypes); 
       })
       .catch((error) => {
         console.error("Error fetching material types:", error);
@@ -268,19 +265,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
     console.log({ newData });
     await sessionStorage.setItem("vehicleData", JSON.stringify(newData));
     setFormData(newData);
-
-    // Disable TP No if PO No is entered and vice versa
-    // if (name === "poNo") {
-    //   setFormData((prevData) => ({
-    //     ...prevData,
-    //     tpNo: value ? "" : prevData.tpNo,
-    //   }));
-    // } else if (name === "tpNo") {
-    //   setFormData((prevData) => ({
-    //     ...prevData,
-    //     poNo: value ? "" : prevData.poNo,
-    //   }));
-    // }
   };
   const handleAddVehicle = async (selectedOption) => {
     console.log({ vehicleNo: selectedOption.value });
@@ -293,15 +277,12 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    console.log(formData);
-    // Check if any mandatory field is missing
+
+
     if (
-      // !formData.poNo ||
-      // !formData.tpNo ||
-      // !formData.challanNo ||
+
       !formData.challanDate ||
       !formData.material ||
-      // !formData.materialType ||
       !formData.vehicleNo ||
       !formData.supplier ||
       !formData.driverDLNo ||
@@ -316,16 +297,15 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       setIsSaving(false);
       return;
     }
-    // Ensure transporter is defined and not null/undefined before calling toString()
-    // const transporterString = transporter ? transporter.toString() : "";
+
 
     const gateData = {
-      // userId,
+
       challanDate: formData.challanDate,
       supplier: formData.supplier,
       supplierAddressLine1: formData.supplierAddressLine1,
       transporter: Array.isArray(transporter) ? transporter.toString() : "",
-      // transporter: transporterString,
+
       material: formData.material,
       materialType: formData.materialType,
       vehicle: formData.vehicleNo,
@@ -336,7 +316,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       tpNo: formData.tpNo,
       challanNo: formData.challanNo,
       ewayBillNo: formData.eWayBillNo,
-      // department: formData.department,
       transactionType: formData.transactionType,
     };
 
@@ -488,7 +467,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
         ...formData,
         tpNo: scannedDataArray[23],
         challanNo: scannedDataArray[19],
-        //challanDate:scannedData[36],
         tpNetWeight: scannedDataArray[33],
       });
       setIsScanning(false);
@@ -515,18 +493,15 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
 
   return (
     <div className="VehicleEntryDetailsMainContent">
-      <h2 className="text-center my-3">Vehicle Entry Inbound Details</h2>
+      <div className="d-flex justify-content-between align-items-center mt-3">
+              <h2 className="text-center mx-auto">Vehicle Entry Inbound Details</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
       {isScanning && (
         <ScannerDisplay setScannedDataArray={setScannedDataArray} />
       )}
-
-      {/* 
-          <pre>
-            {
-              JSON.stringify(scannedDataArray, 0, 2)
-            }
-          </pre> */}
-
       <div className="row">
         <div className="col-lg-12">
           <div className="card m-3 p-2 border shadow-lg">
@@ -704,16 +679,10 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           className="form-control tpscanner"
                           style={{ flexGrow: 1 }}
                         />
-                        {/* <button
-                                className="scanner_button4"
-                                style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                onClick={() => alert("Scan E-WayBill No")}
-                              >
-                                <img src={ScannImage_IB} alt="Scanner" />
-                              </button> */}
+                    
                       </div>
                     </div>
-                    {/* Code of TP Net Weight */}
+
                     <div className="col-md-6 mb-3">
                       <label htmlFor="tpNetWeight" className="user-form-label">
                         TP Net Weight(Ton):
@@ -756,13 +725,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           }}
                         >
                           <FontAwesomeIcon icon={faCar} /> Add
-                          {/* <button
-                                  className="scanner_button2"
-                                  style={{ marginLeft: "15px" }}
-                                  onClick={() => alert("Scan Vehicle No")}
-                                >
-                                  <img src={ScannImage_IB} alt="Scanner" />
-                                </button> */}
+        
                         </div>
                       </button>
                       <Select
@@ -779,7 +742,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                       />
                     </div>
 
-                    {/* Code of  Supplier */}
+
                     <div className="col-md-6 mb-3">
                       <label htmlFor="supplier" className="user-form-label">
                         Supplier:{" "}
@@ -796,7 +759,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           borderRadius: "5px",
                           marginLeft: "5px",
                           backgroundColor: "lightblue",
-                          // width: "200px",
                         }}
                       >
                         <div
@@ -844,16 +806,10 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           className="form-control tpscanner"
                           style={{ flexGrow: 1 }}
                         />
-                        {/* <button
-                                className="scanner_button3"
-                                style={{ marginLeft: "2px", padding: "5px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                onClick={() => alert("Scan Driver DL No")}
-                              >
-                                <img src={ScannImage_IB} alt="Scanner" />
-                              </button> */}
+                     
                       </div>
                     </div>
-                    {/* Code Of Driver Name */}
+         
                     <div className="col-md-6">
                       <label htmlFor="driverName" className="user-form-label">
                         Driver Name:
@@ -1026,7 +982,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                     htmlFor="supplierAddressLine1"
                     className="user-form-label"
                   >
-                    Supplier's Address:
+                    Supplier&apos;s Address:
                     <span
                       style={{ color: "red", fontWeight: "bold" }}
                       className="mx-1"
