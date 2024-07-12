@@ -1,8 +1,6 @@
 import  { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint} from "@fortawesome/free-solid-svg-icons";
-
-
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./CompletedTransaction.css";
 import {
@@ -37,11 +35,8 @@ const CompletedTransaction = () => {
   const [message, setMessage] = useState("");
   const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [startPageNumber, setStartPageNumber] = useState(1);
   const itemsPerPage = 5;
   const [totalEntries, setTotalEntries] = useState(0);
-
-
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
@@ -136,7 +131,6 @@ const CompletedTransaction = () => {
         setTotalPage(data.totalPages);
         console.log("total Page " + data.totalPages);
 
-        // Set the current page to 0 to trigger the paginated fetch
 
         setCurrentPage(0);
       })
@@ -145,7 +139,7 @@ const CompletedTransaction = () => {
       });
   }, []);
 
-  // API for Pagination:
+
 
   useEffect(() => {
     if (currentPage !== null) {
@@ -179,8 +173,6 @@ const CompletedTransaction = () => {
       });
   };
 
-  const pageCount = totalPage;
-  
 
   const handlePrint = async (ticketNo) => {
     const apiUrl = `http://localhost:8080/api/v1/gate/print/${ticketNo}`;
