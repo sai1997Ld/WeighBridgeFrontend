@@ -98,10 +98,10 @@ function ProductManagement() {
   const handleSave = () => {
     let finalproductName = productName;
     let finalproductTypeName;
-
+  
     if (showNameInput && userInputName.trim() !== "") {
       finalproductName = userInputName.trim();
-    } else if (productName.trim() === "" || productTypeName.trim() === "") {
+    } else if (productName.trim() === "") {
       Swal.fire({
         title: "Please fill in all the required fields.",
         icon: "warning",
@@ -112,11 +112,21 @@ function ProductManagement() {
       });
       return;
     }
-
+  
     if (showTypeInput && userInputType.trim() !== "") {
       finalproductTypeName = userInputType.trim();
     } else if (!showTypeInput && productTypeName.trim() !== "") {
       finalproductTypeName = productTypeName.trim();
+    } else {
+      Swal.fire({
+        title: "Please fill in all the required fields.",
+        icon: "warning",
+        confirmButtonText: "OK",
+        customClass: {
+          confirmButton: "btn btn-warning",
+        },
+      });
+      return;
     }
 
     const productData = {
@@ -134,7 +144,7 @@ function ProductManagement() {
     })
       .then(async (response) => {
         if (response.ok) {
-          return response.text(); // Assume the success response is text
+          return response.text(); 
         } else {
           const error = await response.json();
           throw new Error(error.message);
@@ -354,46 +364,49 @@ function ProductManagement() {
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="productTypeName" className="form-label">
-                      Product Type{" "}
-                    </label>
-                    {showTypeInput ? (
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="productTypeName"
-                        value={userInputType}
-                        onChange={handleTypeInputChange}
-                        placeholder="Enter product Type"
-                        autoFocus
-                      />
-                    ) : (
-                      <div>
-                        {productTypeNames.length > 0 ? (
-                          <select
-                            className="form-select"
-                            id="productTypeName"
-                            value={productTypeName}
-                            onChange={handleTypeSelectChange}
-                          >
-                            <option value="">Select product Type</option>
-                            {productTypeNames.map((type, index) => (
-                              <option key={index} value={type}>
-                                {type}
-                              </option>
-                            ))}
-                            <option value="add a type">Add Type</option>
-                          </select>
-                        ) : (
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="productTypeName"
-                            value={userInputType}
-                            onChange={handleTypeInputChange}
-                          />
-                        )}
-                      </div>
-                    )}
+  Product Type <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+</label>
+{showTypeInput ? (
+  <input
+    type="text"
+    className="form-control"
+    id="productTypeName"
+    value={userInputType}
+    onChange={handleTypeInputChange}
+    placeholder="Enter product Type"
+    autoFocus
+    required
+  />
+) : (
+  <div>
+    {productTypeNames.length > 0 ? (
+      <select
+        className="form-select"
+        id="productTypeName"
+        value={productTypeName}
+        onChange={handleTypeSelectChange}
+        required
+      >
+        <option value="">Select product Type</option>
+        {productTypeNames.map((type, index) => (
+          <option key={index} value={type}>
+            {type}
+          </option>
+        ))}
+        <option value="add a type">Add Type</option>
+      </select>
+    ) : (
+      <input
+        type="text"
+        className="form-control"
+        id="productTypeName"
+        value={userInputType}
+        onChange={handleTypeInputChange}
+        required
+      />
+    )}
+  </div>
+)}
                   </div>
                 </div>
                 <div className="d-flex justify-content-end mt-3">
