@@ -123,6 +123,7 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
         });
         navigate(-1);
       } else {
+        toggleModal();
         Swal.fire({
           icon: "error",
           title: "Error!",
@@ -145,26 +146,79 @@ const GateUserExitModal = ({ modalOpen, toggleModal, ticketNo }) => {
       }
     } catch (error) {
       console.log(error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("called response");
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: error.response.data.message || "Request failed",
+          showClass: {
+            popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+          },
+          hideClass: {
+            popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+          },
+        });
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log("called request catch");
+
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "No response received from server.",
+          showClass: {
+            popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+          },
+          hideClass: {
+            popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+          },
+        });
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Something went wrong! Try Again.",
+          showClass: {
+            popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+          },
+          hideClass: {
+            popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+          },
+        });
+      }
+    } finally {
       setIsSaving(false);
-      Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: error.message,
-        showClass: {
-          popup: `
-      animate__animated
-      animate__fadeInUp
-      animate__faster
-    `,
-        },
-        hideClass: {
-          popup: `
-      animate__animated
-      animate__fadeOutDown
-      animate__faster
-    `,
-        },
-      });
+      toggleModal();
     }
   };
 

@@ -16,7 +16,6 @@ const HomePage4 = lazy(() => import("./components/HomePages/HomePage4.jsx"));
 const HomePage5 = lazy(() => import("./components/HomePages/HomePage5.jsx"));
 const HomePage6 = lazy(() => import("./components/HomePages/HomePage6.jsx"));
 
-
 const LoginUser = lazy(() => import("./components/Login/LoginUser.jsx"));
 const ResetPassword = lazy(() =>
   import("./components/ResetPassword/ResetPassword.jsx")
@@ -90,15 +89,54 @@ const ViewCamera = lazy(() =>
   import("./components/Admin/ViewCamera/ViewCamera.jsx")
 );
 
-import VehicleEntry from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntry.jsx";
-import CompletedTransaction from "./components/GateUser/src/components/Vehicle_Entry/CompletedTransaction.jsx";
-import VehicleEntryDetails from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntryDetails.jsx";
-import UpdateGateEntry from "./components/GateUser/src/components/Vehicle_Entry/UpdateGateEntry.jsx";
-import VehicleOutboundDetails from "./components/GateUser/src/components/Vehicle_Entry/VehicleOutboundDetails.jsx";
-import NewVehicleRegistration from "./components/GateUser/src/components/Vehicle_Entry/NewVehicleRegistration.jsx";
-import NewSupplier from "./components/GateUser/src/components/Vehicle_Entry/NewSupplier.jsx";
-import NewMaterial from "./components/GateUser/src/components/Vehicle_Entry/NewMaterial.jsx";
-import NewTransporter from "./components/GateUser/src/components/Vehicle_Entry/NewTransporter.jsx";
+// import VehicleEntry from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntry.jsx";
+const VehicleEntry = lazy(() =>
+  import("./components/GateUser/src/components/Vehicle_Entry/VehicleEntry.jsx")
+);
+// import CompletedTransaction from "./components/GateUser/src/components/Vehicle_Entry/CompletedTransaction.jsx";
+const CompletedTransaction = lazy(() =>
+  import(
+    "./components/GateUser/src/components/Vehicle_Entry/CompletedTransaction.jsx"
+  )
+);
+// import VehicleEntryDetails from "./components/GateUser/src/components/Vehicle_Entry/VehicleEntryDetails.jsx";
+const VehicleEntryDetails = lazy(() =>
+  import(
+    "./components/GateUser/src/components/Vehicle_Entry/VehicleEntryDetails.jsx"
+  )
+);
+// import UpdateGateEntry from "./components/GateUser/src/components/Vehicle_Entry/UpdateGateEntry.jsx";
+const UpdateGateEntry = lazy(() =>
+  import(
+    "./components/GateUser/src/components/Vehicle_Entry/UpdateGateEntry.jsx"
+  )
+);
+// import VehicleOutboundDetails from "./components/GateUser/src/components/Vehicle_Entry/VehicleOutboundDetails.jsx";
+const VehicleOutboundDetails = lazy(() =>
+  import(
+    "./components/GateUser/src/components/Vehicle_Entry/VehicleOutboundDetails.jsx"
+  )
+);
+// import NewVehicleRegistration from "./components/GateUser/src/components/Vehicle_Entry/NewVehicleRegistration.jsx";
+const NewVehicleRegistration = lazy(() =>
+  import(
+    "./components/GateUser/src/components/Vehicle_Entry/NewVehicleRegistration.jsx"
+  )
+);
+// import NewSupplier from "./components/GateUser/src/components/Vehicle_Entry/NewSupplier.jsx";
+const NewSupplier = lazy(() =>
+  import("./components/GateUser/src/components/Vehicle_Entry/NewSupplier.jsx")
+);
+// import NewMaterial from "./components/GateUser/src/components/Vehicle_Entry/NewMaterial.jsx";
+const NewMaterial = lazy(() =>
+  import("./components/GateUser/src/components/Vehicle_Entry/NewMaterial.jsx")
+);
+// import NewTransporter from "./components/GateUser/src/components/Vehicle_Entry/NewTransporter.jsx";
+const NewTransporter = lazy(() =>
+  import(
+    "./components/GateUser/src/components/Vehicle_Entry/NewTransporter.jsx"
+  )
+);
 
 const SalesDetails = lazy(() =>
   import("./components/GateUser/src/components/Vehicle_Entry/SalesDetails.jsx")
@@ -209,7 +247,6 @@ const ManagementMonthlyReport = lazy(() =>
 const ManagementCustomizedReport = lazy(() =>
   import("./components/Management/src/components/customized/customized.jsx")
 );
- 
 
 const OperatorTransaction = lazy(() =>
   import("./components/Operator/src/components/transaction/Transaction.jsx")
@@ -257,7 +294,6 @@ const SalesOrder = lazy(() =>
 const ProcessOrder = lazy(() =>
   import("./components/Sales/ProcessOrder/ProcessOrder.jsx")
 );
-
 
 const SideBar = lazy(() => import("./components/SideBar/SideBar.jsx"));
 const SideBar2 = lazy(() => import("./components/SideBar/SideBar2.jsx"));
@@ -422,7 +458,7 @@ const router = createBrowserRouter(
         path="/ManagementCustomizedReport"
         element={<ManagementCustomizedReport />}
       />
-      
+
       <Route path="/OperatorTransaction" element={<OperatorTransaction />} />
       <Route
         path="/OperatorTransactionComp"
@@ -465,7 +501,6 @@ const router = createBrowserRouter(
       <Route path="/SalesWeeklyReport" element={<SalesWeeklyReport />} />
       <Route path="/SalesMonthlyReport" element={<SalesMonthlyReport />} />
       <Route path="/SalesCustomReport" element={<SalesCustomReport />} />
-      
     </Route>
   )
 );
