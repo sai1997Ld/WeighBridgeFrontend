@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy } from "react";
+import { useState, useEffect, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,11 +7,9 @@ import {
   faPencilAlt,
   faTruck,
 } from "@fortawesome/free-solid-svg-icons";
-import { Chart, ArcElement } from "chart.js/auto";
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./VehicleEntry.css";
-import Swal from "sweetalert2";
-import { Button, Input, Select, DatePicker, Menu, Dropdown } from "antd";
+import { Button, Input, Select, DatePicker, Menu, Dropdown, Pagination } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import moment from "moment";
 import axios from "axios";
@@ -34,25 +32,20 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
-  const [currentDate, setCurrentDate] = useState();
+const VehicleEntry = () => {
   const [selectedDate, setSelectedDate] = useState(moment());
+  const [message, setMessage] = useState("");
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
   const [searchOption, setSearchOption] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [totalPage, setTotalPage] = useState(0);
-  const [date, setDate] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [systemOutTime, setSystemOutTime] = useState("");
+
   const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
-  const [startPageNumber, setStartPageNumber] = useState(1);
+
   const itemsPerPage = 5;
   const [totalEntries, setTotalEntries] = useState(0);
-  const [reportStatuses, setReportStatuses] = useState({}); // function for quality report
   const [materialOptions, setMaterialOptions] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [selectedTransactionType, setSelectedTransactionType] = useState(null);
@@ -72,41 +65,17 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
 
   const userId = sessionStorage.getItem("userId");
 
-  // Code for Date:
-
-  // useEffect(() => {
-  //   const today = new Date();
-  //   const formattedDate = today.toISOString().split("T")[0];
-  //   setCurrentDate(formattedDate);
-  // }, []);
-
-  // useEffect(() => {
-  //   const today = new Date().toISOString().split('T')[0];
-  //   setSelectedDate(today);
-  // }, []);
-
-  const handleDateChange = (date) => {
-    setDate(date);
-    if (date && date.isValid()) {
-      console.log("The date is valid:", date);
-    } else {
-      console.error("Invalid date");
-    }
-  };
-
-  // Code for Searching:
-
-  // const handleSearch = (value) => {
-  //   setSearchQuery(value);
-  //   setCurrentPage(0); // Reset to the first page when searching
-  //   console.log(value);
-  // };
+ 
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
-    setSearchValue(""); // Reset the search value when the option changes
+    setSearchValue(""); 
   };
   const handleInputChange = (e) => {
     setSearchValue(e.target.value);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page - 1);
   };
 
   const handleSearch = async (pageNumber = 0) => {
@@ -209,24 +178,6 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
     </Menu>
   );
 
-  // const getFilteredData = () => {
-  //   return vehicleEntryDetails.filter((entry) => {
-  //     let matchesMaterial = true;
-  //     let matchesTransactionType = true;
-
-  //     if (selectedMaterial) {
-  //       matchesMaterial = entry.materialOrProduct === selectedMaterial;
-  //     }
-
-  //     if (selectedTransactionType) {
-  //       matchesTransactionType = entry.transactionType.toLowerCase() === selectedTransactionType;
-  //     }
-
-  //     return matchesMaterial && matchesTransactionType;
-  //   });
-  // };
-
-  // const filteredData = getFilteredData();
 
   const applyFilter = (data, material, transactionType) => {
     const filtered = data.filter((entry) => {
@@ -369,68 +320,16 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
       });
   };
 
-  const pageCount = totalPage;
-  const handlePageChange = ({ selected }) => {
-    const newStartPage = Math.max(1, selected * 3 - 2);
-    setCurrentPage(selected);
-    setStartPageNumber(newStartPage);
-  };
 
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
 
-  useEffect(() => {
-    Chart.register(ArcElement);
 
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
 
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
 
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
-  const openPopup = () => {
-    setShowPopup(true);
-  };
 
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleConfirm = () => {
-    const details = {
-      ticketType: selectedOption,
-      inTimeDate: selectedDate,
-      outTimeDate: selectedDate, // Assuming both in and out time/date are same for now
-    };
-    onConfirmTicket(details);
-
-    if (selectedOption === "inbound") {
-      navigate("/VehicleEntryDetails");
-    }
-
-    setSelectedOption("");
-    setSelectedDate("");
-    closePopup();
-  };
+ 
+  
+  
 
   //  code Of Edit API:
   const handleEdit = (ticketNo) => {
@@ -457,67 +356,7 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
       });
   };
 
-  // API for Vehicle Out
-
-  const handleVehicleExit = async (ticketNo) => {
-    console.log(`handleVehicleExit called with ticketNo: ${ticketNo}`); // Log the ticket number to ensure the function is called
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/gate/out/${ticketNo}?userId=${userId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // Add body if needed
-          // body: JSON.stringify({ someKey: someValue }),
-          credentials: "include",
-        }
-      );
-
-      let data;
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        data = await response.text();
-      }
-      console.log("API response:", data);
-
-      if (response.ok) {
-        // Display the API response using SweetAlert
-        Swal.fire({
-          icon: "success",
-          title: "Vehicle Exit Status",
-          text: data.message || JSON.stringify(data), // Assuming the response body is the message you want to display
-          showConfirmButton: true,
-        }).then(() => {
-          // Refresh the page after the alert is closed
-          window.location.reload();
-        });
-      } else {
-        // Display the error message from the API response using SweetAlert
-        Swal.fire({
-          icon: "error",
-          title: "Vehicle Exit Status",
-          text: data.message || "An error occurred", // Assuming the response body contains the message you want to display
-          showConfirmButton: true,
-        });
-      }
-    } catch (error) {
-      console.error("Fetch error:", error); // Log the error for debugging
-
-      // Display a generic error message if the API response is not available
-      Swal.fire({
-        icon: "error",
-        title: "Error checking vehicle status",
-        text: "Please try again later",
-        showConfirmButton: true,
-      });
-    }
-  };
-
-  // Code for Quality Report:
+ 
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
@@ -529,7 +368,6 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
       }
       const data = await response.json();
       console.log(data);
-
       const doc = new jsPDF();
 
       const text = data.companyName;
@@ -904,7 +742,7 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                         borderRight: "1px solid white",
                       }}
                     >
-                      Supplier's /Customer's Address
+                      Supplier&apos;s /Customer&apos;s Address
                     </th>
                     <th
                       className="ant-table-cell"
@@ -961,9 +799,6 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                     >
                       TP Net weight(Ton)
                     </th>
-                    {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>PO No.</th>
-                    <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Challan No.</th> */}
-                    {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transaction Status </th> */}
                     <th
                       className="ant-table-cell"
                       style={{
@@ -1041,7 +876,7 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                         >
                           {entry.vehicleOut}
                         </td>
-                        {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transporter}</td> */}
+                      
                         <td
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
@@ -1088,9 +923,7 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                         >
                           {entry.tpNetWeight}
                         </td>
-                        {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.poNo}</td>
-                        <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.challanNo}</td> */}
-                        {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>{entry.transactionStatus}</td> */}
+        
                         <td
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
@@ -1141,10 +974,10 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
                               onClick={() => {
                                 setIsExitModalVisible(true);
                                 setTicketNo(entry.ticketNo);
-                                // handleVehicleExit(entry.ticketNo);
+             
                               }}
                             >
-                              {/* <img src={OutTimeVehicle} alt="Out" className="time-image" /> */}
+                            
                               <FontAwesomeIcon
                                 icon={faTruck}
                                 style={{ color: "red" }}
@@ -1162,118 +995,22 @@ const VehicleEntry = ({ onConfirmTicket = () => {} }) => {
           </div>
         </div>
       </div>
-      {/* Exit Modal Start */}
       <GateUserExitModal
         modalOpen={isExitModalVisible}
         toggleModal={() => setIsExitModalVisible(!isExitModalVisible)}
         ticketNo={ticketNo}
       />
-      {/* Exit Modal End */}
-      {/* Code for Pagination: */}
-      <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-        <span>
-          Showing {currentPage * itemsPerPage + 1} to{" "}
-          {Math.min(
-            (currentPage + 1) * itemsPerPage,
-            currentPage * itemsPerPage + vehicleEntryDetails.length
-          )}{" "}
-          of {totalEntries} entries
-        </span>
-        <div className="ml-auto">
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
-            disabled={currentPage === 0}
-          >
-            &lt;&lt;
-          </button>
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 0}
-          >
-            &lt;
-          </button>
-
-          {Array.from({ length: 3 }, (_, index) => {
-            const pageNumber = currentPage + index;
-            if (pageNumber >= pageCount) return null;
-            return (
-              <button
-                key={pageNumber}
-                className={`btn btn-outline-primary btn-sm me-2 ${
-                  currentPage === pageNumber ? "active" : ""
-                }`}
-                style={{
-                  color: currentPage === pageNumber ? "#fff" : "#0077B6",
-                  backgroundColor:
-                    currentPage === pageNumber ? "#0077B6" : "transparent",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                //onClick={() => setCurrentPage(pageNumber)}
-                onClick={() => setCurrentPage(pageNumber)}
-              >
-                {pageNumber + 1}
-              </button>
-            );
-          })}
-          {currentPage + 3 < pageCount && <span>...</span>}
-          {currentPage + 3 < pageCount && (
-            <button
-              className={`btn btn-outline-primary btn-sm me-2 ${
-                currentPage === pageCount - 1 ? "active" : ""
-              }`}
-              style={{
-                color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
-                backgroundColor:
-                  currentPage === pageCount - 1 ? "#0077B6" : "transparent",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() => setCurrentPage(pageCount - 1)}
-            >
-              {pageCount}
-            </button>
-          )}
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === pageCount - 1}
-          >
-            &gt;
-          </button>
-          <button
-            className="btn btn-outline-primary btn-sm"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() =>
-              setCurrentPage(Math.min(pageCount - 1, currentPage + 5))
-            }
-            disabled={currentPage === pageCount - 1}
-          >
-            &gt;&gt;
-          </button>
-        </div>
-      </div>
+      <div className="d-flex justify-content-center mt-3">
+  <Pagination
+    current={currentPage + 1}
+    total={totalEntries}
+    pageSize={itemsPerPage}
+    showSizeChanger={false}
+    showQuickJumper
+    showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
+    onChange={handlePageChange}
+  />
+</div>
     </SideBar2>
   );
 };

@@ -1,31 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import  { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPrint, faFileWord } from "@fortawesome/free-solid-svg-icons";
-import OutTimeVehicle from "../../assets/OutTimeVehicle.jpg";
-import { Link } from "react-router-dom";
-import { Chart, ArcElement } from "chart.js/auto";
+import { faPrint} from "@fortawesome/free-solid-svg-icons";
+
+
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./CompletedTransaction.css";
-import Swal from "sweetalert2";
 import {
-  Table,
-  Tag,
-  Button,
+
   Input,
   Select,
   DatePicker,
-  Menu,
-  Dropdown,
+  Pagination,
 } from "antd";
-import {
-  SearchOutlined,
-  PrinterOutlined,
-  FilterOutlined,
-} from "@ant-design/icons";
+
 import moment from "moment";
 import axios from "axios";
-import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
 import TicketComponentGU from "./TicketComponentGU";
@@ -40,65 +29,36 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
-  const [currentDate, setCurrentDate] = useState();
+const CompletedTransaction = () => {
   const [selectedDate, setSelectedDate] = useState(moment());
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
   const [searchOption, setSearchOption] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [totalPage, setTotalPage] = useState(0);
-  const [date, setDate] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [systemOutTime, setSystemOutTime] = useState("");
+  const [message, setMessage] = useState("");
   const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageNumber, setStartPageNumber] = useState(1);
   const itemsPerPage = 5;
   const [totalEntries, setTotalEntries] = useState(0);
-  const [reportStatuses, setReportStatuses] = useState({}); // function for quality report
+
 
   const disabledFutureDate = (current) => {
     return current && current > moment().endOf("day");
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page - 1);
+  };
+
   const componentRef = useRef();
   const [ticketData, setTicketData] = useState(null);
 
-  // To add session userid in frontend
+
 
   const userId = sessionStorage.getItem("userId");
 
-  // Code for Date:
 
-  // useEffect(() => {
-  //   const today = new Date();
-  //   const formattedDate = today.toISOString().split("T")[0];
-  //   setCurrentDate(formattedDate);
-  // }, []);
 
-  // useEffect(() => {
-  //   const today = new Date().toISOString().split('T')[0];
-  //   setSelectedDate(today);
-  // }, []);
-
-  const handleDateChange = (date) => {
-    setDate(date);
-    if (date && date.isValid()) {
-      console.log("The date is valid:", date);
-    } else {
-      console.error("Invalid date");
-    }
-  };
-
-  // Code for Searching:
-
-  // const handleSearch = (value) => {
-  //   setSearchQuery(value);
-  //   setCurrentPage(0); // Reset to the first page when searching
-  //   console.log(value);
-  // };
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
     setSearchValue(""); // Reset the search value when the option changes
@@ -139,7 +99,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
     try {
       const response = await api.get(apiUrl); //Use api.get instead of axios.get
       console.log(response.data);
-      // You can handle the response data here, such as setting it to state to display it
+      
       setVehicleEntryDetails(response.data.transactions); // Update the vehicleEntryDetails state with the fetched data
       setTotalPage(response.data.totalPages);
     } catch (error) {
@@ -156,10 +116,9 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
     }
   };
 
-  // API  For Completed Dashboard:
 
   useEffect(() => {
-    // Initial fetch
+    
     fetch(
       `http://localhost:8080/api/v1/gate/completedDashboard?userId=${userId}`,
       {
@@ -221,139 +180,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
   };
 
   const pageCount = totalPage;
-  const handlePageChange = ({ selected }) => {
-    const newStartPage = Math.max(1, selected * 3 - 2);
-    setCurrentPage(selected);
-    setStartPageNumber(newStartPage);
-  };
-
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
-
-  useEffect(() => {
-    Chart.register(ArcElement);
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (
-        homeMainContentRef.current &&
-        chartRef.current?.chartInstance &&
-        chartRef2.current?.chartInstance
-      ) {
-        chartRef.current.chartInstance.resize();
-        chartRef2.current.chartInstance.resize();
-      }
-    });
-
-    if (homeMainContentRef.current) {
-      resizeObserver.observe(homeMainContentRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  const openPopup = () => {
-    setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleConfirm = () => {
-    const details = {
-      ticketType: selectedOption,
-      inTimeDate: selectedDate,
-      outTimeDate: selectedDate, // Assuming both in and out time/date are same for now
-    };
-    onConfirmTicket(details);
-
-    if (selectedOption === "inbound") {
-      navigate("/VehicleEntryDetails");
-    }
-
-    setSelectedOption("");
-    setSelectedDate("");
-    closePopup();
-  };
-
-  // Code for Quality Report:
-
-  // const handleQualityReportDownload = async (ticketNo) => {
-  //     try {
-  //         const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
-  //         if (!response.ok) {
-  //             throw new Error("Network response was not ok");
-  //         }
-  //         const data = await response.json();
-  //         console.log(data);
-  //         const doc = new jsPDF();
-
-  //         const text = data.companyName;
-  //         const textWidth = doc.getTextWidth(text);
-  //         const pageWidth = doc.internal.pageSize.getWidth();
-  //         const x = (pageWidth - textWidth) / 2;
-  //         doc.setFontSize(18);
-  //         doc.text(text, x, 22);
-
-  //         doc.setFontSize(12);
-  //         doc.setTextColor(100);
-  //         const subtitle1 = data.companyAddress;
-  //         const subtitle2 = `Generated on: ${new Date().toLocaleDateString()}`;
-  //         const subtitleWidth1 = doc.getTextWidth(subtitle1);
-  //         const subtitleWidth2 = doc.getTextWidth(subtitle2);
-  //         const subtitleX1 = (pageWidth - subtitleWidth1) / 2;
-  //         const subtitleX2 = (pageWidth - subtitleWidth2) / 2;
-  //         doc.text(subtitle1, subtitleX1, 32);
-  //         doc.text(subtitle2, subtitleX2, 38);
-
-  //         // Add the additional details before the table
-  //         const details = [
-  //             `Ticket No: ${data.ticketNo}`,
-  //             `Date: ${data.date}`,
-  //             `Vehicle No: ${data.vehicleNo}`,
-  //             `Material/Product: ${data.materialOrProduct}`,
-  //             `Material/Product Type: ${data.materialTypeOrProductType}`,
-  //             `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
-  //             `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-  //             `Transaction Type: ${data.transactionType}`
-  //         ];
-
-  //         doc.setFontSize(14);
-  //         let yPosition = 50; // Initial Y position for the details
-  //         details.forEach(detail => {
-  //             doc.text(detail, 20, yPosition);
-  //             yPosition += 10; // Increment Y position for each detail line
-  //         });
-
-  //         // Move the table start position down to avoid overlapping with details
-  //         yPosition += 10;
-
-  //         const filteredEntries = Object.entries(data.qualityParameters).filter(
-  //             ([key, value]) => value !== null && value !== undefined && value !== ""
-  //         );
-
-  //         const tableBody = filteredEntries.map(([key, value]) => [key, value]);
-  //         doc.autoTable({
-  //             startY: yPosition,
-  //             head: [["Field", "Value"]],
-  //             body: tableBody,
-  //         });
-
-  //         doc.save("quality_report.pdf");
-  //     } catch (error) {
-  //         console.error("Error fetching data:", error);
-  //         alert("Failed to download the quality report. Please try again later.");
-  //     }
-  // };
-
-  // API Code for Print:
+  
 
   const handlePrint = async (ticketNo) => {
     const apiUrl = `http://localhost:8080/api/v1/gate/print/${ticketNo}`;
@@ -395,18 +222,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
     }
   }, [ticketData]);
 
-  // useEffect(() => {
-  //     const fetchReportStatuses = async () => {
-  //         const statuses = {};
-  //         for (const entry of vehicleEntryDetails) {
-  //             const status = await checkQualityReportStatus(entry.ticketNo);
-  //             statuses[entry.ticketNo] = status;
-  //         }
-  //         setReportStatuses(statuses);
-  //     };
 
-  //     fetchReportStatuses();
-  // }, [vehicleEntryDetails]);
 
   return (
     <SideBar2>
@@ -424,8 +240,6 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
           >
             <div style={{ flex: "1" }}>
               <DatePicker
-                // value={date}
-                // onChange={handleDateChange}
                 value={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
                 disabledDate={disabledFutureDate}
@@ -567,7 +381,7 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
                         borderRight: "1px solid white",
                       }}
                     >
-                      Supplier's /Customer's Address
+                      Supplier&apos;s /Customer&apos;s Address
                     </th>
                     <th
                       className="ant-table-cell"
@@ -624,7 +438,6 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
                     >
                       Challan No.
                     </th>
-                    {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>Transaction Status </th> */}
                     <th
                       className="ant-table-cell"
                       style={{
@@ -648,7 +461,6 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
                       {" "}
                       Print{" "}
                     </th>
-                    {/* <th className="ant-table-cell" style={{ whiteSpace: "nowrap", color: "white", backgroundColor: "#0077b6", borderRight: "1px solid white" }}>OUT</th> */}
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -741,7 +553,6 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
                         {" "}
                         {entry.challanNo}{" "}
                       </td>
-                      {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center"}}> {entry.transactionStatus}</td> */}
                       <td
                         className="ant-table-cell"
                         style={{ whiteSpace: "nowrap", textAlign: "center" }}
@@ -769,13 +580,6 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
                           />
                         </div>
                       </td>
-                      {/* <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}>
-                                                <button className="image-button" onClick={() => handleVehicleExit(entry.ticketNo)}>
-                                                    <div className="image-container" style={{ border: 'none' }}>
-                                                        <img src={OutTimeVehicle} alt="Out" className="time-image" />
-                                                    </div>
-                                                </button>
-                                            </td> */}
                     </tr>
                   ))}
                 </tbody>
@@ -785,111 +589,17 @@ const CompletedTransaction = ({ onConfirmTicket = () => {} }) => {
         </div>
       </div>
 
-      {/* Code for Pagination: */}
-      <div className="d-flex justify-content-between align-items-center mt-3 ml-2">
-        <span>
-          Showing {currentPage * itemsPerPage + 1} to{" "}
-          {Math.min(
-            (currentPage + 1) * itemsPerPage,
-            currentPage * itemsPerPage + vehicleEntryDetails.length
-          )}{" "}
-          of {totalEntries} entries
-        </span>
-        <div className="ml-auto">
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(Math.max(0, currentPage - 5))}
-            disabled={currentPage === 0}
-          >
-            &lt;&lt;
-          </button>
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 0}
-          >
-            &lt;
-          </button>
-
-          {Array.from({ length: 3 }, (_, index) => {
-            const pageNumber = currentPage + index;
-            if (pageNumber >= pageCount) return null;
-            return (
-              <button
-                key={pageNumber}
-                className={`btn btn-outline-primary btn-sm me-2 ${
-                  currentPage === pageNumber ? "active" : ""
-                }`}
-                style={{
-                  color: currentPage === pageNumber ? "#fff" : "#0077B6",
-                  backgroundColor:
-                    currentPage === pageNumber ? "#0077B6" : "transparent",
-                  borderColor: "#0077B6",
-                  marginRight: "2px",
-                }}
-                //onClick={() => setCurrentPage(pageNumber)}
-                onClick={() => setCurrentPage(pageNumber)}
-              >
-                {pageNumber + 1}
-              </button>
-            );
-          })}
-          {currentPage + 3 < pageCount && <span>...</span>}
-          {currentPage + 3 < pageCount && (
-            <button
-              className={`btn btn-outline-primary btn-sm me-2 ${
-                currentPage === pageCount - 1 ? "active" : ""
-              }`}
-              style={{
-                color: currentPage === pageCount - 1 ? "#fff" : "#0077B6",
-                backgroundColor:
-                  currentPage === pageCount - 1 ? "#0077B6" : "transparent",
-                borderColor: "#0077B6",
-                marginRight: "2px",
-              }}
-              onClick={() => setCurrentPage(pageCount - 1)}
-            >
-              {pageCount}
-            </button>
-          )}
-          <button
-            className="btn btn-outline-primary btn-sm me-2"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === pageCount - 1}
-          >
-            &gt;
-          </button>
-          <button
-            className="btn btn-outline-primary btn-sm"
-            style={{
-              color: "#0077B6",
-              borderColor: "#0077B6",
-              marginRight: "2px",
-            }}
-            onClick={() =>
-              setCurrentPage(Math.min(pageCount - 1, currentPage + 5))
-            }
-            disabled={currentPage === pageCount - 1}
-          >
-            &gt;&gt;
-          </button>
-        </div>
-      </div>
+      <div className="d-flex justify-content-center mt-3">
+      <Pagination
+        current={currentPage + 1}
+        total={totalEntries}
+        pageSize={itemsPerPage}
+        showSizeChanger={false}
+        showQuickJumper
+        showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
+        onChange={handlePageChange}
+      />
+    </div>
     </SideBar2>
   );
 };
