@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faSave, faHome, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import "./CameraMaster.css";
@@ -199,13 +199,22 @@ const CameraMaster = () => {
               <h2 className="text-center mx-auto">
                 {editMode ? "Update Camera" : "Camera Registration"}
               </h2>
-              <Link to={"/admin-dashboard"}>
+              {editMode ? (
                 <FontAwesomeIcon
-                  icon={faHome}
-                  style={{ float: "right", fontSize: "1.5em" }}
+                  icon={faRectangleXmark}
+                  style={{ float: "right", fontSize: "1.5em", color: "red", cursor: "pointer" }}
+                  onClick={() => navigate(-1)}
                   className="mb-2"
                 />
-              </Link>
+              ) : (
+                <Link to={"/admin-dashboard"}>
+                  <FontAwesomeIcon
+                    icon={faHome}
+                    style={{ float: "right", fontSize: "1.5em" }}
+                    className="mb-2"
+                  />
+                </Link>
+              )}
             </div>
             <div className="camera-master-container">
               <div

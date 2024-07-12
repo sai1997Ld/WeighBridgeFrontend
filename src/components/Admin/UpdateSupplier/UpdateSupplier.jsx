@@ -5,24 +5,24 @@ import Select from "react-select";
 import "./UpdateSupplier.css";
 import SideBar from "../../SideBar/SideBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { faSave, faEraser, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function UpdateSupplier() {
+
+function Updatesupplier() {
   const location = useLocation();
   const navigate = useNavigate();
   const supplier = location.state;
-  const [supplierId, setSupplierId] = useState(supplier.supplierId);
-  const [supplierName, setSupplierName] = useState(supplier.supplierName);
-  const [supplierEmail, setSupplierEmail] = useState(supplier.supplierEmail);
-  const [supplierContactNo, setSupplierContactNo] = useState(
+  const [supplierId, setsupplierId] = useState(supplier.supplierId);
+  const [supplierName, setsupplierName] = useState(supplier.supplierName);
+  const [supplierEmail, setsupplierEmail] = useState(supplier.supplierEmail);
+  const [supplierContactNo, setsupplierContactNo] = useState(
     supplier.supplierContactNo
   );
-  const [supplierAddressLine1, setSupplierAddressLine1] = useState(
+  const [supplierAddressLine1, setsupplierAddressLine1] = useState(
     supplier.supplierAddressLine1
   );
-  const [supplierAddressLine2, setSupplierAddressLine2] = useState(
+  const [supplierAddressLine2, setsupplierAddressLine2] = useState(
     supplier.supplierAddressLine2
   );
   const [selectedCountry, setSelectedCountry] = useState({
@@ -48,7 +48,7 @@ function UpdateSupplier() {
     fetchCountries();
     fetchStates(selectedCountry.value);
     fetchCities(selectedCountry.value, selectedState.value);
-  }, [selectedCountry.value, selectedState.value]);
+  }, []);
 
   const fetchCountries = () => {
     const countryData = Country.getAllCountries().map((country) => ({
@@ -77,11 +77,11 @@ function UpdateSupplier() {
   };
 
   const handleClear = () => {
-    setSupplierName("");
-    setSupplierEmail("");
-    setSupplierContactNo("");
-    setSupplierAddressLine1("");
-    setSupplierAddressLine2("");
+    setsupplierName("");
+    setsupplierEmail("");
+    setsupplierContactNo("");
+    setsupplierAddressLine1("");
+    setsupplierAddressLine2("");
     setSelectedCountry(null);
     setSelectedState(null);
     setSelectedCity(null);
@@ -200,15 +200,11 @@ function UpdateSupplier() {
     <SideBar>
       <div className="supplier-management">
         <div className="supplier-main-content container-fluid">
-          <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Update Supplier</h2>
-            <Link to={"/admin-dashboard"}>
-              <FontAwesomeIcon
-                icon={faHome}
-                style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-2"
-              />
-            </Link>
+
+            <FontAwesomeIcon icon={faRectangleXmark} style={{ float: "right", fontSize: "1.5em", color: "red", cursor: "pointer" }} className="mb-2" onClick={() => navigate(-1)} />
+
           </div>
           <div
             className="supplier-card-container card"
@@ -234,9 +230,9 @@ function UpdateSupplier() {
                       type="text"
                       className="form-control"
                       id="supplierName"
-                      placeholder="Enter Supplier Name"
+                      placeholder="Enter supplier Name"
                       value={supplierName}
-                      onChange={(e) => setSupplierName(e.target.value)}
+                      onChange={(e) => setsupplierName(e.target.value)}
                       required
                     />
                   </div>
@@ -251,9 +247,9 @@ function UpdateSupplier() {
                         emailError ? "is-invalid" : ""
                       }`}
                       id="supplierEmail"
-                      placeholder="Enter Supplier Email"
+                      placeholder="Enter supplier Email"
                       value={supplierEmail}
-                      onChange={(e) => setSupplierEmail(e.target.value)}
+                      onChange={(e) => setsupplierEmail(e.target.value)}
                       required
                     />
                     {emailError && (
@@ -277,7 +273,7 @@ function UpdateSupplier() {
                       id="supplierContactNo"
                       placeholder="Enter Contact Number"
                       value={supplierContactNo}
-                      onChange={(e) => setSupplierContactNo(e.target.value)}
+                      onChange={(e) => setsupplierContactNo(e.target.value)}
                       required
                       pattern="\d{10}"
                       title="Please enter 10 numbers"
@@ -309,7 +305,7 @@ function UpdateSupplier() {
                           /[^A-Za-z\s]/gi,
                           ""
                         );
-                        setSupplierAddressLine1(onlyAlphabetsAndSpace);
+                        setsupplierAddressLine1(onlyAlphabetsAndSpace);
                       }}
                       required
                     />
@@ -321,10 +317,7 @@ function UpdateSupplier() {
                       htmlFor="supplierAddressLine2"
                       className="form-label"
                     >
-                      Address Line 2{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Address Line 2
                     </label>
                     <input
                       type="text"
@@ -332,7 +325,7 @@ function UpdateSupplier() {
                       id="supplierAddressLine2"
                       placeholder="Enter Address Line 2"
                       value={supplierAddressLine2}
-                      onChange={(e) => setSupplierAddressLine2(e.target.value)}
+                      onChange={(e) => setsupplierAddressLine2(e.target.value)}
                     />
                   </div>
                   <div className="col-md-6">
@@ -439,7 +432,9 @@ function UpdateSupplier() {
                     style={{
                       backgroundColor: "white",
                       color: "black",
+
                       width: "100px",
+
                       border: "1px solid #cccccc",
                     }}
                     onClick={handleSave}
@@ -457,4 +452,4 @@ function UpdateSupplier() {
   );
 }
 
-export default UpdateSupplier;
+export default Updatesupplier;

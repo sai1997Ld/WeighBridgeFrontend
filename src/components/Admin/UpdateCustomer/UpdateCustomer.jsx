@@ -5,9 +5,8 @@ import Select from "react-select";
 import "./UpdateCustomer.css";
 import SideBar from "../../SideBar/SideBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faEraser, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 function UpdateCustomer() {
   const location = useLocation();
@@ -202,13 +201,9 @@ function UpdateCustomer() {
         <div className="customer-main-content container-fluid">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Update Customer</h2>
-            <Link to={"/admin-dashboard"}>
-              <FontAwesomeIcon
-                icon={faHome}
-                style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-2"
-              />
-            </Link>
+
+            <FontAwesomeIcon icon={faRectangleXmark} style={{ float: "right", fontSize: "1.5em", color: "red", cursor: "pointer" }} className="mb-2" onClick={() => navigate(-1)} />
+
           </div>
           <div
             className="customer-card-container card"
@@ -219,9 +214,9 @@ function UpdateCustomer() {
           >
             <div className="card-body p-4">
               <form>
-  <p style={{ color: "red" }}>
-                      Please fill all * marked fields.
-                    </p>
+                <p style={{ color: "red" }}>
+                  Please fill all * marked fields.
+                </p>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="customerName" className="form-label">
@@ -247,9 +242,8 @@ function UpdateCustomer() {
                     <span style={{ color: "red", fontWeight: "bold" }}> *</span>
                     <input
                       type="email"
-                      className={`form-control ${
-                        emailError ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${emailError ? "is-invalid" : ""
+                        }`}
                       id="customerEmail"
                       placeholder="Enter Customer Email"
                       value={customerEmail}
@@ -271,9 +265,8 @@ function UpdateCustomer() {
                     </label>
                     <input
                       type="tel"
-                      className={`form-control ${
-                        phoneError ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${phoneError ? "is-invalid" : ""
+                        }`}
                       id="customerContactNo"
                       placeholder="Enter Contact Number"
                       value={customerContactNo}

@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEraser, faSave, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faSave, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import "./UpdateTransporter.css";
 import SideBar from "../../SideBar/SideBar";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate} from "react-router-dom";
 
 function UpdateTransporter() {
   const location = useLocation();
   const transporter = location.state;
-  console.log(transporter);
   const [id, setid] = useState(transporter.id);
   const [transporterName, setTransporterName] = useState(
     transporter.transporterName
@@ -138,15 +137,11 @@ function UpdateTransporter() {
     <SideBar>
       <div className="update-transporter">
         <div className="update-main-content container-fluid">
-          <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-center mx-auto">Update Transporter</h2>
-            <Link to={"/admin-dashboard"}>
-              <FontAwesomeIcon
-                icon={faHome}
-                style={{ float: "right", fontSize: "1.5em" }}
-                className="mb-2"
-              />
-            </Link>
+
+            <FontAwesomeIcon icon={faRectangleXmark} style={{ float: "right", fontSize: "1.5em", color: "red", cursor: "pointer" }} className="mb-2" onClick={() => navigate(-1)} />
+
           </div>
           <div
             className="update-transporter-container card"
@@ -161,22 +156,8 @@ function UpdateTransporter() {
                       Please fill all * marked fields.
                     </p>
                 <div className="row mb-2">
-                  <div className="col-md-4">
-                    <label htmlFor="id" className="form-label">
-                      Transporter ID
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="id"
-                      placeholder="Enter ID"
-                      value={id}
-                      onChange={(e) => setid(e.target.value)}
-                      required
-                      disabled
-                    />
-                  </div>
-                  <div className="col-md-4">
+                  
+                  <div className="col-md-6">
                     <label htmlFor="transporterName" className="form-label">
                       Transporter Name{" "}
                       <span style={{ color: "red", fontWeight: "bold" }}>
@@ -193,7 +174,7 @@ function UpdateTransporter() {
                       required
                     />
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <label
                       htmlFor="transporterContactNo"
                       className="form-label"
