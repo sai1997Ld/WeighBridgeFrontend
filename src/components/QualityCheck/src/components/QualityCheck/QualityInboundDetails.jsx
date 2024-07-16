@@ -183,7 +183,7 @@ const QualityInboundDetails = () => {
   };
   const handleSuccessOk = () => {
     setIsSuccessModalVisible(false);
-    navigate("/qualtity-dashboard"); // Replace '/home' with the actual path to your home page
+    navigate("/quality-dashboard"); // Replace '/home' with the actual path to your home page
   };
   const handleOk = () => {
     setIsModalVisible(false);
