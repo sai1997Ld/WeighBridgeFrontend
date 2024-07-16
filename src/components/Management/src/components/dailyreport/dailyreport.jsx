@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar4 from "../../../../SideBar/SideBar4";
 import { Row, Col, Button } from "antd";
-import { Typography } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark, faDownload } from "@fortawesome/free-solid-svg-icons";
 import * as XLSX from 'xlsx';
@@ -11,7 +10,6 @@ import * as XLSX from 'xlsx';
 const ManagementDailyReport = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [weighments, setWeighments] = useState([]);
-  const { Text } = Typography;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,10 +55,7 @@ const ManagementDailyReport = () => {
       });
   };
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
+ 
   const downloadExcel = () => {
     const fileName = "Daily_Report.xlsx";
 
@@ -92,12 +87,12 @@ const ManagementDailyReport = () => {
     <Sidebar4>
       <div className="container-fluid mt-0">
         <div className="mb-3 text-center">
-          <button className="close-button" onClick={goBack}>
-            <FontAwesomeIcon icon={faRectangleXmark} />
-          </button>
-          <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-            Daily Transaction Report
-          </h2>
+        <div className="d-flex justify-content-between align-items-center">
+              <h2 className="text-center mx-auto">Daily Transaction Report</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
 
           <Row gutter={[16, 16]} justify="start" align="top">
             <Col
