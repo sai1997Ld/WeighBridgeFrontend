@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Row, Col , Button } from "antd";
-import { Typography } from "antd";
+
 import { useNavigate } from "react-router-dom";
 import Sidebar4 from "../../../../SideBar/SideBar4";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,7 +21,7 @@ const ManagementCustomizedReport = () => {
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
   };
-  const { Text } = Typography;
+
 
   const [filteredWeighments, setFilteredWeighments] = useState([]);
 const [selectedMaterials, setSelectedMaterials] = useState([]);
@@ -128,9 +128,7 @@ const [allChallans, setAllChallans] = useState([]);
   const handleChallanChange = (selectedItems) => {
     setSelectedChallans(selectedItems);
   };
-  const goBack = () => {
-    navigate(-1);
-  };
+
   const downloadExcel = () => {
     const fileName = "Customized_Report.xlsx";
 
@@ -161,12 +159,12 @@ const [allChallans, setAllChallans] = useState([]);
     <Sidebar4>
       <div className="container-fluid mt-0">
         <div className="mb-3 text-center">
-          <button className="close-button" onClick={goBack}>
-            <FontAwesomeIcon icon={faRectangleXmark} />
-          </button>
-          <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
-            Customized Transaction Report
-          </h2>
+        <div className="d-flex justify-content-between align-items-center">
+              <h2 className="text-center mx-auto">Custom Transaction Report</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
           <Row gutter={[16, 16]} justify="start" align="top">
             <Col
               xs={24}
