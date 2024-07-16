@@ -50,7 +50,7 @@ const LoginUser = () => {
             ADMIN: "/admin-dashboard",
             QUALITY_USER: "/HomePage2",
             MANAGEMENT: "/management-dashboard",
-            GATE_USER: "/gate-dashboard",
+            GATE_USER: "/VehicleEntry",
             WEIGHBRIDGE_OPERATOR: "/weighbridge-dashboard",
             SALE_USER: "/sales-dashboard",
           };

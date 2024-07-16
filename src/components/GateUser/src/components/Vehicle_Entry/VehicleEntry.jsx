@@ -9,7 +9,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import SideBar2 from "../../../../SideBar/SideBar2";
 import "./VehicleEntry.css";
-import { Button, Input, Select, DatePicker, Menu, Dropdown, Pagination } from "antd";
+import {
+  Button,
+  Input,
+  Select,
+  DatePicker,
+  Menu,
+  Dropdown,
+  Pagination,
+} from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import moment from "moment";
 import axios from "axios";
@@ -65,10 +73,9 @@ const VehicleEntry = () => {
 
   const userId = sessionStorage.getItem("userId");
 
- 
   const handleSearchOptionChange = (value) => {
     setSearchOption(value);
-    setSearchValue(""); 
+    setSearchValue("");
   };
   const handleInputChange = (e) => {
     setSearchValue(e.target.value);
@@ -178,14 +185,13 @@ const VehicleEntry = () => {
     </Menu>
   );
 
-
   const applyFilter = (data, material, transactionType) => {
     const filtered = data.filter((entry) => {
       let matchesMaterial = true;
 
       if (material) {
         matchesMaterial =
-          entry.material.toLowerCase() === material.toLowerCase();
+          entry?.material?.toLowerCase() === material?.toLowerCase();
       }
 
       return matchesMaterial;
@@ -320,23 +326,13 @@ const VehicleEntry = () => {
       });
   };
 
-
-
-
-
-
-
-
- 
-  
-  
-
   //  code Of Edit API:
-  const handleEdit = (ticketNo) => {
+  const handleEdit = async (ticketNo) => {
     // Make the API call using Axios with credentials
+    const role = JSON.parse(await sessionStorage.getItem("roles"))[0];
     axios
       .get(
-        `http://localhost:8080/api/v1/gate/edit/${ticketNo}?userId=${userId}`,
+        `http://localhost:8080/api/v1/gate/edit/${ticketNo}?userId=${userId}&role=${role}`,
         {
           withCredentials: true, // Include credentials with the request
         }
@@ -355,8 +351,6 @@ const VehicleEntry = () => {
         // Handle any errors here
       });
   };
-
- 
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
@@ -876,7 +870,7 @@ const VehicleEntry = () => {
                         >
                           {entry.vehicleOut}
                         </td>
-                      
+
                         <td
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
@@ -923,7 +917,7 @@ const VehicleEntry = () => {
                         >
                           {entry.tpNetWeight}
                         </td>
-        
+
                         <td
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
@@ -974,10 +968,8 @@ const VehicleEntry = () => {
                               onClick={() => {
                                 setIsExitModalVisible(true);
                                 setTicketNo(entry.ticketNo);
-             
                               }}
                             >
-                            
                               <FontAwesomeIcon
                                 icon={faTruck}
                                 style={{ color: "red" }}
@@ -1001,16 +993,18 @@ const VehicleEntry = () => {
         ticketNo={ticketNo}
       />
       <div className="d-flex justify-content-center mt-3">
-  <Pagination
-    current={currentPage + 1}
-    total={totalEntries}
-    pageSize={itemsPerPage}
-    showSizeChanger={false}
-    showQuickJumper
-    showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
-    onChange={handlePageChange}
-  />
-</div>
+        <Pagination
+          current={currentPage + 1}
+          total={totalEntries}
+          pageSize={itemsPerPage}
+          showSizeChanger={false}
+          showQuickJumper
+          showTotal={(total, range) =>
+            `Showing ${range[0]}-${range[1]} of ${total} entries`
+          }
+          onChange={handlePageChange}
+        />
+      </div>
     </SideBar2>
   );
 };
