@@ -183,7 +183,7 @@ const QualityOutboundDetails = () => {
   };
   const handleSuccessOk = () => {
     setIsSuccessModalVisible(false);
-    navigate("/qualtity-dashboard"); // Replace '/home' with the actual path to your home page
+    navigate("/quality-dashboard"); // Replace '/home' with the actual path to your home page
   };
   const handleOk = () => {
     setIsModalVisible(false);
@@ -238,70 +238,103 @@ const QualityOutboundDetails = () => {
       event.preventDefault();
     }
   };
+  const StyledInput = styled.input`
+  &.form-control.is-invalid {
+    border-color: #dc3545;
+    background-color: #fff;
+  }
 
-  const renderFieldWithBox = (
-    fieldName,
-    propertyName,
-    isReadOnly = false,
-    isRequired = false
-  ) => {
-    const inputStyle = isReadOnly
-      ? { borderColor: "#ced4da", backgroundColor: "rgb(239, 239, 239)" }
-      : {};
-    const value = formData[propertyName] !== null ? formData[propertyName] : "";
-  
-    // Get the parameter range
-    const parameter = parameters[propertyName];
-    const rangeFrom = parameter ? parseFloat(parameter.rangeFrom) : null;
-    const rangeTo = parameter ? parseFloat(parameter.rangeTo) : null;
-    const inputValue = parseFloat(value);
-  
-    // Determine the class based on whether the value falls within the range and the field is not read-only
-    let inputClass = "form-control";
-    if (
-      !isReadOnly &&
-      !isNaN(rangeFrom) &&
-      !isNaN(rangeTo) &&
-      !isNaN(inputValue)
-    ) {
-      const isSpecialParameter = specialParameters.some(param => 
-        propertyName.toLowerCase().includes(param.toLowerCase())
-      );
-      
-      if (isSpecialParameter) {
-        inputClass += (inputValue >= rangeFrom && inputValue <= rangeTo)
-          ? " is-valid"
-          : " is-invalid";
+  &.form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+`;
+
+const renderFieldWithBox = (
+  fieldName,
+  propertyName,
+  isReadOnly = false,
+  isRequired = false
+) => {
+  const value = formData[propertyName] !== null ? formData[propertyName] : "";
+
+  const parameter = parameters[propertyName];
+  const rangeFrom = parameter ? parseFloat(parameter.rangeFrom) : null;
+  const rangeTo = parameter ? parseFloat(parameter.rangeTo) : null;
+  const inputValue = parseFloat(value);
+
+  let inputStyle = isReadOnly
+    ? { borderColor: "#ced4da", backgroundColor: "rgb(239, 239, 239)" }
+    : {};
+
+  const isSpecialParameter = specialParameters.some(param => 
+    propertyName.toLowerCase().includes(param.toLowerCase())
+  );
+
+  if (!isReadOnly && !isNaN(rangeFrom) && !isNaN(rangeTo) && !isNaN(inputValue)) {
+    if (isSpecialParameter) {
+      // For special parameters, only show as valid if within range
+      if (inputValue >= rangeFrom && inputValue <= rangeTo) {
+        inputStyle = {
+          ...inputStyle,
+          borderColor: "#28a745",
+          backgroundColor: "#fff",
+          boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)"
+        };
       } else {
-        inputClass += " is-valid";
+        inputStyle = {
+          ...inputStyle,
+          borderColor: "#dc3545",
+          backgroundColor: "#fff",
+          boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+        };
+      }
+    } else {
+      // For non-special parameters
+      if (inputValue < rangeFrom) {
+        inputStyle = {
+          ...inputStyle,
+          borderColor: "#dc3545",
+          backgroundColor: "#fff",
+          boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+        };
+      } else {
+        // Show as green for any value >= rangeFrom
+        inputStyle = {
+          ...inputStyle,
+          borderColor: "#28a745",
+          backgroundColor: "#fff",
+          boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)"
+        };
       }
     }
-  
-    return (
-      <div className="col-md-3 mb-3">
-        <label
-          htmlFor={propertyName}
-          className="form-label"
-          style={{ marginBottom: "0" }}
-        >
-          {fieldName}:
-        </label>
-        <input
-          type="text"
-          name={propertyName}
-          autoComplete="off"
-          value={value}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          required={isRequired}
-          readOnly={isReadOnly}
-          style={inputStyle}
-          className={inputClass}
-          id={propertyName}
-        />
-      </div>
-    );
-  };
+  }
+
+  return (
+    <div className="col-md-3 mb-3">
+      <label
+        htmlFor={propertyName}
+        className="form-label"
+        style={{ marginBottom: "0" }}
+      >
+        {fieldName}:
+      </label>
+      <input
+        type="text"
+        name={propertyName}
+        autoComplete="off"
+        value={value}
+        onChange={handleInputChange}
+        onKeyPress={handleKeyPress}
+        required={isRequired}
+        readOnly={isReadOnly}
+        style={inputStyle}
+        className="form-control"
+        id={propertyName}
+      />
+    </div>
+  );
+};
 
   const handleClear = () => {
     setFormData({
@@ -338,7 +371,6 @@ const QualityOutboundDetails = () => {
               outline: "none",
             }}
           >
-            
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2
