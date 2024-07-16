@@ -15,7 +15,8 @@ function HomePage5() {
   const [startDate, setStartDate] = useState(sessionStorage.getItem('startDate') || "");
   const [endDate, setEndDate] = useState(sessionStorage.getItem('endDate') || "");
   const [supplierName, setSupplierName] = useState(sessionStorage.getItem('supplierName') || "");
-  const [supplierAddress, setSupplierAddress] = useState(sessionStorage.getItem('supplierAddress') || "");
+  const [supplierAddresses, setSupplierAddresses] = useState([]);
+const [supplierAddress, setSupplierAddress] = useState(sessionStorage.getItem('supplierAddress') || "");
   const [supplierNames, setSupplierNames] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -183,7 +184,8 @@ function HomePage5() {
         }
       })
       .then((data) => {
-        setSupplierAddress(data[0]); // Assuming the address is the first item in the response array
+        setSupplierAddresses(data); 
+        setSupplierAddress(data[0]); 
       })
       .catch((error) => {
         Swal.fire({
@@ -197,7 +199,7 @@ function HomePage5() {
         });
       });
   };
-
+  
   useEffect(() => {
     if (supplierName) {
       fetchSupplierAddress(supplierName);
@@ -594,14 +596,15 @@ function HomePage5() {
           <label htmlFor="supplierAddressLine1" className="form-label">
             Supplier Address<span style={{ color: "red", fontWeight: "bold" }}> *</span>
           </label>
-          <input
-            type="text"
-            className="form-control"
-            id="supplierAddressLine1"
-            value={supplierAddress}
-            onChange={(e) => setSupplierAddress(e.target.value)}
-            required
-          />
+          <Select
+    id="supplierAddress"
+    value={supplierAddress ? { value: supplierAddress, label: supplierAddress } : null}
+    onChange={(selectedOption) => setSupplierAddress(selectedOption.label)}
+    options={supplierAddresses.map((address) => ({ value: address, label: address }))}
+    isSearchable
+    isRequired
+    placeholder="Select Supplier Address"
+  />
         </div>
       </div>
       {moisturePercentageData.labels.length > 0 && (
