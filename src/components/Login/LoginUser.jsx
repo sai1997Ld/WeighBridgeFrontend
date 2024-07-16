@@ -48,7 +48,7 @@ const LoginUser = () => {
 
           const roleRoutes = {
             ADMIN: "/admin-dashboard",
-            QUALITY_USER: "/qualtity-dashboard",
+            QUALITY_USER: "/quality-dashboard",
             MANAGEMENT: "/management-dashboard",
             GATE_USER: "/gate-dashboard",
             WEIGHBRIDGE_OPERATOR: "/weighbridge-dashboard",
