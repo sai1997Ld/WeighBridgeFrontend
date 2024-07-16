@@ -338,6 +338,7 @@ const QualityOutboundDetails = () => {
               outline: "none",
             }}
           >
+            
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
           <h2
