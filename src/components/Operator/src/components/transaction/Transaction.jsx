@@ -156,8 +156,6 @@ const OperatorTransaction2 = () => {
       })
       .then((secondResponse) => {
         setPendingTareOutbound(secondResponse.data);
-        console.log("Data from the second API:", secondResponse.data);
-
         return axios.get(
           `http://localhost:8080/api/v1/status/pendingGross/Outbound?userId=${userId}`,
           {
@@ -167,7 +165,6 @@ const OperatorTransaction2 = () => {
       })
       .then((thirdResponse) => {
         setPendingGrossOutbound(thirdResponse.data);
-        console.log("Data from the third API:", thirdResponse.data);
 
         return axios.get(
           `http://localhost:8080/api/v1/status/pendingTare/Inbound?userId=${userId}`,
@@ -178,7 +175,6 @@ const OperatorTransaction2 = () => {
       })
       .then((fourthResponse) => {
         setPendingTareInbound(fourthResponse.data);
-        console.log("Data from the fourth API:", fourthResponse.data);
 
         return axios.get(
           `http://localhost:8080/api/v1/status/pendingGross/Inbound?userId=${userId}`,
@@ -189,7 +185,6 @@ const OperatorTransaction2 = () => {
       })
       .then((fifthResponse) => {
         setPendingGrossInbound(fifthResponse.data);
-        console.log("Data from the fourth API:", fifthResponse.data);
       })
 
       .catch((error) => {
@@ -264,7 +259,6 @@ const OperatorTransaction2 = () => {
 
       if (response.status === 200) {
         const responseData = response.data;
-        console.log("Response data:", responseData);
         setSearchWeighments(responseData.weighmentTransactionResponses);
         setTotalSearchPages(responseData.totalPages);
         setSearchPager(responseData.totalElements);
@@ -346,11 +340,6 @@ const OperatorTransaction2 = () => {
       console.error("Error config:", error.config);
     }
   };
-
-  const handleRefresh = () => {
-    window.location.reload();
-  };
-
   const handlePrintClick = useReactToPrint({
     content: () => componentRef.current,
   });

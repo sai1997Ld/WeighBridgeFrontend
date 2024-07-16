@@ -13,7 +13,8 @@ import {
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import LiveVideo from "./LiveVideo";
-import { Spin } from "antd";
+
+import CircularProgress from "@mui/material/CircularProgress";
 
 function TransactionFrom() {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -49,7 +50,6 @@ function TransactionFrom() {
       })
       .then((response) => {
         setTicket(response.data);
-        console.log(response.data);
         setGrossWeight(response.data.grossWeight);
         setTareWeight(response.data.tareWeight);
         setNetWeight(response.data.netWeight);
@@ -62,7 +62,6 @@ function TransactionFrom() {
 
   useEffect(() => {
     setNetWeight(grossWeight - tareWeight);
-    console.log("Count changed:", netWeight);
   }, [tareWeight]);
 
   const handleChange1 = (value) => {
@@ -80,10 +79,7 @@ function TransactionFrom() {
       setInputValue("");
       return;
     }
-    // setInputValue(newValue);
-    console.log({ ticket });
     if (ticket.grossWeight === 0) {
-      console.log("called");
       setGrossWeight(newValue);
     } else if (newValue >= ticket.grossWeight) {
       Swal.fire({
@@ -116,24 +112,25 @@ function TransactionFrom() {
           },
         });
         setIsSaving(false);
-        return; // Exit the function without saving
+        return;
       }
-
-      // window.location.reload();
 
       setInputValue("");
 
-      const blobFront = await fetch(capturedFrontImage).then((res) =>
-        res.blob()
-      );
-      const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-      const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-      const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+      // Fetch images in parallel
+      const [blobFront, blobRear, blobSide, blobTop] = await Promise.all([
+        fetch(capturedFrontImage).then((res) => res.blob()),
+        fetch(capturedRearImage).then((res) => res.blob()),
+        fetch(capturedSideImage).then((res) => res.blob()),
+        fetch(capturedTopImage).then((res) => res.blob()),
+      ]);
+
       const payload = {
         machineId: "1",
         ticketNo: ticketNumber,
         weight: inputValue,
       };
+
       const formD = new FormData();
       formD.append("frontImg1", blobFront, Date.now());
       formD.append("backImg2", blobRear, Date.now());
@@ -143,39 +140,31 @@ function TransactionFrom() {
 
       const response = await axios({
         method: "post",
-        url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=${"WEIGHBRIDGE_OPERATOR"}`,
+        url: `http://localhost:8080/api/v1/weighment/measure?userId=${userId}&role=WEIGHBRIDGE_OPERATOR`,
         data: formD,
         headers: {
           withCredentials: true,
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log({ response });
+
       if (response.status === 200) {
-        if (tareWeight == 0) {
-          Swal.fire({
-            title: "Gross weight saved to the database",
-            icon: "success",
-            confirmButtonText: "OK",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
-          });
-        } else {
-          Swal.fire({
-            title: "Tare weight saved to the database",
-            icon: "success",
-            confirmButtonText: "OK",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
-          });
-        }
+        Swal.fire({
+          title:
+            tareWeight === 0
+              ? "Gross weight saved to the database"
+              : "Tare weight saved to the database",
+          icon: "success",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton: "btn btn-success",
+          },
+        });
         goBack();
-        setIsSaving(false);
       }
+      setIsSaving(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setIsSaving(false);
     }
   };
@@ -265,31 +254,25 @@ function TransactionFrom() {
       const ws = new WebSocket("ws://localhost:8080/ws/weight");
 
       ws.onopen = () => {
-        console.log("Connected to WebSocket server");
         setWeight("Waiting for data...");
       };
 
       ws.onmessage = (event) => {
         const receivedData = event.data.trim();
-        console.log("Received data:", receivedData);
         setWeight(receivedData);
 
         const match = receivedData.match(/(\d+(\.\d+)?)/);
         if (match) {
-          console.log(match[0]);
           handleChange1(match[0]);
-
           setInputValue(match[0]);
         }
       };
 
       ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
         setWeight("Error receiving data");
       };
 
       ws.onclose = (event) => {
-        console.log("WebSocket connection closed", event);
         if (event.wasClean) {
           setWeight("Connection closed");
         } else {
@@ -317,8 +300,6 @@ function TransactionFrom() {
   //   }
   // }, [ticket]);
 
-  console.log(trimmedWeight);
-
   return (
     <SideBar5>
       <div className="container-fluid">
@@ -341,7 +322,6 @@ function TransactionFrom() {
                 readOnly
               />
             </div>
-
           </div>
           <div className="row mb-2 p-2 border shadow-lg rounded-lg">
             <div className="col-md-3 mb-3">
@@ -445,7 +425,6 @@ function TransactionFrom() {
                       min="0"
                       value={inputValue}
                       onChange={(e) => {
-                        console.log(e);
                         setInputValue(e.target.value);
                         handleChange1(e.target.value);
                       }}
@@ -460,10 +439,10 @@ function TransactionFrom() {
                         {ticket.tareWeight === 0 && ticket.netWeight === 0 ? (
                           <button
                             type="button"
-                            className="btn btn-success btn-hover"
+                            className="btn  btn-success"
                             style={{
-                              backgroundColor: "white",
-                              color: "#008060 ",
+                              // backgroundColor: "white",
+                              // color: "#008060 ",
                               width: "100px",
                               border: "1px solid #cccccc",
                             }}
@@ -471,7 +450,9 @@ function TransactionFrom() {
                             disabled={isSaving}
                           >
                             {isSaving ? (
-                              <Spin size="small" />
+                              <div style={{ color: "white" }}>
+                                <CircularProgress color="inherit" size={20} />
+                              </div>
                             ) : (
                               <>
                                 <FontAwesomeIcon
