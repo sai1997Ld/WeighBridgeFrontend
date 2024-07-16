@@ -140,7 +140,7 @@
   border-radius: 0.25rem;
   height: 50px;
   border: 1px solid #ced4da;
-    
+  width: 100% !important;
   background-color:#EFEFEF; 
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   
