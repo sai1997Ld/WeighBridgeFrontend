@@ -185,7 +185,7 @@ const [supplierAddress, setSupplierAddress] = useState(sessionStorage.getItem('s
       })
       .then((data) => {
         setSupplierAddresses(data); 
-        setSupplierAddress(data[0]); 
+        // setSupplierAddress(data[0]); 
       })
       .catch((error) => {
         Swal.fire({
