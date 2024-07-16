@@ -19,6 +19,7 @@ const ViewVehicle = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     fetchVehicles();
@@ -32,10 +33,9 @@ const ViewVehicle = () => {
         }&size=${pageSize}`
       );
       const data = await response.json();
-      setVehicles(data);
-      // Assuming the API returns the total count of vehicles
-      // If it doesn't, you may need to adjust this or use a fixed number
-      setTotalElements(data.length * 10); // This is a placeholder, adjust as needed
+      setVehicles(data.transactions);
+      setTotalElements(data.totalElements);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Error fetching vehicles:", error);
     }
@@ -58,11 +58,14 @@ const ViewVehicle = () => {
       }
       const vehicleData = await response.json();
       setVehicles([vehicleData]);
+      setTotalElements(1);
+      setTotalPages(1);
     } catch (error) {
       Swal.fire("Error", error.message, "error");
     }
   };
 
+  
   const handleActivate = async (vehicleId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -139,6 +142,7 @@ const ViewVehicle = () => {
     });
   };
 
+
   const handlePageChange = (page, pageSize) => {
     setCurrentPage(page);
     setPageSize(pageSize);
@@ -156,8 +160,8 @@ const ViewVehicle = () => {
       key: "transporter",
       render: (transporter) => (
         <ul style={{ listStyleType: "none", padding: 0 }}>
-          {transporter.map((item) => (
-            <li key={item}>{item}</li>
+          {transporter.map((item, index) => (
+            <li key={index}>{item}</li>
           ))}
         </ul>
       ),
@@ -175,7 +179,7 @@ const ViewVehicle = () => {
     {
       title: "Load Capacity",
       dataIndex: "loadCapacity",
-      key:"loadCapacity"
+      key: "loadCapacity",
     },
     {
       title: "Fitness Up to",
@@ -252,7 +256,7 @@ const ViewVehicle = () => {
           <Table
             dataSource={vehicles}
             columns={columns}
-            rowKey="vehicleNo"
+            rowKey="id"
             className="user-table mt-3 custom-table"
             pagination={false}
           />
