@@ -12,5 +12,5 @@ function HomePage2() {
     </div>
   );
 }
-
+ 
 export default HomePage2;
