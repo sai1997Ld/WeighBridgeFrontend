@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark, faSave } from "@fortawesome/free-solid-svg-icons";
 import LiveVideo from "../transactionform/LiveVideo";
-import {Spin} from "antd";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function TransactionFrom2() {
   const navigate = useNavigate();
@@ -85,7 +85,6 @@ function TransactionFrom2() {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      // window.location.reload();
 
       const blobFront = await fetch(capturedFrontImage).then((res) =>
         res.blob()
@@ -115,7 +114,7 @@ function TransactionFrom2() {
         },
       });
       if (response.status === 200) {
-        if (grossWeight == 0) {
+        if (grossWeight === 0) {
           Swal.fire({
             title: "Tare weight saved to the database",
             icon: "success",
@@ -147,35 +146,9 @@ function TransactionFrom2() {
           });
         }
 
-        const consignment = parseFloat(ticket.consignmentWeight);
-        const lowerBound = parseFloat((consignment - 100).toFixed(3));
-        const upperBound = parseFloat((consignment + 100).toFixed(3));
-        if (netWeight) {
-          if (netWeight < lowerBound || netWeight > upperBound) {
-            const result = await Swal.fire({
-              title: "Net weight is out of the allowed range",
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonText: "OK",
-              cancelButtonText: "Cancel",
-              customClass: {
-                confirmButton: "btn btn-success",
-                cancelButton: "btn btn-danger",
-              },
-            });
-
-            if (result.isConfirmed) {
-              // Proceed with saving
-            } else {
-              // Cancel the save operation
-              return;
-            }
-          }
-        }
         goBack();
         setInputValue("");
         setIsSaving(false);
-        
       }
     } catch (error) {
       setIsSaving(false);
@@ -223,62 +196,6 @@ function TransactionFrom2() {
 
   const goBack = () => {
     navigate(-1);
-  };
-
-  useEffect(() => {
-    if (port) {
-      readSerialData();
-    }
-  }, [port]);
-
-  const connectSerial = async () => {
-    if (
-      typeof window === "undefined" ||
-      typeof navigator === "undefined" ||
-      !navigator.serial
-    ) {
-      console.error("Web Serial API is not supported in this environment.");
-      return;
-    }
-
-    try {
-      const port = await navigator.serial.requestPort();
-      await port.open({ baudRate: 9600 });
-      setPort(port);
-    } catch (error) {
-      console.error("There was an error opening the serial port:", error);
-    }
-  };
-
-  const readSerialData = async () => {
-    try {
-      const decoder = new TextDecoderStream();
-      port.readable.pipeTo(decoder.writable);
-      const inputStream = decoder.readable;
-      const reader = inputStream.getReader();
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-          console.log("Stream closed");
-          reader.releaseLock();
-          break;
-        }
-        const newValue = value.trim();
-        const extractedWeight = extractWeight(newValue);
-        if (extractedWeight) {
-          setInputValue(extractedWeight);
-          handleChange1({ target: { value: extractedWeight } });
-        }
-      }
-    } catch (error) {
-      console.error("Error reading serial data:", error);
-    }
-  };
-
-  const extractWeight = (data) => {
-    const match = data.match(/(\d+(\.\d+)?)\s*kg/);
-    return match ? match[0] : null;
   };
 
   const canvasTopRef = useRef(null);
@@ -518,17 +435,17 @@ function TransactionFrom2() {
                         {ticket.grossWeight === 0 && ticket.netWeight === 0 ? (
                           <button
                             type="button"
-                            className="btn btn-success-1 btn-hover"
+                            className="btn btn-success"
                             style={{
-                              backgroundColor: "white",
-                              color: "#008060 ",
                               width: "100px",
                               border: "1px solid #cccccc",
                             }}
                             onClick={handleSave}
                           >
                             {isSaving ? (
-                              <Spin size="small" />
+                              <div style={{ color: "white" }}>
+                                <CircularProgress color="inherit" size={20} />
+                              </div>
                             ) : (
                               <>
                                 <FontAwesomeIcon
@@ -572,7 +489,7 @@ function TransactionFrom2() {
 
                 <div className="col-4">
                   <div className="form-group">
-                    <label htmlFor="vehicleType" className="form-label">
+                    <label htmlFor="tareWeight" className="form-label">
                       Tare Weight:
                     </label>
 
