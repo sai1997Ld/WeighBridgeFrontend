@@ -173,6 +173,11 @@ const ViewVehicle = () => {
       key: "vehicleManufacturer",
     },
     {
+      title: "Load Capacity",
+      dataIndex: "loadCapacity",
+      key:"loadCapacity"
+    },
+    {
       title: "Fitness Up to",
       dataIndex: "fitnessUpto",
       key: "fitnessUpto",
