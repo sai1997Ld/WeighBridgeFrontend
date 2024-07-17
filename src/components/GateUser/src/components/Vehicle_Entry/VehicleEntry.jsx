@@ -26,6 +26,7 @@ import "jspdf-autotable";
 import { Typography } from "antd";
 import styled from "styled-components";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { defaultApiUrl } from "../../../../../Constants";
 
 const GateUserExitModal = lazy(() => import("../Modals/GateUserExitModal"));
 
@@ -164,7 +165,7 @@ const VehicleEntry = () => {
     if (filterType === "material") {
       setSelectedMaterial(filterValue);
       // Apply filter based on material only
-      applyFilter(vehicleEntryDetails, filterValue, selectedTransactionType);
+      // applyFilter(vehicleEntryDetails, filterValue, selectedTransactionType);
     } else if (filterType === "transaction") {
       setSelectedTransactionType(filterValue);
     }
@@ -200,130 +201,142 @@ const VehicleEntry = () => {
     setFilteredData(filtered);
   };
 
-  const fetchDataByTransactionType = async (transactionType) => {
+  const filterData = async (material, transactionType) => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/gate/transactions/ongoing?transactionType=${transactionType}&userId=${userId}`,
-        {
-          credentials: "include", // Include credentials option here
-        }
-      );
+      let apiUrl = `${defaultApiUrl}/gate/transactions/ongoing?userId=${userId}&page=${currentPage}`;
+      if (material) {
+        apiUrl = apiUrl + `&materialName=${material}`;
+      }
+      if (transactionType) {
+        apiUrl = apiUrl + `&transactionType=${transactionType}`;
+      }
+      const response = await fetch(apiUrl, {
+        credentials: "include", // Include credentials option here
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setFilteredData(data.transactions);
+      setVehicleEntryDetails(data.transactions);
+      // setFilteredData(data.transactions);
     } catch (error) {
       console.error("Error fetching vehicle entry details:", error);
     }
   };
   // Fetch data by transaction type when selectedTransactionType changes
-  useEffect(() => {
-    if (selectedTransactionType) {
-      fetchDataByTransactionType(selectedTransactionType);
-    }
-  }, [selectedTransactionType]);
+  // useEffect(() => {
+  //   if (selectedTransactionType) {
+  //     fetchDataByTransactionType(selectedTransactionType);
+  //   }
+  // }, [selectedTransactionType, currentPage]);
 
   // API for Pagination:
 
-  useEffect(() => {
-    // Initial fetch
-    fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setVehicleEntryDetails(data.transactions);
-        setTotalPage(data.totalPages);
-        console.log("total Page " + data.totalPages);
+  // useEffect(() => {
+  //   // Initial fetch
+  //   fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
+  //     credentials: "include",
+  //   })
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setVehicleEntryDetails(data.transactions);
+  //       setTotalPage(data.totalPages);
+  //       console.log("total Page " + data.totalPages);
 
-        // Set the current page to 0 to trigger the paginated fetch
-        // setCurrentPage(0);
-        // Apply initial filter
-        applyFilter(
-          data.transactions,
-          selectedMaterial,
-          selectedTransactionType
-        );
-      })
-      .catch((error) => {
-        console.error("Error fetching vehicle entry details:", error);
-      });
-    fetchData();
-  }, []);
+  //       // Set the current page to 0 to trigger the paginated fetch
+  //       // setCurrentPage(0);
+
+  //       // Apply initial filter
+  //       // applyFilter(
+  //       //   data.transactions,
+  //       //   selectedMaterial,
+  //       //   selectedTransactionType
+  //       // );
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching vehicle entry details:", error);
+  //     });
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
-    applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
+    // applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
   }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
 
   useEffect(() => {
+    console.log({ currentPage });
     if (currentPage !== null) {
       if (searchValue) {
         handleSearch(currentPage);
+      } else if (selectedMaterial || selectedTransactionType) {
+        filterData(selectedMaterial, selectedTransactionType);
       } else fetchData(currentPage);
     }
-  }, [currentPage]);
+  }, [selectedMaterial, selectedTransactionType, currentPage]);
 
   const fetchData = (pageNumber) => {
-    fetch(
-      `http://localhost:8080/api/v1/gate?page=${pageNumber}&userId=${userId}`,
-      {
-        credentials: "include",
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+    console.log({ pageNumber });
+    if (pageNumber !== undefined || pageNumber !== null) {
+      fetch(
+        `http://localhost:8080/api/v1/gate?page=${pageNumber}&userId=${userId}`,
+        {
+          credentials: "include",
         }
-        return response.json();
-      })
-      .then((data) => {
-        setVehicleEntryDetails(data.transactions);
-        setTotalPage(data.totalPages);
-        setTotalEntries(data.totalElements);
-        console.log("total Page " + data.totalPages);
-        //API for InboundPending Status
-        return axios.get(
-          `http://localhost:8080/api/v1/gate/count/Inbound?userId=${userId}`,
-          {
-            withCredentials: true,
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
           }
-        );
-      })
-      .then((secondResponse) => {
-        setInboundPending(secondResponse.data); // Set the inbound pending data
-        console.log("Data from the second API:", secondResponse.data);
-        //API for OutboundPending Status
-        return axios.get(
-          `http://localhost:8080/api/v1/gate/count/Outbound?userId=${userId}`,
-          {
-            withCredentials: true,
-          }
-        );
-      })
-      .then((thirdResponse) => {
-        setOutboundPending(thirdResponse.data);
-        console.log("Data from the third API:", thirdResponse.data);
-        //API for Completed Status
-        return axios.get(
-          `http://localhost:8080/api/v1/gate/count/Complete?userId=${userId}`,
-          {
-            withCredentials: true,
-          }
-        );
-      })
-      .then((fourthResponse) => {
-        setCompleted(fourthResponse.data);
-        console.log("Data from the fourth API:", fourthResponse.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching vehicle entry details:", error);
-      });
+          return response.json();
+        })
+        .then((data) => {
+          setVehicleEntryDetails(data.transactions);
+          setTotalPage(data.totalPages);
+          setTotalEntries(data.totalElements);
+          console.log("total Page " + data.totalPages);
+          //API for InboundPending Status
+          return axios.get(
+            `http://localhost:8080/api/v1/gate/count/Inbound?userId=${userId}`,
+            {
+              withCredentials: true,
+            }
+          );
+        })
+        .then((secondResponse) => {
+          setInboundPending(secondResponse.data); // Set the inbound pending data
+          console.log("Data from the second API:", secondResponse.data);
+          //API for OutboundPending Status
+          return axios.get(
+            `http://localhost:8080/api/v1/gate/count/Outbound?userId=${userId}`,
+            {
+              withCredentials: true,
+            }
+          );
+        })
+        .then((thirdResponse) => {
+          setOutboundPending(thirdResponse.data);
+          console.log("Data from the third API:", thirdResponse.data);
+          //API for Completed Status
+          return axios.get(
+            `http://localhost:8080/api/v1/gate/count/Complete?userId=${userId}`,
+            {
+              withCredentials: true,
+            }
+          );
+        })
+        .then((fourthResponse) => {
+          setCompleted(fourthResponse.data);
+          console.log("Data from the fourth API:", fourthResponse.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching vehicle entry details:", error);
+        });
+    }
   };
 
   //  code Of Edit API:
@@ -830,7 +843,8 @@ const VehicleEntry = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center">
-                  {filteredData.map((entry) => {
+                  {/* {filteredData.map((entry) => { */}
+                  {vehicleEntryDetails.map((entry) => {
                     const isEditDisabled = entry.transactionType === "Outbound";
 
                     return (
