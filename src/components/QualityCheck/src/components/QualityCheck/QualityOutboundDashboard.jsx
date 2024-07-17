@@ -342,8 +342,8 @@ function QualityOutboundTransaction() {
 
   return (
     <SideBar3>
-      <div
-        style={{ fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
+       <div
+        style={{ height: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
       >
         <div className="container-fluid mt-0">
           <div
