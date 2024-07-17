@@ -265,8 +265,9 @@ const VehicleEntry = () => {
   // }, []);
 
   useEffect(() => {
+    setCurrentPage(0);
     // applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
-  }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
+  }, [selectedMaterial, selectedTransactionType]);
 
   useEffect(() => {
     console.log({ currentPage });
