@@ -509,6 +509,8 @@ function QualityCompleted() {
         <div class="signature-line">
           <p>Chief Chemist</p>
           <p>For ${data.companyName}</p>
+          </br>
+          </br>
           <p>Authorised Signatory</p>
         </div>
       `;

@@ -369,7 +369,7 @@ const Sidebar4 = ({ children }) => {
             </ListItemIcon>
             <ListItemText primary="Quality" />
           </ListItemButton>
-          <ListItemButton
+          {/* <ListItemButton
             component={Link}
             to="/ManagementLocation"
             onClick={() => handleItemClick("LiveLocation")}
@@ -393,7 +393,7 @@ const Sidebar4 = ({ children }) => {
               <Room />
             </ListItemIcon>
             <ListItemText primary="GPS Tracking" />
-          </ListItemButton>
+          </ListItemButton> */}
           <ListItemButton
             component={Link}
             to="/ManagementReport"
@@ -419,7 +419,7 @@ const Sidebar4 = ({ children }) => {
             </ListItemIcon>
             <ListItemText primary="Reports" />
           </ListItemButton>
-          <ListItemButton
+          {/* <ListItemButton
             component={Link}
             to="/ManagementCamera"
             onClick={() => handleItemClick("ManagementCamera")}
@@ -443,7 +443,7 @@ const Sidebar4 = ({ children }) => {
               <CameraAlt />
             </ListItemIcon>
             <ListItemText primary="Camera" />
-          </ListItemButton>
+          </ListItemButton> */}
           <ListItemButton
             onClick={handleSignOut2}
             sx={{
