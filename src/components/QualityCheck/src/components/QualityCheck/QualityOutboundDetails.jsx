@@ -74,8 +74,9 @@ const QualityOutboundDetails = () => {
   const specialParameters = ['carbon', 'sulphur', '-1mm', '%Non-Mag'];
   const checkFormValidity = () => {
     const atLeastOneParameterFilled = Object.keys(parameters).some(
-      (parameterName) =>
-        formData[parameterName] && formData[parameterName].trim() !== ""
+      (parameterName) => {
+        return formData[parameterName] && formData[parameterName].trim() !== "";
+      }
     );
     setIsAtLeastOneParameterFilled(atLeastOneParameterFilled);
   };
@@ -121,41 +122,57 @@ const QualityOutboundDetails = () => {
         const data = await response.json();
         if (data.length > 0 && data[0].parameters) {
           const ranges = data[0].parameters.reduce((acc, parameter) => {
-            acc[parameter.parameterName] = {
-              rangeFrom: parameter.rangeFrom,
-              rangeTo: parameter.rangeTo,
-            };
+            if (parameter.parameterName.toLowerCase() === 'size') {
+              acc[parameter.parameterName] = {
+                rangeFrom: parameter.rangeFrom,
+                rangeTo: parameter.rangeTo,
+                displayValue: `${parameter.rangeFrom}-${parameter.rangeTo}`
+              };
+            } else {
+              acc[parameter.parameterName] = {
+                rangeFrom: parameter.rangeFrom,
+                rangeTo: parameter.rangeTo
+              };
+            }
             return acc;
           }, {});
           setParameters(ranges);
+          
+          // Set the 'Size' parameter in formData
+          if (ranges['Size']) {
+            setFormData(prevData => ({
+              ...prevData,
+              Size: ranges['Size'].displayValue
+            }));
+          }
         }
       } catch (error) {
         console.error("Error fetching parameter ranges:", error);
       }
     };
-
+  
     if (urlData.materialName && urlData.materialType) {
       fetchParameters();
     }
   }, []);
 
+
+
   const handleSave = async () => {
-    // Filter the data to only include parameters with non-empty values
     let data = Object.keys(parameters).reduce((acc, parameterName) => {
       if (formData[parameterName] && formData[parameterName].trim() !== "") {
         acc[parameterName] = formData[parameterName].trim();
       }
       return acc;
     }, {});
-
+  
     console.log("Form data being sent:", data);
-
-    // Check if at least one parameter has a non-empty value
+  
     if (Object.keys(data).length === 0) {
       setIsModalVisible(true);
       return;
     }
-
+  
     try {
       const response = await fetch(
         `http://localhost:8080/api/v1/qualities/${formData.ticketNo}?userId=${userId}`,
@@ -168,7 +185,7 @@ const QualityOutboundDetails = () => {
           credentials: "include",
         }
       );
-
+  
       if (response.ok) {
         console.log("Data saved successfully");
         setIsSuccessModalVisible(true);
@@ -181,6 +198,8 @@ const QualityOutboundDetails = () => {
       setIsModalVisible(true);
     }
   };
+
+  
   const handleSuccessOk = () => {
     setIsSuccessModalVisible(false);
     navigate("/quality-dashboard"); // Replace '/home' with the actual path to your home page
@@ -225,6 +244,9 @@ const QualityOutboundDetails = () => {
   }, [formData]);
 
   const generateFieldNameWithRange = (parameterName) => {
+    if (parameterName.toLowerCase() === 'size') {
+      return 'Size';
+    }
     const parameter = parameters[parameterName];
     if (!parameter) return `${parameterName}`;
     const { rangeFrom, rangeTo } = parameter;
@@ -261,51 +283,50 @@ const renderFieldWithBox = (
   const parameter = parameters[propertyName];
   const rangeFrom = parameter ? parseFloat(parameter.rangeFrom) : null;
   const rangeTo = parameter ? parseFloat(parameter.rangeTo) : null;
-  const inputValue = parseFloat(value);
 
   let inputStyle = isReadOnly
     ? { borderColor: "#ced4da", backgroundColor: "rgb(239, 239, 239)" }
     : {};
 
-  const isSpecialParameter = specialParameters.some(param => 
+  const isSpecialParameter = specialParameters.some(param =>
     propertyName.toLowerCase().includes(param.toLowerCase())
   );
 
-  if (!isReadOnly && !isNaN(rangeFrom) && !isNaN(rangeTo) && !isNaN(inputValue)) {
-    if (isSpecialParameter) {
-      // For special parameters, only show as valid if within range
-      if (inputValue >= rangeFrom && inputValue <= rangeTo) {
-        inputStyle = {
-          ...inputStyle,
-          borderColor: "#28a745",
-          backgroundColor: "#fff",
-          boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)"
-        };
+  if (!isReadOnly && !isNaN(rangeFrom) && !isNaN(rangeTo) && value !== "") {
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue)) {
+      if (isSpecialParameter || propertyName.toLowerCase() === 'size') {
+        if (numericValue >= rangeFrom && numericValue <= rangeTo) {
+          inputStyle = {
+            ...inputStyle,
+            borderColor: "#28a745",
+            backgroundColor: "#fff",
+            boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)"
+          };
+        } else {
+          inputStyle = {
+            ...inputStyle,
+            borderColor: "#dc3545",
+            backgroundColor: "#fff",
+            boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+          };
+        }
       } else {
-        inputStyle = {
-          ...inputStyle,
-          borderColor: "#dc3545",
-          backgroundColor: "#fff",
-          boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
-        };
-      }
-    } else {
-      // For non-special parameters
-      if (inputValue < rangeFrom) {
-        inputStyle = {
-          ...inputStyle,
-          borderColor: "#dc3545",
-          backgroundColor: "#fff",
-          boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
-        };
-      } else {
-        // Show as green for any value >= rangeFrom
-        inputStyle = {
-          ...inputStyle,
-          borderColor: "#28a745",
-          backgroundColor: "#fff",
-          boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)"
-        };
+        if (numericValue >= rangeFrom) {
+          inputStyle = {
+            ...inputStyle,
+            borderColor: "#28a745",
+            backgroundColor: "#fff",
+            boxShadow: "0 0 0 0.2rem rgba(40, 167, 69, 0.25)"
+          };
+        } else {
+          inputStyle = {
+            ...inputStyle,
+            borderColor: "#dc3545",
+            backgroundColor: "#fff",
+            boxShadow: "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+          };
+        }
       }
     }
   }
@@ -317,7 +338,7 @@ const renderFieldWithBox = (
         className="form-label"
         style={{ marginBottom: "0" }}
       >
-        {fieldName}:
+        {generateFieldNameWithRange(propertyName)}:
       </label>
       <input
         type="text"
@@ -337,15 +358,16 @@ const renderFieldWithBox = (
 };
 
   const handleClear = () => {
-    setFormData({
-      ...formData,
-      ...Object.keys(parameters).reduce((acc, parameterName) => {
-        acc[parameterName] = "";
-        return acc;
-      }, {}),
+    setFormData((prevFormData) => {
+      const newFormData = { ...prevFormData };
+      Object.keys(parameters).forEach((parameterName) => {
+        if (parameterName.toLowerCase() !== 'size') {
+          newFormData[parameterName] = "";
+        }
+      });
+      return newFormData;
     });
   };
-
   const goBack = () => {
     navigate(-1);
   };
@@ -441,7 +463,7 @@ const renderFieldWithBox = (
                           {Object.keys(parameters).map((parameterName) => (
                             <React.Fragment key={parameterName}>
                               {renderFieldWithBox(
-                                generateFieldNameWithRange(parameterName),
+                                parameterName,
                                 parameterName,
                                 false,
                                 true
