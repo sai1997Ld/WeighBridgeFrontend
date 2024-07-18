@@ -22,23 +22,18 @@ const QPrint = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      handlePrint(ticketNo, data);
+      handlePrint(data);
     } catch (error) {
       console.error("Error fetching data:", error);
       alert("Failed to fetch data for printing. Please try again later.");
     }
   };
-
   const handleClear = () => {
     setTicketNo('');
     console.log('Clear clicked');
   };
 
-  const handlePrint = async (ticketNo, data) => {
-    // Create a div to hold the printable content
-    const printableDiv = document.createElement('div');
-    printableDiv.id = 'printableDiv';
-
+  const handlePrint = (data) => {
     const labels = [
       "Ticket No",
       "Company Name",
@@ -52,7 +47,7 @@ const QPrint = () => {
       "Transaction Type"
     ];
 
-    printableDiv.innerHTML = `
+    const printableContent = `
       <h2>${data.companyName}</h2>
       <p>${data.companyAddress}</p>
       <p>Generated on: ${new Date().toLocaleDateString()}</p>
@@ -100,15 +95,14 @@ const QPrint = () => {
             default:
               value = undefined;
           }
-          return `<tr><th>${label}</th><td>${typeof value === "object" ? JSON.stringify(value) : value
-            }</td></tr>`;
+          return `<tr><th>${label}</th><td>${typeof value === "object" ? JSON.stringify(value) : value}</td></tr>`;
         })
         .join("")}
           ${data.qualityParameters
         ? `<tr>
                     <th>Quality Parameters</th>
                     <td>
-                      <table>
+                      <table class="nested-table">
                         <tr>
                           <th>Parameter</th>
                           <th>Value</th>
@@ -129,71 +123,77 @@ const QPrint = () => {
       <div class="signature-line">
         <p>Chief Chemist</p>
         <p>For ${data.companyName}</p>
-        <br>
-        <br>
         <p>Authorised Signatory</p>
       </div>
     `;
 
-    // Append the div to the body
-    document.body.appendChild(printableDiv);
-
-    // Apply print-specific styles
-    const style = document.createElement('style');
-    style.innerHTML = `
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-    #printableDiv, #printableDiv * {
-      visibility: visible;
-    }
-    #printableDiv {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      font-size: 20px; /* Decreased font size */
-      line-height: 1.2; /* Tightened line height */
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 5px; /* Reduced padding */
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background-color: #0077b6;
-      color: white;
-    }
-    h2 {
-      font-size: 14px; /* Smaller heading */
-      margin: 5px 0; /* Reduced margin */
-    }
-    p {
-      margin: 2px 0; /* Reduced margin */
-    }
-    .signature-line {
-      margin-top: 10px; /* Reduced top margin */
-    }
-    .signature-line p {
-      margin: 0; /* Remove margin from signature lines */
-    }
-  }
-`;
-    document.head.appendChild(style);
-
-    // Trigger print
-    window.print();
-
-    // Remove the printable div and style after printing
-    setTimeout(() => {
-      document.body.removeChild(printableDiv);
-      document.head.removeChild(style);
-    }, 0);
+    // Create a new window or take over the current window
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Report</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              font-size: 12px;
+              line-height: 1.3;
+              padding: 20px;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            th, td {
+              padding: 8px;
+              text-align: left;
+              border-bottom: 1px solid #ddd;
+            }
+            th {
+              background-color: #0077b6;
+              color: white;
+            }
+            .nested-table {
+              font-size: 11px;
+            }
+            .signature-line {
+              margin-top: 30px;
+            }
+            .signature-line p {
+              margin: 5px 0;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+              .no-print {
+                display: none;
+              }
+            }
+            @media screen and (max-width: 600px) {
+              body {
+                font-size: 10px;
+                padding: 10px;
+              }
+              th, td {
+                padding: 5px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${printableContent}
+          <div class="no-print" style="margin-top: 20px;">
+            <button onclick="window.print()">Print</button>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   return (
