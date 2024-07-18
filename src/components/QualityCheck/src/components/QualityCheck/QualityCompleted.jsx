@@ -1,4 +1,4 @@
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SideBar3 from "../../../../SideBar/SideBar3";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -53,7 +53,7 @@ function QualityCompleted() {
     'SupplierAddress',
     'TransactionType',
   ];
-  
+
   const outboundLabels = [
     'Ticket No',
     'Company Name',
@@ -98,15 +98,15 @@ function QualityCompleted() {
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {
-  
+
           return data;
-  
+
         } else {
-  
+
           console.error("Unexpected data format:", data);
-  
+
           return [];
-  
+
         }
       } else {
         console.error("Failed to fetch all transactions:", response.status);
@@ -117,7 +117,7 @@ function QualityCompleted() {
       return [];
     }
   };
-  
+
 
   const fetchMaterialOptions = async () => {
     try {
@@ -421,129 +421,162 @@ function QualityCompleted() {
       const labels = isOutbound
         ? outboundLabels
         : isInbound
-        ? inboundLabels
-        : transactionType === ""
-        ? []
-        : null;
-  
-      // Open a new window or tab to print the data
-      const printWindow = window.open("", "_blank");
-      const formattedData = `
-      <html>
-        <head>
-          <title>Print Report</title>
-          <style>
-            table {
-              width: 100%;
-              border-collapse: collapse;
+          ? inboundLabels
+          : transactionType === ""
+            ? []
+            : null;
+
+      // Create a div to hold the printable content
+      const printableDiv = document.createElement('div');
+      printableDiv.id = 'printableDiv';
+
+      printableDiv.innerHTML = `
+        <h2>${data.companyName}</h2>
+        <p>${data.companyAddress}</p>
+        <p>Generated on: ${new Date().toLocaleDateString()}</p>
+        <table>
+          <tbody>
+            ${labels
+          .map((label) => {
+            const propertyName = label.toLowerCase().replace(/ /g, "");
+            let value;
+            switch (propertyName) {
+              case "ticketno":
+                value = data.ticketNo;
+                break;
+              case "companyname":
+                value = data.companyName;
+                break;
+              case "companyaddress":
+                value = data.companyAddress;
+                break;
+              case "date":
+                value = data.date;
+                break;
+              case "vehicleno":
+                value = data.vehicleNo;
+                break;
+              case "product":
+              case "material":
+                value = data.materialOrProduct;
+                break;
+              case "producttype":
+              case "materialtype":
+                value = data.materialTypeOrProductType;
+                break;
+              case "customername":
+              case "supplier":
+                value = data.supplierOrCustomerName;
+                break;
+              case "customeraddress":
+              case "supplieraddress":
+                value = data.supplierOrCustomerAddress;
+                break;
+              case "transactiontype":
+                value = data.transactionType.charAt(0).toUpperCase() + data.transactionType.slice(1);
+                break;
+              default:
+                value = undefined;
             }
-            th, td {
-              padding: 8px;
-              text-align: left;
-              border-bottom: 1px solid #ddd;
-            }
-            th {
-              background-color: #0077b6;
-              color: white;
-            }
-          </style>
-        </head>
-        <body>
-          <h2>${data.companyName}</h2>
-          <p>${data.companyAddress}</p>
-          <p>Generated on: ${new Date().toLocaleDateString()}</p>
-          <table>
-            <tbody>
-              ${labels
-                .map((label) => {
-                  const propertyName = label.toLowerCase().replace(/ /g, "");
-                  let value;
-                  switch (propertyName) {
-                    case "ticketno":
-                      value = data.ticketNo;
-                      break;
-                    case "companyname":
-                      value = data.companyName;
-                      break;
-                    case "companyaddress":
-                      value = data.companyAddress;
-                      break;
-                    case "date":
-                      value = data.date;
-                      break;
-                    case "vehicleno":
-                      value = data.vehicleNo;
-                      break;
-                    case "product":
-                    case "material":
-                      value = data.materialOrProduct;
-                      break;
-                    case "producttype":
-                    case "materialtype":
-                      value = data.materialTypeOrProductType;
-                      break;
-                    case "customername":
-                    case "supplier":
-                      value = data.supplierOrCustomerName;
-                      break;
-                    case "customeraddress":
-                    case "supplieraddress":
-                      value = data.supplierOrCustomerAddress;
-                      break;
-                    case "transactiontype":
-                      value = data.transactionType.charAt(0).toUpperCase() + data.transactionType.slice(1);
-                      break;
-                    default:
-                      value = undefined;
-                  }
-                  return `<tr><th>${label}</th><td>${
-                    typeof value === "object" ? JSON.stringify(value) : value
-                  }</td></tr>`;
-                })
-                .join("")}
-              ${
-                data.qualityParameters
-                  ? `<tr>
-                        <th>Quality Parameters</th>
-                        <td>
-                          <table>
-                            <tr>
-                              <th>Parameter</th>
-                              <th>Value</th>
-                            </tr>
-                            ${Object.entries(data.qualityParameters)
-                              .map(
-                                ([key, value]) =>
-                                  `<tr><td>${key}</td><td>${value}</td></tr>`
-                              )
-                              .join("")}
-                          </table>
-                        </td>
-                      </tr>`
-                  : ""
-              }
-            </tbody>
-          </table>
-           <div class="signature-line">
-              <p>Chief Chemist</p>
-              <p>For ${data.companyName}</p>
-              <br>
-              <br>
-              <p>Authorised Signatory</p>
-          </div>
-          <script>
-            window.print();
-            window.close();
-          </script>
-        </body>
-      </html>
-    `;
-    printWindow.document.write(formattedData);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    alert("Failed to fetch data for printing. Please try again later.");
+            return `<tr><th>${label}</th><td>${typeof value === "object" ? JSON.stringify(value) : value
+              }</td></tr>`;
+          })
+          .join("")}
+            ${data.qualityParameters
+          ? `<tr>
+                      <th>Quality Parameters</th>
+                      <td>
+                        <table class="nested-table">
+                          <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                          </tr>
+                          ${Object.entries(data.qualityParameters)
+            .map(
+              ([key, value]) =>
+                `<tr><td>${key}</td><td>${value}</td></tr>`
+            )
+            .join("")}
+                        </table>
+                      </td>
+                    </tr>`
+          : ""
+        }
+          </tbody>
+        </table>
+        <div class="signature-line">
+          <p>Chief Chemist</p>
+          <p>For ${data.companyName}</p>
+                  <br>
+        <br>
+          <p>Authorised Signatory</p>
+        </div>
+      `;
+
+      // Append the div to the body
+      document.body.appendChild(printableDiv);
+
+      // Apply print-specific styles
+      const style = document.createElement('style');
+      style.innerHTML = `
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #printableDiv, #printableDiv * {
+      visibility: visible;
+    }
+    #printableDiv {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      font-size: 20px; /* Decreased font size */
+      line-height: 1.2; /* Tightened line height */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 5px; /* Reduced padding */
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #0077b6;
+      color: white;
+    }
+    h2 {
+      font-size: 14px; /* Smaller heading */
+      margin: 5px 0; /* Reduced margin */
+    }
+    p {
+      margin: 2px 0; /* Reduced margin */
+    }
+    .signature-line {
+      margin-top: 10px; /* Reduced top margin */
+    }
+    .signature-line p {
+      margin: 0; /* Remove margin from signature lines */
+    }
   }
-};
+`;
+      document.head.appendChild(style);
+
+      // Trigger print
+      window.print();
+
+      // Remove the printable div and style after printing
+      setTimeout(() => {
+        document.body.removeChild(printableDiv);
+        document.head.removeChild(style);
+      }, 0);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Failed to fetch data for printing. Please try again later.");
+    }
+  };
 
 
   const handlePrintFormat = () => {
@@ -564,9 +597,9 @@ function QualityCompleted() {
   return (
     <>
       <SideBar3>
-      <div
-        style={{ height: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
-      >
+        <div
+          style={{ height: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
+        >
           <div className="container-fluid mt-0">
             <div
               className="d-flex justify-content-between align-items-center"
@@ -577,7 +610,7 @@ function QualityCompleted() {
                   value={selectedDate}
                   onChange={(date) => setSelectedDate(date)}
                   disabledDate={disabledFutureDate}
-                  format="DD-MM-YYYY" 
+                  format="DD-MM-YYYY"
                   style={{
                     borderRadius: "5px",
                     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -787,11 +820,11 @@ function QualityCompleted() {
                             {item.supplierOrCustomerAddress}
                           </td>
                           <td
-  className="ant-table-cell"
-  style={{ whiteSpace: "nowrap" }}
->
-  {item.transactionType || "N/A"}
-</td>
+                            className="ant-table-cell"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.transactionType || "N/A"}
+                          </td>
                           <td className="ant-table-cell" style={{ whiteSpace: "nowrap" }}>
                             <button
                               className="btn btn-success btn-sm"
@@ -828,17 +861,17 @@ function QualityCompleted() {
             {/* Pagination */}
             <div className="d-flex justify-content-center mt-3">
 
-<Pagination
-  current={currentPage + 1}
-  total={filteredData.length}
-  pageSize={itemsPerPage}
-  showSizeChanger={false}
-  showQuickJumper
-  showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
-  onChange={(page) => setCurrentPage(page - 1)}
-  style={{ marginBottom: '20px' }}
-/>
-</div>
+              <Pagination
+                current={currentPage + 1}
+                total={filteredData.length}
+                pageSize={itemsPerPage}
+                showSizeChanger={false}
+                showQuickJumper
+                showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
+                onChange={(page) => setCurrentPage(page - 1)}
+                style={{ marginBottom: '20px' }}
+              />
+            </div>
           </div>
         </div>
         <Modal

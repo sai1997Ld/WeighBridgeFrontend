@@ -9,7 +9,7 @@ const QPrint = () => {
 
   const [isOutbound, setIsOutbound] = useState(false);
   const [transactionType, setTransactionType] = useState('');
-  
+
   const handleSearch = async () => {
     try {
       const response = await fetch(
@@ -35,7 +35,10 @@ const QPrint = () => {
   };
 
   const handlePrint = async (ticketNo, data) => {
-    const printWindow = window.open("", "_blank");
+    // Create a div to hold the printable content
+    const printableDiv = document.createElement('div');
+    printableDiv.id = 'printableDiv';
+
     const labels = [
       "Ticket No",
       "Company Name",
@@ -48,118 +51,149 @@ const QPrint = () => {
       data.transactionType === "outbound" ? "Customer Address" : "Supplier Address",
       "Transaction Type"
     ];
-  
-    const formattedData = `
-      <html>
-        <head>
-          <title>Print Report</title>
-          <style>
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            th, td {
-              padding: 8px;
-              text-align: left;
-              border-bottom: 1px solid #ddd;
-            }
-            th {
-              background-color: #0077b6;
-              color: white;
-            }
-          </style>
-        </head>
-        <body>
-          <h2>${data.companyName}</h2>
-          <p>${data.companyAddress}</p>
-          <p>Generated on: ${new Date().toLocaleDateString()}</p>
-          <table>
-            <tbody>
-              ${labels
-                .map((label) => {
-                  const propertyName = label.toLowerCase().replace(/ /g, "");
-                  let value;
-                  switch (propertyName) {
-                    case "ticketno":
-                      value = data.ticketNo;
-                      break;
-                    case "companyname":
-                      value = data.companyName;
-                      break;
-                    case "companyaddress":
-                      value = data.companyAddress;
-                      break;
-                    case "date":
-                      value = data.date;
-                      break;
-                    case "vehicleno":
-                      value = data.vehicleNo;
-                      break;
-                    case "product":
-                    case "material":
-                      value = data.materialOrProduct;
-                      break;
-                    case "producttype":
-                    case "materialtype":
-                      value = data.materialTypeOrProductType;
-                      break;
-                    case "customername":
-                    case "supplier":
-                      value = data.supplierOrCustomerName;
-                      break;
-                    case "customeraddress":
-                    case "supplieraddress":
-                      value = data.supplierOrCustomerAddress;
-                      break;
-                    case "transactiontype":
-                      value = data.transactionType.charAt(0).toUpperCase() + data.transactionType.slice(1);
-                      break;
-                    default:
-                      value = undefined;
-                  }
-                  return `<tr><th>${label}</th><td>${
-                    typeof value === "object" ? JSON.stringify(value) : value
-                  }</td></tr>`;
-                })
-                .join("")}
-              ${
-                data.qualityParameters
-                  ? `<tr>
-                        <th>Quality Parameters</th>
-                        <td>
-                          <table>
-                            <tr>
-                              <th>Parameter</th>
-                              <th>Value</th>
-                            </tr>
-                            ${Object.entries(data.qualityParameters)
-                              .map(
-                                ([key, value]) =>
-                                  `<tr><td>${key}</td><td>${value}</td></tr>`
-                              )
-                              .join("")}
-                          </table>
-                        </td>
-                      </tr>`
-                  : ""
-              }
-            </tbody>
-          </table>
-           <div class="signature-line">
-              <p>Chief Chemist</p>
-              <p>For ${data.companyName}</p>
-              <br>
-              <br>
-              <p>Authorised Signatory</p>
-          </div>
-          <script>
-            window.print();
-            window.close();
-          </script>
-        </body>
-      </html>
+
+    printableDiv.innerHTML = `
+      <h2>${data.companyName}</h2>
+      <p>${data.companyAddress}</p>
+      <p>Generated on: ${new Date().toLocaleDateString()}</p>
+      <table>
+        <tbody>
+          ${labels
+        .map((label) => {
+          const propertyName = label.toLowerCase().replace(/ /g, "");
+          let value;
+          switch (propertyName) {
+            case "ticketno":
+              value = data.ticketNo;
+              break;
+            case "companyname":
+              value = data.companyName;
+              break;
+            case "companyaddress":
+              value = data.companyAddress;
+              break;
+            case "date":
+              value = data.date;
+              break;
+            case "vehicleno":
+              value = data.vehicleNo;
+              break;
+            case "product":
+            case "material":
+              value = data.materialOrProduct;
+              break;
+            case "producttype":
+            case "materialtype":
+              value = data.materialTypeOrProductType;
+              break;
+            case "customername":
+            case "supplier":
+              value = data.supplierOrCustomerName;
+              break;
+            case "customeraddress":
+            case "supplieraddress":
+              value = data.supplierOrCustomerAddress;
+              break;
+            case "transactiontype":
+              value = data.transactionType.charAt(0).toUpperCase() + data.transactionType.slice(1);
+              break;
+            default:
+              value = undefined;
+          }
+          return `<tr><th>${label}</th><td>${typeof value === "object" ? JSON.stringify(value) : value
+            }</td></tr>`;
+        })
+        .join("")}
+          ${data.qualityParameters
+        ? `<tr>
+                    <th>Quality Parameters</th>
+                    <td>
+                      <table>
+                        <tr>
+                          <th>Parameter</th>
+                          <th>Value</th>
+                        </tr>
+                        ${Object.entries(data.qualityParameters)
+          .map(
+            ([key, value]) =>
+              `<tr><td>${key}</td><td>${value}</td></tr>`
+          )
+          .join("")}
+                      </table>
+                    </td>
+                  </tr>`
+        : ""
+      }
+        </tbody>
+      </table>
+      <div class="signature-line">
+        <p>Chief Chemist</p>
+        <p>For ${data.companyName}</p>
+        <br>
+        <br>
+        <p>Authorised Signatory</p>
+      </div>
     `;
-    printWindow.document.write(formattedData);
+
+    // Append the div to the body
+    document.body.appendChild(printableDiv);
+
+    // Apply print-specific styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #printableDiv, #printableDiv * {
+      visibility: visible;
+    }
+    #printableDiv {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      font-size: 20px; /* Decreased font size */
+      line-height: 1.2; /* Tightened line height */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 5px; /* Reduced padding */
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #0077b6;
+      color: white;
+    }
+    h2 {
+      font-size: 14px; /* Smaller heading */
+      margin: 5px 0; /* Reduced margin */
+    }
+    p {
+      margin: 2px 0; /* Reduced margin */
+    }
+    .signature-line {
+      margin-top: 10px; /* Reduced top margin */
+    }
+    .signature-line p {
+      margin: 0; /* Remove margin from signature lines */
+    }
+  }
+`;
+    document.head.appendChild(style);
+
+    // Trigger print
+    window.print();
+
+    // Remove the printable div and style after printing
+    setTimeout(() => {
+      document.body.removeChild(printableDiv);
+      document.head.removeChild(style);
+    }, 0);
   };
 
   return (
@@ -174,10 +208,10 @@ const QPrint = () => {
       >
         <Form layout="vertical">
           <Form.Item label="Ticket Number">
-            <Input 
-              placeholder="Search by Ticket Number" 
-              value={ticketNo} 
-              onChange={(e) => setTicketNo(e.target.value)} 
+            <Input
+              placeholder="Search by Ticket Number"
+              value={ticketNo}
+              onChange={(e) => setTicketNo(e.target.value)}
             />
           </Form.Item>
           <Form.Item>
