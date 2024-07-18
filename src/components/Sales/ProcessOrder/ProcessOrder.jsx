@@ -28,10 +28,10 @@ function ProcessOrder() {
 
   useEffect(() => {
     // Fetch vehicle numbers
-    fetch("http://localhost:8080/api/v1/vehicles")
+    fetch("http://localhost:8080/api/v1/vehicles?size=20")
       .then((response) => response.json())
       .then((data) => {
-        const numbers = data.map((vehicle) => ({
+        const numbers = data.transactions.map((vehicle) => ({
           value: vehicle.vehicleNo,
           label: vehicle.vehicleNo,
         }));

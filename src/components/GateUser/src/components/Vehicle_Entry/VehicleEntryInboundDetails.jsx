@@ -94,7 +94,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       };
       const response = await axios(config);
       console.log({ response: response.data });
-      const numbers = response.data.map((vehicle) => ({
+      const numbers = response.data.transactions.map((vehicle) => ({
         value: vehicle.vehicleNo,
         label: vehicle.vehicleNo,
       }));
@@ -840,7 +840,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                             <td>
                               <div className="row">
                                 <CameraLiveVideo
-                                  wsUrl={"ws://localhost:8080/ws/frame3"}
+                                  wsUrl={`ws://localhost:8080/ws/frame`}
                                   imageRef={canvasTopRef}
                                   setCapturedImage={setCapturedTopImage}
                                   capturedImage={capturedTopImage}
