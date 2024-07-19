@@ -47,7 +47,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageNumber, setStartPageNumber] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 5;
   const [totalEntries, setTotalEntries] = useState(0);
   const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
   const [materialOptions, setMaterialOptions] = useState([]);
@@ -229,10 +229,10 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     const [filterType, filterValue] = e.key.split('-');
     if (filterType === 'material') {
       setSelectedMaterial(filterValue);
-      // Apply filter based on material only
-      applyFilter(vehicleEntryDetails, filterValue, selectedTransactionType);
+      applyFilter(filterValue, selectedTransactionType);
     } else if (filterType === 'transaction') {
       setSelectedTransactionType(filterValue);
+      applyFilter(selectedMaterial, filterValue);
     }
   };
 
@@ -270,20 +270,52 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   // const filteredData = getFilteredData();
 
-  const applyFilter = (data, material, transactionType) => {
-    const filtered = data.filter((entry) => {
-      let matchesMaterial = true;
-
+  const applyFilter = async (material, transactionType) => {
+    try {
+      let apiUrl = `${defaultApiUrl}/gate/transactions/ongoing?userId=${userId}&page=${currentPage}&size=5`;
       if (material) {
-        matchesMaterial = entry.material.toLowerCase() === material.toLowerCase();
+        apiUrl += `&materialName=${material}`;
       }
-
-      return matchesMaterial;
-    });
-
-    setFilteredData(filtered);
+      if (transactionType) {
+        apiUrl += `&transactionType=${transactionType}`;
+      }
+      const response = await fetch(apiUrl, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setVehicleEntryDetails(data.transactions);
+      setTotalPage(data.totalPages);
+      setTotalEntries(data.totalElements);
+    } catch (error) {
+      console.error('Error fetching filtered data:', error);
+    }
   };
 
+  // const filterData = async (material, transactionType) => {
+  //   try {
+  //     let apiUrl = `http://localhost:8080/api/v1/gate/transactions/ongoing?userId=${userId}&page=${currentPage}`;
+  //     if (material) {
+  //       apiUrl = apiUrl + `&materialName=${material}`;
+  //     }
+  //     if (transactionType) {
+  //       apiUrl = apiUrl + `&transactionType=${transactionType}`;
+  //     }
+  //     const response = await fetch(apiUrl, {
+  //       credentials: "include", // Include credentials option here
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     const data = await response.json();
+  //     setVehicleEntryDetails(data.transactions);
+  //     // setFilteredData(data.transactions);
+  //   } catch (error) {
+  //     console.error("Error fetching vehicle entry details:", error);
+  //   }
+  // };
   const fetchDataByTransactionType = async (transactionType) => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?transactionType=${transactionType}`, {
@@ -336,15 +368,19 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   }, []);
 
   useEffect(() => {
-    applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
-  }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
+    applyFilter(selectedMaterial, selectedTransactionType);
+  }, [currentPage, selectedMaterial, selectedTransactionType]);
+
 
 
   useEffect(() => {
+    console.log({ currentPage });
     if (currentPage !== null) {
-      fetchData(currentPage, selectedDate);
+      if (searchValue) {
+        handleSearch(currentPage);
+      } else fetchData(currentPage, selectedDate);
     }
-  }, [currentPage, selectedDate]);
+  }, [selectedMaterial, selectedTransactionType, currentPage, selectedDate]);
 
   useEffect(() => {
     fetchData(0); // Initial fetch with page 0 and no date
@@ -533,7 +569,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
                   </tr>
                 </thead>
                 <tbody className="text-center">
-                  {filteredData.map((entry) => (
+                  {vehicleEntryDetails.map((entry) => (
                     <tr key={entry.id}>
                       <td className="ant-table-cell" style={{ textAlign: "center" }} >{entry.ticketNo}</td>
                       <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.vehicleNo} </td>
