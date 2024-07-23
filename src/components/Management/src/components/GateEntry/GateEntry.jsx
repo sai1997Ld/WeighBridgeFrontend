@@ -463,9 +463,6 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
               </div>
             </div>
 
-
-
-
             <div style={{ flex: "1" }}></div> {/* To balance the layout */}
           </div>
           <div className="d-flex justify-content-center mb-3">

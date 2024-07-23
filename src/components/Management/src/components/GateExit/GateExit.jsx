@@ -230,7 +230,8 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     if (filterType === 'material') {
       setSelectedMaterial(filterValue);
       // Apply filter based on material only
-      applyFilter(vehicleEntryDetails, filterValue, selectedTransactionType);
+      fetchData(currentPage, selectedDate, filterValue); 
+
     } else if (filterType === 'transaction') {
       setSelectedTransactionType(filterValue);
     }
@@ -240,7 +241,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
   const menu = (
     <Menu onClick={handleMaterialFilter}>
       <Menu.SubMenu key="1" title="Product/Material">
-        {materialOptions.map((option, index) => (
+        {materialOptions.map((option) => (
           <Menu.Item key={`material-${option}`}>{option}</Menu.Item>
         ))}
       </Menu.SubMenu>
@@ -270,19 +271,19 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
 
   // const filteredData = getFilteredData();
 
-  const applyFilter = (data, material, transactionType) => {
-    const filtered = data.filter((entry) => {
-      let matchesMaterial = true;
+  // const applyFilter = (data, material, transactionType) => {
+  //   const filtered = data.filter((entry) => {
+  //     let matchesMaterial = true;
 
-      if (material) {
-        matchesMaterial = entry.material.toLowerCase() === material.toLowerCase();
-      }
+  //     if (material) {
+  //       matchesMaterial = entry.material.toLowerCase() === material.toLowerCase();
+  //     }
 
-      return matchesMaterial;
-    });
+  //     return matchesMaterial;
+  //   });
 
-    setFilteredData(filtered);
-  };
+  //   setFilteredData(filtered);
+  // };
 
   const fetchDataByTransactionType = async (transactionType) => {
     try {
@@ -327,7 +328,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
         // Set the current page to 0 to trigger the paginated fetch
         // setCurrentPage(0);
         // Apply initial filter
-        applyFilter(data.transactions, selectedMaterial, selectedTransactionType);
+        // applyFilter(data.transactions, selectedMaterial, selectedTransactionType);
       })
       .catch(error => {
         console.error('Error fetching vehicle entry details:', error);
@@ -335,22 +336,22 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
-  }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
+  // useEffect(() => {
+  //   applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
+  // }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
 
 
   useEffect(() => {
     if (currentPage !== null) {
-      fetchData(currentPage, selectedDate);
+      fetchData(currentPage, selectedDate, selectedMaterial);
     }
-  }, [currentPage, selectedDate]);
+  }, [currentPage, selectedDate, selectedMaterial]);
 
   useEffect(() => {
     fetchData(0); // Initial fetch with page 0 and no date
   }, []);
 
-  const fetchData = (pageNumber, date = selectedDate) => {
+  const fetchData = (pageNumber, date = selectedDate, material = selectedMaterial) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
   
@@ -370,6 +371,12 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     if (date && date.isValid()) {
       const formattedDate = date.format('YYYY-MM-DD');
       apiUrl += `&date=${formattedDate}`;
+    }
+
+    if (material) {
+
+      apiUrl += `&materialName=${encodeURIComponent(material)}`;
+
     }
   
     fetch(apiUrl, {
@@ -533,7 +540,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
                   </tr>
                 </thead>
                 <tbody className="text-center">
-                  {filteredData.map((entry) => (
+                  {vehicleEntryDetails.map((entry) => (
                     <tr key={entry.id}>
                       <td className="ant-table-cell" style={{ textAlign: "center" }} >{entry.ticketNo}</td>
                       <td className="ant-table-cell" style={{ whiteSpace: "nowrap", textAlign: "center" }}> {entry.vehicleNo} </td>
