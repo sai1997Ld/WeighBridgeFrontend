@@ -465,7 +465,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
                 </h2>
               </div>
               <div style={{ flex: "1", textAlign: "right" }}>
-                <Link to="/home5">
+                <Link to="/management-dashboard">
                   <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.5em' }} />
                 </Link>
               </div>
