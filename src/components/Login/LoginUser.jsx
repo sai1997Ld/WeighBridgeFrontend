@@ -94,7 +94,7 @@ const LoginUser = () => {
       console.error("Error:", error);
       Swal.fire({
         title: "Error",
-        text: error.message,
+        text: "Something Went Wrong! Please try again.",
         icon: "error",
         confirmButtonText: "OK",
       });
