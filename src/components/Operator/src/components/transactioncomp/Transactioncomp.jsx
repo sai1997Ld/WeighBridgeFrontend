@@ -75,13 +75,12 @@ const OperatorTransaction2 = () => {
   const fetchMaterials = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/materials`,
+        `http://localhost:8080/api/v1/materials/names`,
         {
           withCredentials: true,
         }
       );
-      const materials = response.data.map((material) => material.materialName);
-      setAllMaterials([...new Set(materials)]);
+      setAllMaterials(response.data);
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
