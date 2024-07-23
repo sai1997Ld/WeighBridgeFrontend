@@ -3,20 +3,24 @@ import "./transaction.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { faPrint, faTruck, faSyncAlt , faFileWord } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPrint,
+  faTruck,
+  faSyncAlt,
+  faFileWord,
+} from "@fortawesome/free-solid-svg-icons";
 import SideBar5 from "../../../../SideBar/SideBar5";
 import { Button } from "antd";
 import { Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { Select, Input ,Pagination } from "antd";
+import { Select, Input, Pagination } from "antd";
 import { Row, Col } from "antd";
 import TicketComponent from "./TicketPrintComponent";
 import { useReactToPrint } from "react-to-print";
 import styled from "styled-components";
 
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 const TransactionUpdatesContainer = styled.div`
   display: flex;
@@ -122,13 +126,12 @@ const OperatorTransaction2 = () => {
   const fetchMaterials = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/materials`,
+        `http://localhost:8080/api/v1/materials/names`,
         {
           withCredentials: true,
         }
       );
-      const materials = response.data.map((material) => material.materialName);
-      setAllMaterials([...new Set(materials)]);
+      setAllMaterials(response.data);
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
@@ -363,13 +366,15 @@ const OperatorTransaction2 = () => {
 
   const handleQualityReportDownload = async (ticketNo) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/qualities/report-response/${ticketNo}?userId=${userId}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
       console.log(data);
-      
+
       const doc = new jsPDF();
 
       const text = data.companyName;
@@ -389,10 +394,10 @@ const OperatorTransaction2 = () => {
         const year = d.getFullYear();
 
         if (day < 10) {
-          day = '0' + day;
+          day = "0" + day;
         }
         if (month < 10) {
-          month = '0' + month;
+          month = "0" + month;
         }
         return `${day}-${month}-${year}`;
       };
@@ -413,12 +418,12 @@ const OperatorTransaction2 = () => {
         `Material/Product Type: ${data.materialTypeOrProductType}`,
         `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
         `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-        `Transaction Type: ${data.transactionType}`
+        `Transaction Type: ${data.transactionType}`,
       ];
 
       doc.setFontSize(14);
       let yPosition = 50; // Initial Y position for the details
-      details.forEach(detail => {
+      details.forEach((detail) => {
         doc.text(detail, 20, yPosition);
         yPosition += 10; // Increment Y position for each detail line
       });
@@ -523,7 +528,7 @@ const OperatorTransaction2 = () => {
                       onChange={handleSearchOptionChange}
                       style={{ width: "100%" }}
                     >
-                      <Select.Option value="">Select Option </Select.Option>
+                      <Select.Option value="">Select Option</Select.Option>
                       <Select.Option value="ticketNo">Ticket No</Select.Option>
                       <Select.Option value="vehicleNo">
                         Vehicle No
@@ -589,8 +594,9 @@ const OperatorTransaction2 = () => {
             <TransactionUpdateBox bgColor="#BDBDBD">
               <Text>
                 <FontAwesomeIcon
-                  icon={faTruck}
+                  icon={faTruck}                
                   style={{ paddingRight: "5px" }}
+                  flip="horizontal"
                 />
                 Inbound Pending Tare Weight: <b>{pendingTareInbound}</b>
               </Text>
@@ -600,6 +606,7 @@ const OperatorTransaction2 = () => {
                 <FontAwesomeIcon
                   icon={faTruck}
                   style={{ paddingRight: "5px" }}
+                  flip="horizontal"
                 />
                 Inbound Pending Gross Weight: <b>{pendingGrossInbound}</b>
               </Text>
@@ -608,7 +615,6 @@ const OperatorTransaction2 = () => {
               <Text>
                 <FontAwesomeIcon
                   icon={faTruck}
-                  flip="horizontal"
                   style={{ paddingLeft: "5px" }}
                 />
                 Outbound Pending Tare Weight: <b>{pendingTareOutbound}</b>
@@ -619,7 +625,6 @@ const OperatorTransaction2 = () => {
                 <FontAwesomeIcon
                   icon={faTruck}
                   style={{ paddingLeft: "5px" }}
-                  flip="horizontal"
                 />
                 Outbound Pending Gross Weight: <b>{pendingGrossOutbound}</b>
               </Text>
@@ -639,7 +644,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Ticket No.
@@ -651,7 +656,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Transaction Type
@@ -663,7 +668,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Vehicle No.
@@ -675,11 +680,10 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Transporter
-                   
                   </th>
                   <th
                     className="ant-table-cell"
@@ -688,7 +692,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Supplier/Customer
@@ -700,7 +704,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Gross Wt.
@@ -712,7 +716,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Tare Wt.
@@ -724,7 +728,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Net Wt.
@@ -736,7 +740,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Material/Product
@@ -748,7 +752,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Type
@@ -760,7 +764,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Print
@@ -772,7 +776,7 @@ const OperatorTransaction2 = () => {
                       color: "white",
                       backgroundColor: "#0077b6",
                       borderRight: "1px solid white",
-                      textAlign:"center",
+                      textAlign: "center",
                     }}
                   >
                     Quality Report
@@ -880,15 +884,18 @@ const OperatorTransaction2 = () => {
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
                         >
-                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
-                            onClick={() => handleQualityReportDownload(weighment.ticketNo)}
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() =>
+                              handleQualityReportDownload(weighment.ticketNo)
+                            }
                             // disabled={!entry.qualityParameters}
                             // disabled={!entry.quality}
                           >
                             <FontAwesomeIcon icon={faFileWord} />
                           </button>
                         </td>
-
                       </tr>
                     ))
                   : weighments.map((weighment) => (
@@ -1008,8 +1015,12 @@ const OperatorTransaction2 = () => {
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
                         >
-                          <button className="btn btn-success btn-sm" style={{ padding: "3px 6px" }}
-                            onClick={() => handleQualityReportDownload(weighment.ticketNo)}
+                          <button
+                            className="btn btn-success btn-sm"
+                            style={{ padding: "3px 6px" }}
+                            onClick={() =>
+                              handleQualityReportDownload(weighment.ticketNo)
+                            }
                             // disabled={!entry.qualityParameters}
                             // disabled={!entry.quality}
                           >
@@ -1024,22 +1035,24 @@ const OperatorTransaction2 = () => {
         </div>
 
         <div className="d-flex justify-content-center mt-3">
-        <Pagination
-          current={(searchOption ? searchPageNumber : pageNumber) + 1}
-          total={searchOption ? searchPager : pager}
-          pageSize={itemsPerPage}
-          showSizeChanger={false}
-          showQuickJumper
-          showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total} entries`}
-          onChange={(page) => {
-            if (searchOption) {
-              setSearchPageNumber(page - 1);
-            } else {
-              setPageNumber(page - 1);
+          <Pagination
+            current={(searchOption ? searchPageNumber : pageNumber) + 1}
+            total={searchOption ? searchPager : pager}
+            pageSize={itemsPerPage}
+            showSizeChanger={false}
+            showQuickJumper
+            showTotal={(total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} entries`
             }
-          }}
-        />
-      </div>
+            onChange={(page) => {
+              if (searchOption) {
+                setSearchPageNumber(page - 1);
+              } else {
+                setPageNumber(page - 1);
+              }
+            }}
+          />
+        </div>
       </div>
       <div style={{ display: "none" }}>
         <TicketComponent ref={componentRef} data={ticketData} />
