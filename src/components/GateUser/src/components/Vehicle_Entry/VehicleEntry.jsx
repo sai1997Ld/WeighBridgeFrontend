@@ -120,7 +120,8 @@ const VehicleEntry = () => {
       console.log(response.data);
       // You can handle the response data here, such as setting it to state to display it
       setVehicleEntryDetails(response.data.transactions); // Update the vehicleEntryDetails state with the fetched data
-      setTotalPage(response.data.totalPages);
+      setTotalPage(response?.data?.totalPages);
+      setTotalEntries(response?.data?.totalElements);
     } catch (error) {
       console.error("Error fetching data:", error);
       if (
@@ -218,6 +219,8 @@ const VehicleEntry = () => {
       }
       const data = await response.json();
       setVehicleEntryDetails(data.transactions);
+      setTotalPage(data.totalPages);
+      setTotalEntries(data.totalElements);
       // setFilteredData(data.transactions);
     } catch (error) {
       console.error("Error fetching vehicle entry details:", error);
