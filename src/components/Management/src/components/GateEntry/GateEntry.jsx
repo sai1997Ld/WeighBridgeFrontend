@@ -47,7 +47,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
   const [startPageNumber, setStartPageNumber] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
   const [totalEntries, setTotalEntries] = useState(0);
   const [reportStatuses, setReportStatuses] = useState({}); // function for quality report 
   const [materialOptions, setMaterialOptions] = useState([]);
@@ -229,10 +229,10 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     const [filterType, filterValue] = e.key.split('-');
     if (filterType === 'material') {
       setSelectedMaterial(filterValue);
-      applyFilter(filterValue, selectedTransactionType);
+      fetchData(currentPage, selectedDate, filterValue); // This is correct
     } else if (filterType === 'transaction') {
       setSelectedTransactionType(filterValue);
-      applyFilter(selectedMaterial, filterValue);
+      // You might want to handle transaction type filtering here
     }
   };
 
@@ -240,7 +240,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   const menu = (
     <Menu onClick={handleMaterialFilter}>
       <Menu.SubMenu key="1" title="Product/Material">
-        {materialOptions.map((option, index) => (
+        {materialOptions.map((option) => (
           <Menu.Item key={`material-${option}`}>{option}</Menu.Item>
         ))}
       </Menu.SubMenu>
@@ -270,52 +270,20 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
   // const filteredData = getFilteredData();
 
-  const applyFilter = async (material, transactionType) => {
-    try {
-      let apiUrl = `${defaultApiUrl}/gate/transactions/ongoing?userId=${userId}&page=${currentPage}&size=5`;
-      if (material) {
-        apiUrl += `&materialName=${material}`;
-      }
-      if (transactionType) {
-        apiUrl += `&transactionType=${transactionType}`;
-      }
-      const response = await fetch(apiUrl, {
-        credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setVehicleEntryDetails(data.transactions);
-      setTotalPage(data.totalPages);
-      setTotalEntries(data.totalElements);
-    } catch (error) {
-      console.error('Error fetching filtered data:', error);
-    }
-  };
+  // const applyFilter = (data, material, transactionType) => {
+  //   const filtered = data.filter((entry) => {
+  //     let matchesMaterial = true;
 
-  // const filterData = async (material, transactionType) => {
-  //   try {
-  //     let apiUrl = `http://localhost:8080/api/v1/gate/transactions/ongoing?userId=${userId}&page=${currentPage}`;
   //     if (material) {
-  //       apiUrl = apiUrl + `&materialName=${material}`;
+  //       matchesMaterial = entry?.material?.toLowerCase() === material?.toLowerCase();
   //     }
-  //     if (transactionType) {
-  //       apiUrl = apiUrl + `&transactionType=${transactionType}`;
-  //     }
-  //     const response = await fetch(apiUrl, {
-  //       credentials: "include", // Include credentials option here
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  //     const data = await response.json();
-  //     setVehicleEntryDetails(data.transactions);
-  //     // setFilteredData(data.transactions);
-  //   } catch (error) {
-  //     console.error("Error fetching vehicle entry details:", error);
-  //   }
+
+  //     return matchesMaterial;
+  //   });
+
+  //   setFilteredData(filtered);
   // };
+
   const fetchDataByTransactionType = async (transactionType) => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?transactionType=${transactionType}`, {
@@ -359,7 +327,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         // Set the current page to 0 to trigger the paginated fetch
         // setCurrentPage(0);
         // Apply initial filter
-        applyFilter(data.transactions, selectedMaterial, selectedTransactionType);
+        // applyFilter(data.transactions, selectedMaterial, selectedTransactionType);
       })
       .catch(error => {
         console.error('Error fetching vehicle entry details:', error);
@@ -367,47 +335,47 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     fetchData();
   }, []);
 
+  // useEffect(() => {
+  //   applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
+  // }, [vehicleEntryDetails, selectedMaterial, selectedTransactionType]);
+
+
   useEffect(() => {
-    applyFilter(selectedMaterial, selectedTransactionType);
-  }, [currentPage, selectedMaterial, selectedTransactionType]);
-
-
-
-  useEffect(() => {
-    console.log({ currentPage });
     if (currentPage !== null) {
-      if (searchValue) {
-        handleSearch(currentPage);
-      } else fetchData(currentPage, selectedDate);
+      fetchData(currentPage, selectedDate, selectedMaterial);
     }
-  }, [selectedMaterial, selectedTransactionType, currentPage, selectedDate]);
+  }, [currentPage, selectedDate, selectedMaterial]);
 
   useEffect(() => {
     fetchData(0); // Initial fetch with page 0 and no date
   }, []);
 
-  const fetchData = (pageNumber, date = selectedDate) => {
+  const fetchData = (pageNumber, date = selectedDate, material = selectedMaterial) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
-  
+
     if (!selectedCompany) {
       console.error('Company not selected');
       return;
     }
-  
+
     let apiUrl = `http://localhost:8080/api/v1/management/transactions/ongoing?companyName=${selectedCompany}`;
-  
+
     if (selectedSiteName) {
       apiUrl += `&siteName=${selectedSiteName}`;
     }
-  
+
     apiUrl += `&page=${pageNumber}`;
-  
+
     if (date && date.isValid()) {
       const formattedDate = date.format('YYYY-MM-DD');
       apiUrl += `&date=${formattedDate}`;
     }
-  
+
+    if (material) {
+      apiUrl += `&materialName=${encodeURIComponent(material)}`;
+    }
+
     fetch(apiUrl, {
       credentials: "include"
     })
@@ -422,18 +390,6 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         setTotalPage(data.totalPages);
         setTotalEntries(data.totalElements);
         console.log("total Page " + data.totalPages);
-      })
-      .then((secondResponse) => {
-        setInboundPending(secondResponse.data); // Set the inbound pending data
-        console.log("Data from the second API:", secondResponse.data);
-      })
-      .then((thirdResponse) => {
-        setOutboundPending(thirdResponse.data);
-        console.log("Data from the third API:", thirdResponse.data);
-      })
-      .then((fourthResponse) => {
-        setCompleted(fourthResponse.data);
-        console.log("Data from the fourth API:", fourthResponse.data);
       })
       .catch(error => {
         console.error('Error fetching vehicle entry details:', error);
@@ -472,9 +428,9 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
 
 
-  
 
- 
+
+
 
   return (
     <SideBar4>
@@ -483,17 +439,17 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
           <div className="d-flex justify-content-between align-items-center" style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <div className="d-flex justify-content-between align-items-center w-100">
               <div style={{ flex: "2" }}>
-              <DatePicker
-  value={selectedDate}
-  onChange={handleDateChange}
-  disabledDate={disabledFutureDate}
-  format="DD-MM-YYYY"
-  style={{
-    borderRadius: "5px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  }}
-  allowClear={true} // This allows the user to clear the date
-/>
+                <DatePicker
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  disabledDate={disabledFutureDate}
+                  format="DD-MM-YYYY"
+                  style={{
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  }}
+                  allowClear={true} // This allows the user to clear the date
+                />
               </div>
               <div style={{ flex: "15", textAlign: "center" }}>
                 <h2 style={{ fontFamily: "Arial", marginBottom: "0px", textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)" }}>
@@ -613,20 +569,20 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
         </div>
       </div>
 
-     {/* Pagination */}
-     <div className="d-flex justify-content-center mt-3">
+      {/* Pagination */}
+      <div className="d-flex justify-content-center mt-3">
 
-     <Pagination
-  current={currentPage + 1}
-  total={totalEntries} // Use totalEntries instead of filteredData.length
-  pageSize={itemsPerPage}
-  showSizeChanger={false}
-  showQuickJumper
-  showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
-  onChange={(page) => setCurrentPage(page - 1)}
-  style={{ marginBottom: '20px' }}
-/>
-</div>
+        <Pagination
+          current={currentPage + 1}
+          total={totalEntries} // Use totalEntries instead of filteredData.length
+          pageSize={itemsPerPage}
+          showSizeChanger={false}
+          showQuickJumper
+          showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
+          onChange={(page) => setCurrentPage(page - 1)}
+          style={{ marginBottom: '20px' }}
+        />
+      </div>
 
     </SideBar4>
   );
