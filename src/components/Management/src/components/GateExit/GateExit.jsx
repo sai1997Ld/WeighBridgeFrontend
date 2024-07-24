@@ -159,36 +159,34 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
       message.error('Please enter a search value');
       return;
     }
-
-    let apiUrl = `${api.defaults.baseURL}/transactions`;
-
-    // Build the URL based on the selected search option
-    switch (searchOption) {
-      case 'ticketNo':
-        apiUrl += `?ticketNo=${searchValue}`;
-        break;
-      case 'date':
-        apiUrl += `?date=${searchValue}`;
-        break;
-      case 'vehicleNo':
-        apiUrl += `?vehicleNo=${searchValue}`;
-        break;
-      case 'supplier':
-        apiUrl += `?supplier=${searchValue}`;
-        break;
-      case 'address':
-        apiUrl += `?address=${searchValue}`;
-        break;
-      default:
-        break;
+  
+    const selectedCompany = sessionStorage.getItem('company');
+    const selectedSiteName = sessionStorage.getItem('site');
+  
+    if (!selectedCompany) {
+      console.error('Company not selected');
+      return;
     }
-
+  
+    let apiUrl = `http://localhost:8080/api/v1/management/transactions/ongoing?vehicleStatus=completed&companyName=${encodeURIComponent(selectedCompany)}`;
+  
+    if (selectedSiteName) {
+      apiUrl += `&siteName=${encodeURIComponent(selectedSiteName)}`;
+    }
+  
+    // Add the search parameter based on the selected option
+    if (searchOption === 'ticketNo') {
+      apiUrl += `&ticketNo=${encodeURIComponent(searchValue)}`;
+    } else if (searchOption === 'vehicleNo') {
+      apiUrl += `&vehicleNo=${encodeURIComponent(searchValue)}`;
+    }
+  
     try {
-      const response = await api.get(apiUrl); //Use api.get instead of axios.get
+      const response = await api.get(apiUrl);
       console.log(response.data);
-      // You can handle the response data here, such as setting it to state to display it
-      setVehicleEntryDetails(response.data.transactions); // Update the vehicleEntryDetails state with the fetched data
+      setVehicleEntryDetails(response.data.transactions);
       setTotalPage(response.data.totalPages);
+      setTotalEntries(response.data.totalElements);
     } catch (error) {
       console.error('Error fetching data:', error);
       if (error.response && error.response.data && error.response.data.message) {
@@ -198,7 +196,6 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
       }
     }
   };
-
   // Code for Filltered Data:
 
 
