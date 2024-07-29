@@ -19,14 +19,14 @@ import axios from "axios";
 import CameraLiveVideo from "../Vehicle_Entry/CameraLiveVideo.jsx";
 import { Spin } from "antd";
 
-
-const VehicleEntryInboundDetails = ({ ticketNo }) => {
+const VehicleEntryInboundDetails = () => {
   // const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const navigate = useNavigate();
   const chartRef = useRef(null);
   const chartRef2 = useRef(null);
   const homeMainContentRef = useRef(null);
   const [suppliers, setSuppliers] = useState([]);
+  const [scannedEWayBill, setScannedEWayBill] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [transporter, setTransporter] = useState();
   const [materials, setMaterials] = useState([]);
@@ -40,6 +40,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
 
   const [scannedDataArray, setScannedDataArray] = useState([]);
   const [isScanning, setIsScanning] = useState(false);
+  const [isScanningEWayBill, setIsScanningEWayBill] = useState(false);
 
   const [supplierAddresses, setSupplierAddresses] = useState([]);
 
@@ -75,9 +76,13 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
   const canvasFrontRef = useRef(null);
   const canvasSideRef = useRef(null);
 
-  const handleScanButtonClick = () => {
+  const handleScanButtonClick = (scanning) => {
     alert("Scanner enabled");
-    setIsScanning(true); // Enable scanning mode
+    if (scanning === "ewaybill") {
+      setIsScanningEWayBill(true);
+    } else {
+      setIsScanning(true); // Enable scanning mode
+    }
   };
 
   //Code of Add New Vehicle
@@ -183,7 +188,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
         const newData = {
           ...formData,
           supplier: selectedOption.value,
-          supplierAddressLine1: "", 
+          supplierAddressLine1: "",
         };
         setFormData(newData);
 
@@ -194,11 +199,10 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       });
   };
 
-
   const handleNewSupplier = () => {
     navigate("/new-supplier");
   };
- 
+
   const handleNewMaterial = () => {
     navigate("/new-material");
   };
@@ -208,8 +212,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
     setFormData({ ...newData, material: selectedOption.value });
     setSelectedMaterial(selectedOption);
   };
-
- 
 
   const fetchMaterialList = async () => {
     try {
@@ -252,7 +254,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
         );
         console.log({ newData });
         setSelectedMaterialType(newData);
-        setMaterialType(newMaterialTypes); 
+        setMaterialType(newMaterialTypes);
       })
       .catch((error) => {
         console.error("Error fetching material types:", error);
@@ -278,9 +280,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
   const handleSave = async () => {
     setIsSaving(true);
 
-
     if (
-
       !formData.challanDate ||
       !formData.material ||
       !formData.vehicleNo ||
@@ -298,9 +298,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       return;
     }
 
-
     const gateData = {
-
       challanDate: formData.challanDate,
       supplier: formData.supplier,
       supplierAddressLine1: formData.supplierAddressLine1,
@@ -460,18 +458,84 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
     };
   }, []);
 
+  const filterData = (items) => {
+    const vehicleRegex =
+      /^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$|^[0-9]{1,2}BH\d{2}[A-Z]{1,2}\d{4}$|^[A-Z]{2}\d{2}[A-Z]{1,2}\d{1,4}$|^[A-Z]{2}\d{2}[A-Z]{1,2}\d{1,2}\s?\d{4}$/;
+
+    const vehicleNo = items.filter((item) => vehicleRegex.test(item));
+
+    const isAlphanumeric = (str) => /[a-zA-Z]/.test(str) && /\d/.test(str);
+
+    // Filter TP NO
+    const validAlphanumericItems = items.filter((item) => isAlphanumeric(item));
+
+    const regex = /^[a-zA-Z0-9]+\/\d+$/;
+    const matchingItems = items.filter((item) => regex.test(item));
+
+    // Filter Challan No
+    const isChallanNo = (str) => /[0-9]-[0-9]/.test(str);
+    const challanNos = items.filter((item) => isChallanNo(item));
+    const indexOfVehicleNo = items.indexOf(vehicleNo[0]);
+
+    const materialValues = materials.map((material) => material.value);
+
+    // Find the first item in the `items` array that matches any material value
+    const materialName = items.find((item) => materialValues.includes(item));
+
+    return {
+      tpNo: matchingItems[0],
+      challanNo: challanNos[0],
+      vehicleNo: vehicleNo[0],
+      tpNetWeight: items[indexOfVehicleNo - 1],
+      material: materials.filter((material) => material.value === materialName),
+    };
+  };
+
   useEffect(() => {
-    console.log({ scannedDataArray });
-    if (scannedDataArray.length > 36) {
-      setFormData({
-        ...formData,
-        tpNo: scannedDataArray[23],
-        challanNo: scannedDataArray[19],
-        tpNetWeight: scannedDataArray[33],
-      });
-      setIsScanning(false);
-    }
+    const func = async () => {
+      try {
+        const { tpNo, challanNo, vehicleNo, tpNetWeight, material } =
+          await filterData(scannedDataArray);
+        if (scannedDataArray.length >= 3) {
+          console.log("called");
+          setFormData({
+            ...formData,
+            tpNo: tpNo,
+            challanNo: challanNo,
+            tpNetWeight: tpNetWeight,
+          });
+          setSelectedMaterial(material);
+          setVehicleNo(
+            vehicleNumbers.filter(
+              (vehicleNum) => vehicleNum.value === vehicleNo
+            )
+          );
+          setIsScanning(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    func();
   }, [scannedDataArray]);
+
+  useEffect(() => {
+    const func = async () => {
+      try {
+        if (scannedEWayBill.length > 0) {
+          console.log({ scannedEWayBill });
+
+          setFormData({
+            ...formData,
+            eWayBillNo: scannedEWayBill[0].split("/")[0],
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    func();
+  }, [scannedEWayBill]);
 
   useEffect(() => {
     if (formData.material) {
@@ -494,13 +558,31 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
   return (
     <div className="VehicleEntryDetailsMainContent">
       <div className="d-flex justify-content-between align-items-center mt-3">
-              <h2 className="text-center mx-auto">Vehicle Entry Inbound Details</h2>
-   
-              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
- 
-        </div>
+        <h2 className="text-center mx-auto">Vehicle Entry Inbound Details</h2>
+
+        <FontAwesomeIcon
+          icon={faRectangleXmark}
+          style={{
+            float: "right",
+            fontSize: "1.5em",
+            color: "red",
+            cursor: "pointer",
+          }}
+          className="mb-2"
+          onClick={() => navigate(-1)}
+        />
+      </div>
       {isScanning && (
-        <ScannerDisplay setScannedDataArray={setScannedDataArray} />
+        <ScannerDisplay
+          setScannedDataArray={setScannedDataArray}
+          isEwayBill={false}
+        />
+      )}
+      {isScanningEWayBill && (
+        <ScannerDisplay
+          setScannedDataArray={setScannedEWayBill}
+          isEwayBill={true}
+        />
       )}
       <div className="row">
         <div className="col-lg-12">
@@ -667,8 +749,8 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                         E-way Bill No:
                       </label>
                       <div
-                        className="input-group"
-                        style={{ display: "flex", alignItems: "center" }}
+                        className="input-group d-flex justify-content-center align-items-center"
+                        // style={{ display: "flex", alignItems: "center" }}
                       >
                         <input
                           type="text"
@@ -679,7 +761,21 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           className="form-control tpscanner"
                           style={{ flexGrow: 1 }}
                         />
-                    
+                        <button
+                          className="scanner_button1"
+                          style={{
+                            marginLeft: "2px",
+                            padding: "5px 10px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          onClick={() => handleScanButtonClick("ewaybill")}
+                          // disabled={!!formData.poNo}
+                        >
+                          <QrCodeIcon />
+                          {/* <img src={ScannImage_IB} alt="Scanner" /> */}
+                        </button>
                       </div>
                     </div>
 
@@ -725,7 +821,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           }}
                         >
                           <FontAwesomeIcon icon={faCar} /> Add
-        
                         </div>
                       </button>
                       <Select
@@ -741,7 +836,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                         required
                       />
                     </div>
-
 
                     <div className="col-md-6 mb-3">
                       <label htmlFor="supplier" className="user-form-label">
@@ -806,10 +900,9 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
                           className="form-control tpscanner"
                           style={{ flexGrow: 1 }}
                         />
-                     
                       </div>
                     </div>
-         
+
                     <div className="col-md-6">
                       <label htmlFor="driverName" className="user-form-label">
                         Driver Name:
