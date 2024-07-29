@@ -204,7 +204,28 @@ const VehicleEntry = () => {
 
   const filterData = async (material, transactionType) => {
     try {
-      let apiUrl = `${defaultApiUrl}/gate/transactions/ongoing?userId=${userId}&page=${currentPage}`;
+      let apiUrl = `${defaultApiUrl}/gate/transactions/ongoing?userId=${userId}&page=${currentPage}&`;
+
+      switch (searchOption) {
+        case "ticketNo":
+          apiUrl += `&ticketNo=${searchValue}`;
+          break;
+        case "date":
+          apiUrl += `&date=${searchValue}`;
+          break;
+        case "vehicleNo":
+          apiUrl += `&vehicleNo=${searchValue}`;
+          break;
+        case "supplier":
+          apiUrl += `&supplierName=${searchValue}`;
+          break;
+        case "address":
+          apiUrl += `&address=${searchValue}`;
+          break;
+        default:
+          break;
+      }
+
       if (material) {
         apiUrl = apiUrl + `&materialName=${material}`;
       }
@@ -275,7 +296,9 @@ const VehicleEntry = () => {
   useEffect(() => {
     console.log({ currentPage });
     if (currentPage !== null) {
-      if (searchValue) {
+      if (searchValue && (selectedMaterial || selectedTransactionType)) {
+        filterData(selectedMaterial, selectedTransactionType);
+      } else if (searchValue) {
         handleSearch(currentPage);
       } else if (selectedMaterial || selectedTransactionType) {
         filterData(selectedMaterial, selectedTransactionType);
