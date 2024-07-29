@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Pagination, Input, Tooltip } from 'antd';
+import { Table, Button, Pagination, Input, Tooltip, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import SideBar6 from '../SideBar/Sidebar6';
 import './HomePage6.css';
 import Swal from "sweetalert2";
@@ -16,6 +18,9 @@ const HomePage6 = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const [searchValue, setSearchValue] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [closeMessage, setCloseMessage] = useState('');
+  const [selectedSaleOrderNo, setSelectedSaleOrderNo] = useState(null);
   const navigate = useNavigate();
 
   const userId = sessionStorage.getItem("userId");
@@ -55,6 +60,59 @@ const HomePage6 = () => {
     fetchData();
   }, [currentPage, pageSize, searchValue, userId]);
 
+  const handleDelete = (saleOrderNo) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to close the sales order ${saleOrderNo}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, close it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setSelectedSaleOrderNo(saleOrderNo);
+        setIsModalVisible(true);
+      }
+    });
+  };
+  const handleModalOk = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        saleOrderNo: selectedSaleOrderNo,
+        message: closeMessage
+      });
+
+      const response = await fetch(`http://localhost:8080/api/v1/sales/closeOrder?${queryParams}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to close the sale order');
+      }
+
+      const data = await response.text();
+      Swal.fire('Success', data, 'success');
+      setIsModalVisible(false);
+      setCloseMessage('');
+      
+      const updatedSales = sales.filter(sale => sale.saleOrderNo !== selectedSaleOrderNo);
+      setSales(updatedSales);
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    }
+  };
+
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+    setCloseMessage('');
+  };
+
   const columns = [
     {
       title: 'Sale Order No',
@@ -62,13 +120,13 @@ const HomePage6 = () => {
       key: 'saleOrderNo',
       render: (text, record) => (
         <Tooltip title="Create Sales Pass">
-        <Button
-          onClick={() => handleRowClick(record)}
-          style={{ backgroundColor: "#88CCFA" }}
-        >
-          {text}
-        </Button>
-      </Tooltip>
+          <Button
+            onClick={() => handleRowClick(record)}
+            style={{ backgroundColor: "#88CCFA" }}
+          >
+            {text}
+          </Button>
+        </Tooltip>
       ),
     },
     {
@@ -110,18 +168,28 @@ const HomePage6 = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
-        <Tooltip title="View Sales Pass">
-        <Button
-          icon={<VisibilityIcon />}
-          onClick={() => handleViewClick(record.saleOrderNo)}
-        />
-      </Tooltip>
+        <div>
+          <Tooltip title="View Sales Pass">
+            <Button
+              icon={<VisibilityIcon />}
+              onClick={() => handleViewClick(record.saleOrderNo)}
+              style={{ marginRight: '8px' }}
+            />
+          </Tooltip>
+          <Tooltip title="Close Sales Order">
+            <Button
+              icon={<FontAwesomeIcon icon={faTimes} />}
+              onClick={() => handleDelete(record.saleOrderNo)}
+              style={{ backgroundColor: "#ff4d4f", color: "white" }}
+            />
+          </Tooltip>
+        </div>
       ),
     },
   ];
 
   const handleRowClick = (record) => {
-    navigate('/ProcessOrder', { state: { saleOrderNo: record.saleOrderNo, productName: record.productName } });
+    navigate('/ProcessOrder', { state: { saleOrderNo: record.saleOrderNo, productName: record.productName, balanceQty: record.balanceQty } });
   };
 
   const handleViewClick = (saleOrderNo) => {
@@ -155,23 +223,13 @@ const HomePage6 = () => {
         </div>
 
         <div className="table-responsive">
-          {searchResult ? (
-            <Table
-              dataSource={[searchResult]}
-              columns={columns}
-              rowKey="saleOrderNo"
-              className="user-table mt-3 custom-table"
-              pagination={false}
-            />
-          ) : (
-            <Table
-              dataSource={sales}
-              columns={columns}
-              rowKey="saleOrderNo" // Update the rowKey to be consistent
-              className="user-table mt-3 custom-table"
-              pagination={false}
-            />
-          )}
+          <Table
+            dataSource={searchResult ? [searchResult] : sales}
+            columns={columns}
+            rowKey="saleOrderNo"
+            className="user-table mt-3 custom-table"
+            pagination={false}
+          />
         </div>
         <div className="pagination-container d-flex justify-content-center mt-3 flex-wrap">
           <Pagination
@@ -184,6 +242,20 @@ const HomePage6 = () => {
             showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
           />
         </div>
+
+        <Modal
+          title="Close Sales Order"
+          open={isModalVisible}
+          onOk={handleModalOk}
+          onCancel={handleModalCancel}
+        >
+          <p>Please enter a message for closing the sales order:</p>
+          <Input.TextArea
+            value={closeMessage}
+            onChange={(e) => setCloseMessage(e.target.value)}
+            rows={4}
+          />
+        </Modal>
       </div>
     </SideBar6>
   );
