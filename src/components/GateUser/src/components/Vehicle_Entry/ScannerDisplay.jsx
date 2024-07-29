@@ -78,7 +78,7 @@ const ScannerDisplay = ({ setScannedDataArray, isEwayBill }) => {
         type="text"
         style={{ opacity: 0, position: "absolute" }}
       />
-      <p>Scanning...</p>
+      {/* <p>Scanning...</p> */}
       {/* {scannedData && (
         <div>
           <h2>Scanned Data:</h2>
