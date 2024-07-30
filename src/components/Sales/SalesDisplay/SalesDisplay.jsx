@@ -32,11 +32,11 @@ const SalesDisplay = () => {
       dataIndex: "salePassNo",
       key: "salePassNo",
     },
-    {
-      title: "Consignment Weight",
-      dataIndex: "consignmentWeight",
-      key: "consignmentWeight",
-    },
+    // {
+    //   title: "Consignment Weight",
+    //   dataIndex: "consignmentWeight",
+    //   key: "consignmentWeight",
+    // },
     {
       title: "Product Name",
       dataIndex: "productName",

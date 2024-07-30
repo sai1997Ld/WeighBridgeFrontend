@@ -140,6 +140,11 @@ const HomePage6 = () => {
       key: 'customerName',
     },
     {
+      title: 'Customer Address',
+      dataIndex: 'customerAddress',
+      key: 'customerAddress',
+    },
+    {
       title: 'Product Name',
       dataIndex: 'productName',
       key: 'productName',
@@ -189,7 +194,7 @@ const HomePage6 = () => {
   ];
 
   const handleRowClick = (record) => {
-    navigate('/ProcessOrder', { state: { saleOrderNo: record.saleOrderNo, productName: record.productName, balanceQty: record.balanceQty } });
+    navigate('/ProcessOrder', { state: { saleOrderNo: record.saleOrderNo, productName: record.productName, balanceQty: record.balanceQty, customerName: record.customerName, customerAddress: record.customerAddress } });
   };
 
   const handleViewClick = (saleOrderNo) => {
