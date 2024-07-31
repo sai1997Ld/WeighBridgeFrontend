@@ -460,7 +460,7 @@ const OperatorTransaction2 = () => {
         }}
       >
         <div className="container-fluid mt-0">
-          <div className="mb-3 mt-1 text-center">
+          <div className="mb-3 mt-3 text-center">
             <h2 style={{ fontFamily: "Arial", marginBottom: "0px !important" }}>
               Transaction Dashboard
             </h2>
