@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const ScannerDisplay = ({ setScannedDataArray }) => {
     const [scannedData, setScannedData] = useState("");

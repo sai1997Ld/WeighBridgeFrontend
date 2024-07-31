@@ -34,12 +34,12 @@ function ProcessOrder() {
   const [selectedFollowOnOrder, setSelectedFollowOnOrder] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/vehicles?size=20")
+    fetch("http://localhost:8080/api/v1/vehicles/vehicleList")
       .then((response) => response.json())
       .then((data) => {
-        const numbers = data.transactions.map((vehicle) => ({
-          value: vehicle.vehicleNo,
-          label: vehicle.vehicleNo,
+        const numbers = data.map((vehicleNo) => ({
+          value: vehicleNo,
+          label: vehicleNo,
         }));
         setVehicleNumbers(numbers);
       })

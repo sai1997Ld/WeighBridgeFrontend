@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement } from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
 import QrCodeIcon from "@mui/icons-material/QrCode";
-// import Header from "../../../../Header/Header";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ScannerDisplay from "./ScannerDisplay.jsx";
 import {
@@ -88,15 +88,11 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
 
   const getVehicles = async () => {
     try {
-      const config = {
-        url: "http://localhost:8080/api/v1/vehicles?size=20",
-        method: "get",
-      };
-      const response = await axios(config);
+      const response = await axios.get("http://localhost:8080/api/v1/vehicles/vehicleList");
       console.log({ response: response.data });
-      const numbers = response.data.transactions.map((vehicle) => ({
-        value: vehicle.vehicleNo,
-        label: vehicle.vehicleNo,
+      const numbers = response.data.map((vehicleNo) => ({
+        value: vehicleNo,
+        label: vehicleNo,
       }));
       setVehicleNumbers(numbers);
 
@@ -109,7 +105,6 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       );
 
       setVehicleNo(tempVehicleNo);
-      // await handleVehicleNoKeyPress(requiredData?.vehicleNo)
 
       console.log({
         vehicleData: vehicleData?.challanNo,
@@ -124,6 +119,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       console.log(error);
     }
   };
+
   // Get API for Fetching  Vehicle No if Registerd:
   useEffect(() => {
     // Fetch vehicle numbers
@@ -290,9 +286,8 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
       !formData.supplierAddressLine1
     ) {
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Please fill out all mandatory fields.",
+        title: "Please fill in all the required fields.",
+        icon: "warning",
       });
       setIsSaving(false);
       return;

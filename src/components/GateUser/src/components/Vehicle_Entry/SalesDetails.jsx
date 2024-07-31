@@ -55,14 +55,7 @@ const SalesDetails = ({ onConfirmTicket = () => { } }) => {
         navigate(`/VehicleEntry-Outbound/?sales=${salePassNo}`);
     };
 
-    const handlePageChange = ({ selected }) => {
-        setCurrentPage(selected);
-    };
 
-    // Code for Close icon
-    const goBack = () => {
-        navigate(-1);
-    }
 
     return (
         <SideBar2>

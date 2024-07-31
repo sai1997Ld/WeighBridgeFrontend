@@ -1010,7 +1010,7 @@ const VehicleEntry = () => {
         toggleModal={() => setIsExitModalVisible(!isExitModalVisible)}
         ticketNo={ticketNo}
       />
-      <div className="d-flex justify-content-center mt-3">
+      <div className="d-flex justify-content-center mt-3 mb-3">
         <Pagination
           current={currentPage + 1}
           total={totalEntries}
