@@ -5,6 +5,7 @@ import SideBar6 from "../../SideBar/Sidebar6";
 import { faSave, faEraser, faHome, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, Link } from "react-router-dom";
+import Select from 'react-select';
 
 function SalesOrder() {
   const [purchaseOrderedDate, setPurchaseOrderedDate] = useState("");
@@ -16,6 +17,8 @@ function SalesOrder() {
   const [orderedQuantity, setOrderedQuantity] = useState(0);
   const [brokerName, setBrokerName] = useState("");
   const [brokerAddress, setBrokerAddress] = useState("");
+  const [lumps, setLumps] = useState(0); // New state for Lumps
+  const [fines, setFines] = useState(0); // New state for Fines
   const [customerNames, setCustomerNames] = useState([]);
   const [productNames, setProductNames] = useState([]);
 
@@ -35,7 +38,6 @@ function SalesOrder() {
       .then((data) => setProductNames(data))
       .catch((error) => console.error("Error fetching product names:", error));
 
-    // Load saved form data from sessionStorage
     const savedFormData = sessionStorage.getItem("salesOrderFormData");
     if (savedFormData) {
       const parsedData = JSON.parse(savedFormData);
@@ -48,14 +50,14 @@ function SalesOrder() {
       setOrderedQuantity(parsedData.orderedQuantity || 0);
       setBrokerName(parsedData.brokerName || "");
       setBrokerAddress(parsedData.brokerAddress || "");
+      setLumps(parsedData.lumps || 0); // Load Lumps
+      setFines(parsedData.fines || 0); // Load Fines
 
-      // Clear the saved form data after loading
       sessionStorage.removeItem("salesOrderFormData");
     }
   }, []);
 
   const handleAddCustomer = () => {
-    // Save current form state to sessionStorage
     sessionStorage.setItem(
       "salesOrderFormData",
       JSON.stringify({
@@ -68,13 +70,15 @@ function SalesOrder() {
         orderedQuantity,
         brokerName,
         brokerAddress,
+        lumps,
+        fines
       })
     );
     navigate("/SalesCustomer");
   };
 
-  const handleCustomerNameChange = (event) => {
-    const selectedCustomerName = event.target.value;
+  const handleCustomerChange = (selectedOption) => {
+    const selectedCustomerName = selectedOption ? selectedOption.value : "";
     setCustomerName(selectedCustomerName);
 
     fetch(
@@ -99,6 +103,8 @@ function SalesOrder() {
     setOrderedQuantity(0);
     setBrokerName("");
     setBrokerAddress("");
+    setLumps(0); // Clear Lumps
+    setFines(0); // Clear Fines
   };
 
   const handleSave = () => {
@@ -133,6 +139,8 @@ function SalesOrder() {
       brokerName,
       brokerAddress,
       userId,
+      lumps, // Include Lumps
+      fines  // Include Fines
     };
 
     fetch("http://localhost:8080/api/v1/sales/add/salesdetail", {
@@ -163,7 +171,6 @@ function SalesOrder() {
           },
         });
         handleClear();
-        // Clear saved form data
         sessionStorage.removeItem("salesOrderFormData");
         navigate("/sales-dashboard");
       })
@@ -180,6 +187,11 @@ function SalesOrder() {
         });
       });
   };
+
+  const customerOptions = customerNames.map((name) => ({
+    value: name,
+    label: name,
+  }));
 
   return (
     <SideBar6>
@@ -205,9 +217,9 @@ function SalesOrder() {
             >
               <div className="card-body p-4">
                 <form>
-  <p style={{ color: "red" }}>
-                      Please fill all * marked fields.
-                    </p>
+                  <p style={{ color: "red" }}>
+                    Please fill all * marked fields.
+                  </p>
                   <div className="row mb-2">
                     <div className="col-md-4">
                       <label
@@ -292,19 +304,13 @@ function SalesOrder() {
                           </div>
                         </button>
                       </div>
-                      <select
-                        className="form-select"
+                      <Select
                         id="customerName"
-                        value={customerName}
-                        onChange={handleCustomerNameChange}
-                      >
-                        <option value="">Select Customer Name</option>
-                        {customerNames.map((name) => (
-                          <option key={name} value={name}>
-                            {name}
-                          </option>
-                        ))}
-                      </select>
+                        options={customerOptions}
+                        value={customerOptions.find(option => option.value === customerName)}
+                        onChange={handleCustomerChange}
+                        placeholder="Select Customer Name"
+                      />
                     </div>
 
                     <div className="col-md-6">
@@ -371,6 +377,49 @@ function SalesOrder() {
                       />
                     </div>
                   </div>
+
+                  <div className="row mb-2">
+                    <div className="col-md-6">
+                      <label htmlFor="lumps" className="form-label">
+                        Lumps
+                        
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="lumps"
+                        placeholder="Enter Lumps"
+                        value={lumps}
+                        onChange={(e) => {
+                          const newValue = Math.max(
+                            0,
+                            parseFloat(e.target.value, 10)
+                          );
+                          setLumps(newValue);
+                        }}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="fines" className="form-label">
+                        Fines
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="fines"
+                        placeholder="Enter Fines"
+                        value={fines}
+                        onChange={(e) => {
+                          const newValue = Math.max(
+                            0,
+                            parseFloat(e.target.value, 10)
+                          );
+                          setFines(newValue);
+                        }}
+                      />
+                    </div>
+                  </div>
+
                   <div className="row mb-2">
                     <div className="col-md-6">
                       <label htmlFor="brokerName" className="form-label">
