@@ -1,8 +1,23 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
+import QRCode from "qrcode";
 
 const TicketPrintComponentGU = React.forwardRef((props, ref) => {
   const { ticketData } = props;
+  const qrCodeRef = useRef(null);
+
+  useEffect(() => {
+    if (ticketData && qrCodeRef.current) {
+      QRCode.toCanvas(
+        qrCodeRef.current,
+        JSON.stringify({ ticketNo: ticketData.ticketNo }),
+        { width: 64, margin: 0 },
+        (error) => {
+          if (error) console.error('Error generating QR code', error);
+        }
+      );
+    }
+  }, [ticketData]);
 
   if (!ticketData) {
     return null;
@@ -25,7 +40,6 @@ const TicketPrintComponentGU = React.forwardRef((props, ref) => {
     { label: "TP Net Weight", value: ticketData.tpNetWeight, condition: transactionType !== "Outbound" },
     { label: "PO No", value: ticketData.poNo, condition: true },
     { label: "Challan Date", value: ticketData.challanDate, condition: true },
-    // { label: "Transaction Date", value: ticketData.transactionDate, condition: true },
   ].filter(field => field.condition);
 
   // Define signatures based on transaction type
@@ -56,6 +70,7 @@ const TicketPrintComponentGU = React.forwardRef((props, ref) => {
         fontSize: "9pt",
         lineHeight: "1.4",
         boxSizing: "border-box",
+        position: "relative",
       }}
     >
       <header style={{ textAlign: "center", marginBottom: "5mm" }}>
@@ -66,6 +81,11 @@ const TicketPrintComponentGU = React.forwardRef((props, ref) => {
           {ticketData.siteName}
         </p>
       </header>
+
+      {/* QR Code */}
+      <div style={{ position: "absolute", top: "10mm", right: "10mm", width: "64px", height: "64px" }}>
+        <canvas ref={qrCodeRef} />
+      </div>
 
       <div
         style={{
@@ -108,8 +128,6 @@ const TicketPrintComponentGU = React.forwardRef((props, ref) => {
           ))}
         </tbody>
       </table>
-
-
 
       <div style={{ marginTop: "10mm" }}>
         <h3
