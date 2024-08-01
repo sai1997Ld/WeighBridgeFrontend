@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy } from "react";
+import { useState, useEffect, lazy, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,6 +27,9 @@ import { Typography } from "antd";
 import styled from "styled-components";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { defaultApiUrl } from "../../../../../Constants";
+import { useReactToPrint } from "react-to-print";
+import TicketComponentGU from "./TicketComponentGU";
+
 
 const GateUserExitModal = lazy(() => import("../Modals/GateUserExitModal"));
 
@@ -48,10 +51,12 @@ const VehicleEntry = () => {
   const [searchOption, setSearchOption] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [totalPage, setTotalPage] = useState(0);
+  const [ticketData, setTicketData] = useState(null);
 
   const [vehicleEntryDetails, setVehicleEntryDetails] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(0);
+  const componentRef = useRef();
 
   const itemsPerPage = 5;
   const [totalEntries, setTotalEntries] = useState(0);
@@ -187,20 +192,7 @@ const VehicleEntry = () => {
     </Menu>
   );
 
-  const applyFilter = (data, material, transactionType) => {
-    const filtered = data.filter((entry) => {
-      let matchesMaterial = true;
 
-      if (material) {
-        matchesMaterial =
-          entry?.material?.toLowerCase() === material?.toLowerCase();
-      }
-
-      return matchesMaterial;
-    });
-
-    setFilteredData(filtered);
-  };
 
   const filterData = async (material, transactionType) => {
     try {
@@ -221,55 +213,15 @@ const VehicleEntry = () => {
       setVehicleEntryDetails(data.transactions);
       setTotalPage(data.totalPages);
       setTotalEntries(data.totalElements);
-      // setFilteredData(data.transactions);
+      
     } catch (error) {
       console.error("Error fetching vehicle entry details:", error);
     }
   };
-  // Fetch data by transaction type when selectedTransactionType changes
-  // useEffect(() => {
-  //   if (selectedTransactionType) {
-  //     fetchDataByTransactionType(selectedTransactionType);
-  //   }
-  // }, [selectedTransactionType, currentPage]);
 
-  // API for Pagination:
-
-  // useEffect(() => {
-  //   // Initial fetch
-  //   fetch(`http://localhost:8080/api/v1/gate?userId=${userId}`, {
-  //     credentials: "include",
-  //   })
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       setVehicleEntryDetails(data.transactions);
-  //       setTotalPage(data.totalPages);
-  //       console.log("total Page " + data.totalPages);
-
-  //       // Set the current page to 0 to trigger the paginated fetch
-  //       // setCurrentPage(0);
-
-  //       // Apply initial filter
-  //       // applyFilter(
-  //       //   data.transactions,
-  //       //   selectedMaterial,
-  //       //   selectedTransactionType
-  //       // );
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching vehicle entry details:", error);
-  //     });
-  //   fetchData();
-  // }, []);
 
   useEffect(() => {
     setCurrentPage(0);
-    // applyFilter(vehicleEntryDetails, selectedMaterial, selectedTransactionType);
   }, [selectedMaterial, selectedTransactionType]);
 
   useEffect(() => {
@@ -453,72 +405,45 @@ const VehicleEntry = () => {
     }
   };
 
-  const handlePrint = (entry) => {
-    // Prepare data for the QR code
-    const qrData = JSON.stringify({
-      ticketNo: entry.ticketNo,
-    });
+  const handlePrint = async (ticketNo) => {
+    const apiUrl = `http://localhost:8080/api/v1/gate/print/${ticketNo}`;
+    try {
+      const response = await axios.get(apiUrl, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
 
-    // Open a new window
-    const printWindow = window.open("", "_blank");
-
-    if (printWindow) {
-      // Write HTML content to the new window
-      printWindow.document.write(`
-      <html>
-      <head>
-        <title>Print QR Code</title>
-        <style>
-          body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-          }
-          .qr-container {
-            text-align: center;
-          }
-          canvas {
-            display: block;
-            margin: 0 auto;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="qr-container">
-          <h1>QR Code</h1>
-        <h1>Ticket No. ${entry.ticketNo}</h1>
-          <canvas id="qr-code"></canvas>
-        </div>
-        <script>
-          function generateQRCode(data) {
-            const canvas = document.getElementById('qr-code');
-            const qr = new QRious({
-              element: canvas,
-              value: data,
-              size: 200,
-              level: 'H'
-            });
-          }
-          window.onload = function() {
-            generateQRCode(${JSON.stringify(qrData)});
-            setTimeout(() => window.print(), 500); // Ensure QR code is rendered before printing
-          };
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-      </body>
-      </html>
-    `);
-
-      printWindow.document.close();
-    } else {
-      console.error(
-        "Print window could not be opened. Please check your browser settings for pop-up blockers."
-      );
+      if (response.status === 200) {
+        const ticketData = response.data;
+        setTicketData(ticketData);
+      } else {
+        console.error("Error: Received unexpected response status");
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error("Error data:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
+      } else if (error.request) {
+        console.error("Error request:", error.request);
+      } else {
+        console.error("Error message:", error.message);
+      }
+      console.error("Error config:", error.config);
     }
   };
+
+  const handlePrintClick = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  useEffect(() => {
+    if (ticketData) {
+      handlePrintClick();
+    }
+  }, [ticketData]);
 
   const TransactionUpdatesContainer = styled.div`
     display: flex;
@@ -861,13 +786,19 @@ const VehicleEntry = () => {
                             className="btn btn-info btn-md"
                             style={{ padding: "3px 6px" }}
                             onClick={() => {
-                              handlePrint(entry);
+                              handlePrint(entry.ticketNo);
                             }}
                           >
                             <FontAwesomeIcon icon={faPrint} />
                           </button>
                           &nbsp;&nbsp;
                           {entry.ticketNo}
+                          <div style={{ display: "none" }}>
+                          <TicketComponentGU
+                            ref={componentRef}
+                            ticketData={ticketData}
+                          />
+                        </div>
                         </td>
 
                         <td

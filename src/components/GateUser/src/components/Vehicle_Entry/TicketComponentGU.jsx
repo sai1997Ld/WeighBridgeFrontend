@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const TicketPrintComponentGU = React.forwardRef((props, ref) => {
   const { ticketData } = props;
@@ -7,163 +8,172 @@ const TicketPrintComponentGU = React.forwardRef((props, ref) => {
     return null;
   }
 
-  const divStyle = {
-    border: "1px solid #ccc",
-    padding: "20px",
-    marginBottom: "20px",
-  };
+  const { transactionType } = ticketData;
 
-  const bottomStyle = {
-    // display: "flex",
-    // justifyContent: "space-between",
-    // alignItems: "center",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gridAutoRows: "100px",
-    marginTop: "100px",
-  };
-  const box1 = {
-    gridColumnStart: 1,
-    gridColumnEnd: 3,
-  };
-  const box2 = {
-    gridColumnStart: 3,
-    gridColumnEnd: 4,
-    marginRight: "50px",
-  };
+  // Filter fields based on transaction type
+  const filteredFields = [
+    {label:"VehicleIn", value: ticketData.vehicleIn, condition: true},
+    { label: "Product", value: ticketData.productName, condition: transactionType !== "Inbound" },
+    { label: "Product Type", value: ticketData.productType, condition: transactionType !== "Inbound" },
+    { label: "Material", value: ticketData.material, condition: transactionType !== "Outbound" },
+    {label: "Material Type", value: ticketData.materialType, condition: transactionType !== "Outbound"},
+    { label: "Transporter", value: ticketData.transporter, condition: true },
+    { label: "Customer", value: ticketData.customer, condition: transactionType !== "Inbound" },
+    { label: "Supplier", value: ticketData.supplier, condition: transactionType !== "Outbound" },
+    { label: "Challan", value: ticketData.challanNo, condition: transactionType !== "Outbound" },
+    { label: "TP No", value: ticketData.tpNo, condition: true },
+    { label: "TP Net Weight", value: ticketData.tpNetWeight, condition: transactionType !== "Outbound" },
+    { label: "PO No", value: ticketData.poNo, condition: true },
+    { label: "Challan Date", value: ticketData.challanDate, condition: true },
+    // { label: "Transaction Date", value: ticketData.transactionDate, condition: true },
+  ].filter(field => field.condition);
 
-  const headingStyle = {
-    fontSize: "24px",
-    marginBottom: "10px",
-  };
-
-  const paragraphStyle = {
-    margin: "5px 0",
-  };
+  // Define signatures based on transaction type
+  const signatures = transactionType === "Inbound"
+    ? [
+        { label: "Loaded by", value: ticketData.loadedBy },
+        { label: "Security Officer", value: ticketData.securityOfficer },
+      ]
+    : [
+        { label: "Issued by", value: ticketData.issuedBy },
+        { label: "Approved by", value: ticketData.approvedBy },
+        { label: "Loaded by", value: ticketData.loadedBy },
+        { label: "Security Officer", value: ticketData.securityOfficer },
+      ];
 
   return (
-    <div ref={ref} style={divStyle}>
-      <h2 style={{ textAlign: "center" }}>{ticketData.companyName}</h2>
-      <h4 style={{ textAlign: "center" }}>{ticketData.siteName}</h4>
-      <div style={{ paddingLeft: "5%" }}>
-        <p>
-          {" "}
-          <strong> Ticket No: </strong> {ticketData.ticketNo}{" "}
+    <div
+      ref={ref}
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        padding: "10mm",
+        margin: "auto",
+        backgroundColor: "white",
+        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+        fontFamily: "Arial, sans-serif",
+        color: "#333",
+        fontSize: "9pt",
+        lineHeight: "1.4",
+        boxSizing: "border-box",
+      }}
+    >
+      <header style={{ textAlign: "center", marginBottom: "5mm" }}>
+        <h1 style={{ margin: "0", fontSize: "16pt", color: "#0056b3" }}>
+          {ticketData.companyName}
+        </h1>
+        <p style={{ margin: "2mm 0 0", fontSize: "10pt" }}>
+          {ticketData.siteName}
         </p>
-        <p>
-          {" "}
-          <strong> Vehicle No: </strong> {ticketData.vehicleNo}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Vehicle In: </strong> {ticketData.vehicleIn}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Vehicle Out: </strong> {ticketData.vehicleOut}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Transporter Name: </strong> {ticketData.transporter}{" "}
-        </p>
+      </header>
 
-        {ticketData.transactionType === "Inbound" && (
-          <>
-            <p>
-              <strong>Supplier:</strong> {ticketData.supplier}
-            </p>
-            <p>
-              <strong>Supplier Address:</strong> {ticketData.supplierAddress}
-            </p>
-          </>
-        )}
+      <div
+        style={{
+          border: "1px solid #0056b3",
+          padding: "3mm",
+          marginBottom: "5mm",
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            margin: "0 0 3mm",
+            color: "#0056b3",
+            fontSize: "14pt",
+          }}
+        >
+          {transactionType === "Inbound" ? "Material Entry Slip" : "Vehicle Loading Slip"}
+        </h2>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <strong>Ticket No: {ticketData.ticketNo}</strong>
+          <strong>Vehicle No: {ticketData.vehicleNo}</strong>
+        </div>
+      </div>
 
-        {ticketData.transactionType === "Outbound" && (
-          <>
-            <p>
-              <strong>Customer:</strong> {ticketData.customer}
-            </p>
-            <p>
-              <strong>Customer Address:</strong> {ticketData.customerAddress}
-            </p>
-          </>
-        )}
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          marginBottom: "5mm",
+        }}
+      >
+        <tbody>
+          {filteredFields.map((item, index) => (
+            <tr key={index} style={{ borderBottom: "1px solid #dee2e6" }}>
+              <td style={{ padding: "2mm", fontWeight: "bold", width: "30%" }}>
+                {item.label}:
+              </td>
+              <td style={{ padding: "2mm" }}>{item.value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-        {ticketData.transactionType === "Inbound" && (
-          <>
-            <p>
-              {" "}
-              <strong> Material: </strong> {ticketData.material}{" "}
-            </p>
-            <p>
-              {" "}
-              <strong> Material Type: </strong> {ticketData.materialType}{" "}
-            </p>
-          </>
-        )}
 
-        {ticketData.transactionType === "Outbound" && (
-          <>
-            <p>
-              {" "}
-              <strong> Product: </strong> {ticketData.productName}{" "}
-            </p>
-            <p>
-              {" "}
-              <strong> Product Type: </strong> {ticketData.productType}{" "}
-            </p>
-          </>
-        )}
 
-        <p>
-          {" "}
-          <strong> TP No: </strong> {ticketData.tpNo}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> TP Net Weight : </strong> {ticketData.tpNetWeight}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> PO No: </strong> {ticketData.poNo}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Challan: </strong> {ticketData.challanNo}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Challan Date: </strong> {ticketData.challanDate}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Transaction Date: </strong> {ticketData.transactionDate}{" "}
-        </p>
-        <p>
-          {" "}
-          <strong> Transaction Type: </strong> {ticketData.transactionType}{" "}
-        </p>
-        <div className="" style={bottomStyle}>
-          <p style={box1}>
-            {" "}
-            <strong> Issued By </strong> {ticketData.issuedBy}{" "}
-          </p>
-          <p style={box2}>
-            {" "}
-            <strong> Approved By </strong> {ticketData.approvedBy}{" "}
-          </p>
-          <p style={box1}>
-            {" "}
-            <strong> Loaded By: </strong> {ticketData.loadedBy}{" "}
-          </p>
-          <p style={box2}>
-            {" "}
-            <strong> Security Officer </strong> {ticketData.securityOfficer}{" "}
-          </p>
+      <div style={{ marginTop: "10mm" }}>
+        <h3
+          style={{
+            color: "#0056b3",
+            borderBottom: "1px solid #0056b3",
+            paddingBottom: "1mm",
+            fontSize: "12pt",
+          }}
+        >
+          Signatures
+        </h3>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
+        >
+          {signatures.map((item, index) => (
+            <div key={index} style={{ width: transactionType === "Inbound" ? "45%" : "22%", marginBottom: "5mm" }}>
+              <p style={{ margin: "0", fontSize: "9pt" }}>{item.label}</p>
+              <div style={{ borderBottom: "1px solid black", height: "15mm" }}></div>
+              <p style={{ margin: "2mm 0 0", fontSize: "9pt" }}>{item.value}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 });
+
+TicketPrintComponentGU.displayName = "TicketPrintComponentGU";
+
+TicketPrintComponentGU.propTypes = {
+  ticketData: PropTypes.shape({
+    companyName: PropTypes.string.isRequired,
+    siteName: PropTypes.string.isRequired,
+    ticketNo: PropTypes.string.isRequired,
+    vehicleNo: PropTypes.string.isRequired,
+    vehicleIn: PropTypes.string.isRequired,
+    vehicleOut: PropTypes.string.isRequired,
+    transporter: PropTypes.string.isRequired,
+    supplier: PropTypes.string,
+    customer: PropTypes.string,
+    material: PropTypes.string,
+    materialType: PropTypes.string,
+    productName: PropTypes.string,
+    productType: PropTypes.string,
+    tpNo: PropTypes.string.isRequired,
+    tpNetWeight: PropTypes.string.isRequired,
+    poNo: PropTypes.string.isRequired,
+    challanNo: PropTypes.string,
+    challanDate: PropTypes.string,
+    transactionDate: PropTypes.string.isRequired,
+    transactionType: PropTypes.oneOf(['Inbound', 'Outbound']).isRequired,
+    grossWeight: PropTypes.number.isRequired,
+    tareWeight: PropTypes.number.isRequired,
+    netWeight: PropTypes.number.isRequired,
+    issuedBy: PropTypes.string,
+    approvedBy: PropTypes.string,
+    loadedBy: PropTypes.string.isRequired,
+    securityOfficer: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default TicketPrintComponentGU;
