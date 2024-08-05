@@ -28,7 +28,7 @@ function ManagementQuality() {
   const [itemsPerPage, setItemsPerPage] = useState(7);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("select"); // State for search type
-  const [selectedDate, setSelectedDate] = useState(moment());
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
   const navigate = useNavigate();
@@ -354,27 +354,29 @@ function ManagementQuality() {
     try {
       const selectedCompany = sessionStorage.getItem("company");
       const selectedSiteName = sessionStorage.getItem("site");
-      // const selectedSiteAddress = sessionStorage.getItem('selectedSiteAddress');
-
+  
       if (!selectedCompany || !selectedSiteName) {
-        console.error("Company, site name, or site address not selected");
+        console.error("Company or site name not selected");
         return;
       }
-
-      // Format the selected date as "DD-MM-YYYY"
-      const year = selectedDate.year();
-      const month = String(selectedDate.month() + 1).padStart(2, "0");
-      const day = String(selectedDate.date()).padStart(2, "0");
-      const formattedDate = `${day}-${month}-${year}`;
-
+  
+      let formattedDate = "";
+      if (selectedDate) {
+        // Format the selected date as "DD-MM-YYYY"
+        const year = selectedDate.year();
+        const month = String(selectedDate.month() + 1).padStart(2, "0");
+        const day = String(selectedDate.date()).padStart(2, "0");
+        formattedDate = `${day}-${month}-${year}`;
+      }
+  
       const apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
-
+  
       const requestPayload = {
         fromDate: formattedDate,
         companyName: `${selectedCompany}`,
         siteName: `${selectedSiteName}`,
       };
-
+  
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
@@ -383,7 +385,7 @@ function ManagementQuality() {
         body: JSON.stringify(requestPayload),
         credentials: "include",
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         setApiData(data);
@@ -394,6 +396,7 @@ function ManagementQuality() {
       console.error("Error fetching API data:", error);
     }
   };
+  
   useEffect(() => {
     fetchApiData();
   }, [selectedDate]);
@@ -419,16 +422,17 @@ function ManagementQuality() {
             style={{ marginTop: "1rem", marginBottom: "1rem" }}
           >
             <div style={{ flex: "1" }}>
-              <DatePicker
-                value={selectedDate}
-                onChange={handleDateChange}
-                disabledDate={disabledFutureDate}
-                format="DD-MM-YYYY"
-                style={{
-                  borderRadius: "5px",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                }}
-              />
+            <DatePicker
+  value={selectedDate}
+  onChange={handleDateChange}
+  disabledDate={disabledFutureDate}
+  format="DD-MM-YYYY"
+  style={{
+    borderRadius: "5px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  }}
+  placeholder="Select date"
+/>
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
