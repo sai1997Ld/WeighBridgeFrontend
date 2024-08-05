@@ -21,6 +21,7 @@ function SalesOrder() {
   const [fines, setFines] = useState(0); // New state for Fines
   const [customerNames, setCustomerNames] = useState([]);
   const [productNames, setProductNames] = useState([]);
+  const [requiresLumpsAndFines, setRequiresLumpsAndFines] = useState(false);
 
   const navigate = useNavigate();
 
@@ -115,7 +116,8 @@ function SalesOrder() {
       customerAddress.trim() === "" ||
       productName.trim() === "" ||
       orderedQuantity === 0 ||
-      saleOrderNo.trim() === ""
+      saleOrderNo.trim() === "" ||
+      (requiresLumpsAndFines && (lumps === 0 || fines === 0))
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -127,7 +129,6 @@ function SalesOrder() {
       });
       return;
     }
-
     const salesData = {
       purchaseOrderedDate,
       purchaseOrderNo,

@@ -14,7 +14,7 @@ const { Option } = AntSelect;
 function ProcessOrder() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { saleOrderNo, productName, balanceQty, customerName, customerAddress } = location.state || {};
+  const { saleOrderNo, productName, balanceQty, customerName, customerAddress, lumpsBalance, finesBalance } = location.state || {};
 
   const [formsaleOrderNo, setFormsaleOrderNo] = useState(saleOrderNo || "");
   const [formProductName, setFormProductName] = useState(productName || "");
@@ -27,6 +27,14 @@ function ProcessOrder() {
   const [balance, setBalance] = useState(() => {
     const sessionBalance = sessionStorage.getItem("balanceQty");
     return sessionBalance ? parseFloat(sessionBalance) : (balanceQty || 0);
+  });
+  const [lumpsbalance, setlumpsBalance] = useState(() => {
+    const sessionBalance = sessionStorage.getItem("lumpsBalance");
+    return sessionBalance ? parseFloat(sessionBalance) : (lumpsBalance || 0);
+  });
+  const [finesbalance, setfinesBalance] = useState(() => {
+    const sessionBalance = sessionStorage.getItem("finesBalance");
+    return sessionBalance ? parseFloat(sessionBalance) : (finesBalance || 0);
   });
 
   const [isFollowOnModalVisible, setIsFollowOnModalVisible] = useState(false);
@@ -56,10 +64,14 @@ function ProcessOrder() {
       sessionStorage.removeItem("processOrderFormData");
     } else {
       setBalance(balanceQty || parseFloat(sessionStorage.getItem("balanceQty")) || 0);
+      setlumpsBalance(lumpsBalance || parseFloat(sessionStorage.getItem("lumpsBalance")) || 0);
+      setfinesBalance(finesBalance || parseFloat(sessionStorage.getItem("finesBalance")) || 0);
     }
 
     sessionStorage.setItem("balanceQty", balance.toString());
-  }, [balanceQty, balance]);
+    sessionStorage.setItem("lumpsBalance", lumpsbalance.toString());
+    sessionStorage.setItem("finesBalance", finesbalance.toString());
+  }, [balanceQty, balance, lumpsBalance, finesBalance]);
 
   useEffect(() => {
     if (vehicleNo) {
@@ -107,7 +119,7 @@ function ProcessOrder() {
   };
 
   const handleSave = () => {
-    if (!formsaleOrderNo || !formProductName || !productType || !vehicleNo || !transporterName) {
+    if (!formsaleOrderNo || !formProductName || !vehicleNo || !transporterName) {
       Swal.fire({
         title: "Please fill in all the required fields.",
         icon: "warning",
@@ -119,7 +131,67 @@ function ProcessOrder() {
       return;
     }
 
-    if (balance < 60) {
+    if (productType === "Lumps" && lumpsbalance < 60) {
+      Swal.fire({
+        title: 'Low Lumps Balance Quantity',
+        html: `The current lumps balance quantity is <strong>${lumpsbalance}</strong>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Use Existing',
+        cancelButtonText: 'Create New',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          saveSalesPass();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire({
+            title: 'Create New Order',
+            text: 'Choose an option',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Follow On',
+            cancelButtonText: 'New Order',
+            reverseButtons: true
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetchFollowOnOrders();
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+              navigate('/create-new-order');
+            }
+          });
+        }
+      });
+    } else if (productType === "Fines" && finesbalance < 60) {
+      Swal.fire({
+        title: 'Low Fines Balance Quantity',
+        html: `The current fines balance quantity is <strong>${finesbalance}</strong>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Use Existing',
+        cancelButtonText: 'Create New',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          saveSalesPass();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire({
+            title: 'Create New Order',
+            text: 'Choose an option',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Follow On',
+            cancelButtonText: 'New Order',
+            reverseButtons: true
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetchFollowOnOrders();
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+              navigate('/create-new-order');
+            }
+          });
+        }
+      });
+    } else if (balance < 60) {
       Swal.fire({
         title: 'Low Balance Quantity',
         html: `The current balance quantity is <strong>${balance}</strong>`,
@@ -282,7 +354,7 @@ function ProcessOrder() {
                         value={formsaleOrderNo}
                         onChange={(e) => setFormsaleOrderNo(e.target.value)}
                         required
-                        readOnly
+                        disabled
                       />
                     </div>
                     <div className="col-md-4">
@@ -297,12 +369,12 @@ function ProcessOrder() {
                         value={formProductName}
                         onChange={(e) => setFormProductName(e.target.value)}
                         required
-                        readOnly
+                        disabled
                       />
                     </div>
                     <div className="col-md-4">
                       <label htmlFor="productType" className="form-label">
-                        Product Type <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                        Product Type
                       </label>
                       <select
                         className="form-select"

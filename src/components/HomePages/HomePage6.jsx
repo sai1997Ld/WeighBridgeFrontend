@@ -165,10 +165,21 @@ const HomePage6 = () => {
       key: 'progressiveQty',
     },
     {
+      title: 'Lumps Balance',
+      dataIndex: 'lumpsBalance',
+      key: 'lumpsBalance',
+    },
+    {
+      title: 'Fines Balance',
+      dataIndex: 'finesBalance',
+      key: 'finesBalance'
+    },
+    {
       title: 'Balance Qty',
       dataIndex: 'balanceQty',
       key: 'balanceQty',
     },
+  
     {
       title: 'Action',
       key: 'action',
@@ -181,21 +192,25 @@ const HomePage6 = () => {
               style={{ marginRight: '8px' }}
             />
           </Tooltip>
-          <Tooltip title="Close Sales Order">
-            <Button
-              icon={<FontAwesomeIcon icon={faTimes} />}
-              onClick={() => handleDelete(record.saleOrderNo)}
-              style={{ backgroundColor: "#ff4d4f", color: "white" }}
-            />
-          </Tooltip>
+        
+          {record.balanceQty > 0 && record.balanceQty <= 8 && (
+            <Tooltip title="Close Sales Order">
+              <Button
+                icon={<FontAwesomeIcon icon={faTimes} />}
+                onClick={() => handleDelete(record.saleOrderNo)}
+                style={{ backgroundColor: "#ff4d4f", color: "white" }}
+              />
+            </Tooltip>
+          )}
         </div>
       ),
     },
   ];
 
   const handleRowClick = (record) => {
-    navigate('/ProcessOrder', { state: { saleOrderNo: record.saleOrderNo, productName: record.productName, balanceQty: record.balanceQty, customerName: record.customerName, customerAddress: record.customerAddress } });
+    navigate('/ProcessOrder', { state: { saleOrderNo: record.saleOrderNo, productName: record.productName, balanceQty: record.balanceQty, customerName: record.customerName, customerAddress: record.customerAddress, lumpsBalance: record.lumpsBalance, finesBalance: record.finesBalance } });
   };
+  
 
   const handleViewClick = (saleOrderNo) => {
     navigate(`/SalesDisplay?saleOrderNo=${saleOrderNo}`);
@@ -229,10 +244,15 @@ const HomePage6 = () => {
 
         <div className="table-responsive">
           <Table
+            columns={columns.map(col => {
+              return {
+                ...col,
+                align: 'center'
+              }
+            })}
             dataSource={searchResult ? [searchResult] : sales}
-            columns={columns}
             rowKey="saleOrderNo"
-            className="user-table mt-3 custom-table"
+            className="user-table mt-3 custom-table "
             pagination={false}
           />
         </div>
