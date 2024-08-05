@@ -74,8 +74,10 @@ const QualityInboundDetails = () => {
 
   const checkFormValidity = () => {
     const atLeastOneParameterFilled = Object.keys(parameters).some(
-      (parameterName) =>
-        formData[parameterName] && formData[parameterName].trim() !== ""
+      (parameterName) => {
+        const value = formData[parameterName];
+        return value !== undefined && value !== null && value.trim() !== "";
+      }
     );
     setIsAtLeastOneParameterFilled(atLeastOneParameterFilled);
   };
@@ -140,6 +142,11 @@ const QualityInboundDetails = () => {
   }, []);
 
   const handleSave = async () => {
+    if (!isAtLeastOneParameterFilled) {
+      setIsModalVisible(true);
+      return;
+    }
+
     // Filter the data to only include parameters with non-empty values
     let data = Object.keys(parameters).reduce((acc, parameterName) => {
       if (formData[parameterName] && formData[parameterName].trim() !== "") {
@@ -149,12 +156,6 @@ const QualityInboundDetails = () => {
     }, {});
 
     console.log("Form data being sent:", data);
-
-    // Check if at least one parameter has a non-empty value
-    if (Object.keys(data).length === 0) {
-      setIsModalVisible(true);
-      return;
-    }
 
     try {
       const response = await fetch(
@@ -181,6 +182,8 @@ const QualityInboundDetails = () => {
       setIsModalVisible(true);
     }
   };
+
+
   const handleSuccessOk = () => {
     setIsSuccessModalVisible(false);
     navigate("/quality-dashboard"); // Replace '/home' with the actual path to your home page
@@ -438,8 +441,7 @@ const QualityInboundDetails = () => {
                               onClick={handleSave}
                               disabled={!isAtLeastOneParameterFilled}
                             >
-                              <FontAwesomeIcon icon={faSave} className="me-1" />{" "}
-                              Save
+                              <FontAwesomeIcon icon={faSave} className="me-1" /> Save
                             </button>
                           </div>
                         </div>
