@@ -71,7 +71,7 @@ function ProcessOrder() {
     sessionStorage.setItem("balanceQty", balance.toString());
     sessionStorage.setItem("lumpsBalance", lumpsbalance.toString());
     sessionStorage.setItem("finesBalance", finesbalance.toString());
-  }, [balanceQty, balance, lumpsBalance, finesBalance]);
+  }, []);
 
   useEffect(() => {
     if (vehicleNo) {
@@ -234,8 +234,12 @@ function ProcessOrder() {
       vehicleNo: vehicleNo.value,
       transporterName,
     };
-
-    fetch("http://localhost:8080/api/v1/salesProcess/salesProcess", {
+  
+    const apiUrl = selectedFollowOnOrder
+      ? `http://localhost:8080/api/v1/salesProcess/salesProcess?saleOrder=${formsaleOrderNo}`
+      : "http://localhost:8080/api/v1/salesProcess/salesProcess";
+  
+    fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -279,13 +283,15 @@ function ProcessOrder() {
         });
       });
   };
+  
 
   const fetchFollowOnOrders = () => {
     const queryParams = new URLSearchParams({
       customerName,
       customerAddress,
       productName: formProductName,
-      saleOrder: saleOrderNo
+      saleOrder: saleOrderNo,
+      productType: productType
     });
 
     fetch(`http://localhost:8080/api/v1/sales/saleOrderList?${queryParams}`)
@@ -302,19 +308,30 @@ function ProcessOrder() {
 
   const handleFollowOnOrderSelect = (value) => {
     setSelectedFollowOnOrder(value);
+    const selectedOrder = followOnOrders.find(order => order.saleOrderNo === value);
+    if (selectedOrder && productType === "Lumps") {
+      setlumpsBalance(selectedOrder.lumps);
+    }
+    if (selectedOrder && productType === "Fines") {
+      setfinesBalance(selectedOrder.fines);
+    }
   };
-
+  
   const handleFollowOnModalOk = () => {
     if (selectedFollowOnOrder) {
-      setIsFollowOnModalVisible(false);
       const selectedOrder = followOnOrders.find(order => order.saleOrderNo === selectedFollowOnOrder);
+      setIsFollowOnModalVisible(false);
       setFormsaleOrderNo(selectedOrder.saleOrderNo);
       setBalance(selectedOrder.balanceQuantity);
-      Swal.fire('Success', 'Follow-on order selected', 'success');
+  
+      // Redirect to the sales pass page with the new sale order number
+      navigate('/ProcessOrder', { state: { saleOrderNo: selectedOrder.saleOrderNo } });
+      Swal.fire('Success', `${saleOrderNo} order selected`, 'success');
     } else {
       Swal.fire('Warning', 'Please select a follow-on order', 'warning');
     }
   };
+  
 
   const handleFollowOnModalCancel = () => {
     setIsFollowOnModalVisible(false);
@@ -335,16 +352,33 @@ function ProcessOrder() {
             </Link>
           </div>
           <div className="sales-process-card-container">
-            <div className="card" style={{
-              boxShadow: "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
-            }}>
+            <div
+              className="card"
+              style={{
+                boxShadow:
+                  "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
+              }}
+            >
               <div className="card-body p-4">
                 <form>
-                  <p style={{ color: "red" }}>Please fill all * marked fields.</p>
+                  <p style={{ color: "red" }}>
+                    Please fill all * marked fields.
+                  </p>
                   <div className="row mb-2">
                     <div className="col-md-4">
-                      <label htmlFor="purchaseOrderNo" className="form-label">
-                        Sales Order No <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      <label
+                        htmlFor="purchaseOrderNo"
+                        className="form-label"
+                      >
+                        Sales Order No{" "}
+                        <span
+                          style={{
+                            color: "red",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -352,14 +386,27 @@ function ProcessOrder() {
                         id="purchaseOrderNo"
                         placeholder="Enter Purchase Order No"
                         value={formsaleOrderNo}
-                        onChange={(e) => setFormsaleOrderNo(e.target.value)}
+                        onChange={(e) =>
+                          setFormsaleOrderNo(e.target.value)
+                        }
                         required
                         disabled
                       />
                     </div>
                     <div className="col-md-4">
-                      <label htmlFor="productName" className="form-label">
-                        Product Name <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      <label
+                        htmlFor="productName"
+                        className="form-label"
+                      >
+                        Product Name{" "}
+                        <span
+                          style={{
+                            color: "red",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -367,13 +414,18 @@ function ProcessOrder() {
                         id="productName"
                         placeholder="Enter Product Name"
                         value={formProductName}
-                        onChange={(e) => setFormProductName(e.target.value)}
+                        onChange={(e) =>
+                          setFormProductName(e.target.value)
+                        }
                         required
                         disabled
                       />
                     </div>
                     <div className="col-md-4">
-                      <label htmlFor="productType" className="form-label">
+                      <label
+                        htmlFor="productType"
+                        className="form-label"
+                      >
                         Product Type
                       </label>
                       <select
@@ -381,12 +433,16 @@ function ProcessOrder() {
                         id="productType"
                         value={productType}
                         required
-                        onChange={(e) => setProductType(e.target.value)}
+                        onChange={(e) =>
+                          setProductType(e.target.value)
+                        }
                         disabled={!productTypes.length}
                       >
                         <option value="">Select Product Type</option>
                         {productTypes.map((type, index) => (
-                          <option key={index} value={type}>{type}</option>
+                          <option key={index} value={type}>
+                            {type}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -394,7 +450,15 @@ function ProcessOrder() {
                   <div className="row mb-2">
                     <div className="col-md-6">
                       <label htmlFor="vehicleNo" className="form-label">
-                        Vehicle No <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                        Vehicle No{" "}
+                        <span
+                          style={{
+                            color: "red",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          *
+                        </span>
                       </label>
                       <button
                         className="btn btn-sm border btn-success-1 btn-hover"
@@ -426,19 +490,34 @@ function ProcessOrder() {
                       />
                     </div>
                     <div className="col-md-6">
-                      <label htmlFor="transporterName" className="form-label">
-                        Transporter Name <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+                      <label
+                        htmlFor="transporterName"
+                        className="form-label"
+                      >
+                        Transporter Name{" "}
+                        <span
+                          style={{
+                            color: "red",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          *
+                        </span>
                       </label>
                       <select
                         className="form-select"
                         id="transporterName"
                         value={transporterName}
-                        onChange={(e) => setTransporterName(e.target.value)}
+                        onChange={(e) =>
+                          setTransporterName(e.target.value)
+                        }
                         required
                       >
                         <option value="">Select Transporter Name</option>
                         {transporters.map((transporter, index) => (
-                          <option key={index} value={transporter}>{transporter}</option>
+                          <option key={index} value={transporter}>
+                            {transporter}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -455,7 +534,10 @@ function ProcessOrder() {
                       }}
                       onClick={handleClear}
                     >
-                      <FontAwesomeIcon icon={faEraser} className="me-1" />
+                      <FontAwesomeIcon
+                        icon={faEraser}
+                        className="me-1"
+                      />
                       Clear
                     </button>
                     <button
@@ -469,36 +551,45 @@ function ProcessOrder() {
                       }}
                       onClick={handleSave}
                     >
-                      <FontAwesomeIcon icon={faSave} className="me-1" />
+                      <FontAwesomeIcon
+                        icon={faSave}
+                        className="me-1"
+                      />
                       Save
                     </button>
                   </div>
                 </form>
               </div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
 
       <Modal
-        title="Select Follow-on Order"
-        open={isFollowOnModalVisible}
-        onOk={handleFollowOnModalOk}
-        onCancel={handleFollowOnModalCancel}
+  title="Select Follow-on Order"
+  open={isFollowOnModalVisible}
+  onOk={handleFollowOnModalOk}
+  onCancel={handleFollowOnModalCancel}
+>
+  <AntSelect
+    style={{ width: "100%" }}
+    placeholder="Select a follow-on order"
+    onChange={handleFollowOnOrderSelect}
+    value={selectedFollowOnOrder}
+  >
+    {followOnOrders.map((order) => (
+      <Option
+        key={order.saleOrderNo}
+        value={order.saleOrderNo}
       >
-        <AntSelect
-          style={{ width: '100%' }}
-          placeholder="Select a follow-on order"
-          onChange={handleFollowOnOrderSelect}
-          value={selectedFollowOnOrder}
-        >
-          {followOnOrders.map(order => (
-            <Option key={order.saleOrderNo} value={order.saleOrderNo}>
-              {order.saleOrderNo} - Balance: {order.balanceQuantity}
-            </Option>
-          ))}
-        </AntSelect>
-      </Modal>
+        {order.saleOrderNo} - Balance: {order.balanceQuantity}
+        {productType === "Lumps" && ` - Lumps Balance: ${order.lumps}`}
+        {productType === "Fines" && ` - Fines Balance: ${order.fines}`}
+      </Option>
+    ))}
+  </AntSelect>
+</Modal>
+
     </SideBar6>
   );
 }
