@@ -184,12 +184,12 @@ const HomePage6 = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
-        <div>
+        <div className='d-flex gap-1'>
           <Tooltip title="View Sales Pass">
             <Button
               icon={<VisibilityIcon />}
               onClick={() => handleViewClick(record.saleOrderNo)}
-              style={{ marginRight: '8px' }}
+             
             />
           </Tooltip>
         
