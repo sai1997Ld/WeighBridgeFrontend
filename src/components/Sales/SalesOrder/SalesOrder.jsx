@@ -17,8 +17,8 @@ function SalesOrder() {
   const [orderedQuantity, setOrderedQuantity] = useState(0);
   const [brokerName, setBrokerName] = useState("");
   const [brokerAddress, setBrokerAddress] = useState("");
-  const [lumps, setLumps] = useState(0); // New state for Lumps
-  const [fines, setFines] = useState(0); // New state for Fines
+  const [lumps, setLumps] = useState(0); 
+  const [fines, setFines] = useState(0); 
   const [customerNames, setCustomerNames] = useState([]);
   const [productNames, setProductNames] = useState([]);
   const [requiresLumpsAndFines, setRequiresLumpsAndFines] = useState(false);
@@ -51,12 +51,15 @@ function SalesOrder() {
       setOrderedQuantity(parsedData.orderedQuantity || 0);
       setBrokerName(parsedData.brokerName || "");
       setBrokerAddress(parsedData.brokerAddress || "");
-      setLumps(parsedData.lumps || 0); // Load Lumps
-      setFines(parsedData.fines || 0); // Load Fines
-
+      setLumps(parsedData.lumps || 0); 
+      setFines(parsedData.fines || 0); 
       sessionStorage.removeItem("salesOrderFormData");
     }
   }, []);
+
+  useEffect(() => {
+    setRequiresLumpsAndFines(productName === "Sponge Iron");
+  }, [productName]);
 
   const handleAddCustomer = () => {
     sessionStorage.setItem(
@@ -104,8 +107,8 @@ function SalesOrder() {
     setOrderedQuantity(0);
     setBrokerName("");
     setBrokerAddress("");
-    setLumps(0); // Clear Lumps
-    setFines(0); // Clear Fines
+    setLumps(0); 
+    setFines(0); 
   };
 
   const handleSave = () => {
@@ -117,7 +120,7 @@ function SalesOrder() {
       productName.trim() === "" ||
       orderedQuantity === 0 ||
       saleOrderNo.trim() === "" ||
-      (requiresLumpsAndFines && (lumps === 0 || fines === 0))
+      (requiresLumpsAndFines && (lumps === " " || lumps === 0 || fines === "  " || fines === 0))
     ) {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -140,8 +143,8 @@ function SalesOrder() {
       brokerName,
       brokerAddress,
       userId,
-      lumps, // Include Lumps
-      fines  // Include Fines
+      lumps,
+      fines  
     };
 
     fetch("http://localhost:8080/api/v1/sales/add/salesdetail", {
@@ -366,10 +369,10 @@ function SalesOrder() {
                         className="form-control"
                         id="orderedQuantity"
                         placeholder="Enter Ordered Quantity"
-                        value={orderedQuantity}
+                        value={orderedQuantity || 0}
                         required
                         onChange={(e) => {
-                          const newValue = Math.max(
+                          const newValue = e.target.value === "" ? 0 : Math.max(
                             0,
                             parseFloat(e.target.value, 10)
                           );
@@ -382,7 +385,7 @@ function SalesOrder() {
                   <div className="row mb-2">
                     <div className="col-md-6">
                       <label htmlFor="lumps" className="form-label">
-                        Lumps
+                        Lumps (in %)
                         
                       </label>
                       <input
@@ -390,9 +393,9 @@ function SalesOrder() {
                         className="form-control"
                         id="lumps"
                         placeholder="Enter Lumps"
-                        value={lumps}
+                        value={lumps || 0}
                         onChange={(e) => {
-                          const newValue = Math.max(
+                          const newValue = e.target.value === "" ? 0 : Math.max(
                             0,
                             parseFloat(e.target.value, 10)
                           );
@@ -402,16 +405,16 @@ function SalesOrder() {
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="fines" className="form-label">
-                        Fines
+                        Fines (in %)
                       </label>
                       <input
                         type="number"
                         className="form-control"
                         id="fines"
                         placeholder="Enter Fines"
-                        value={fines}
+                        value={fines || 0}
                         onChange={(e) => {
-                          const newValue = Math.max(
+                          const newValue = e.target.value === "" ? 0 : Math.max(
                             0,
                             parseFloat(e.target.value, 10)
                           );
