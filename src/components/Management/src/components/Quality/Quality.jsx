@@ -360,29 +360,19 @@ function ManagementQuality() {
         return;
       }
   
-      let formattedDate = "";
+      let apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
+  
       if (selectedDate) {
-        // Format the selected date as "DD-MM-YYYY"
-        const year = selectedDate.year();
-        const month = String(selectedDate.month() + 1).padStart(2, "0");
-        const day = String(selectedDate.date()).padStart(2, "0");
-        formattedDate = `${day}-${month}-${year}`;
+        // Format the selected date as "YYYY-MM-DD"
+        const formattedDate = selectedDate.format("YYYY-MM-DD");
+        apiUrl += `?date=${formattedDate}`;
       }
   
-      const apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
-  
-      const requestPayload = {
-        fromDate: formattedDate,
-        companyName: `${selectedCompany}`,
-        siteName: `${selectedSiteName}`,
-      };
-  
       const response = await fetch(apiUrl, {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestPayload),
         credentials: "include",
       });
   
@@ -396,11 +386,17 @@ function ManagementQuality() {
       console.error("Error fetching API data:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchApiData();
-  }, [selectedDate]);
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
+  useEffect(() => {
+    if (selectedDate) {
+      fetchApiData();
+    }
+  }, [selectedDate]);
+  
   useEffect(() => {
     if (filteredData.length !== allData.length) {
       setCurrentPage(0);
@@ -422,17 +418,17 @@ function ManagementQuality() {
             style={{ marginTop: "1rem", marginBottom: "1rem" }}
           >
             <div style={{ flex: "1" }}>
-            <DatePicker
-  value={selectedDate}
-  onChange={handleDateChange}
-  disabledDate={disabledFutureDate}
-  format="DD-MM-YYYY"
-  style={{
-    borderRadius: "5px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  }}
-  placeholder="Select date"
-/>
+              <DatePicker
+                value={selectedDate}
+                onChange={handleDateChange}
+                disabledDate={disabledFutureDate}
+                format="DD-MM-YYYY"
+                style={{
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+                placeholder="Select date"
+              />
             </div>
             <div style={{ flex: "1", textAlign: "center" }}>
               <h2
@@ -479,7 +475,7 @@ function ManagementQuality() {
                   placeholder="Select a search option"
                   style={{ width: "200px" }}
                   onChange={handleSearchOptionChange}
-                  // suffixIcon={<SearchOutlined />}
+                // suffixIcon={<SearchOutlined />}
                 >
                   <Option value="ticketNo">Search by Ticket No</Option>
                   <Option value="vehicleNo">Search by Vehicle No</Option>
@@ -695,20 +691,20 @@ function ManagementQuality() {
               </StyledTable>
             </div>
           </div>
-         {/* Pagination */}
-         <div className="d-flex justify-content-center mt-3">
+          {/* Pagination */}
+          <div className="d-flex justify-content-center mt-3">
 
-         <Pagination
-  current={currentPage + 1}
-  total={apiData.length}  // Change this line
-  pageSize={itemsPerPage}
-  showSizeChanger={false}
-  showQuickJumper
-  showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
-  onChange={(page) => setCurrentPage(page - 1)}
-  style={{ marginBottom: '20px' }}
-/>
-</div>
+            <Pagination
+              current={currentPage + 1}
+              total={apiData.length}  // Change this line
+              pageSize={itemsPerPage}
+              showSizeChanger={false}
+              showQuickJumper
+              showTotal={(total, range) => ` Showing ${range[0]}-${range[1]} of ${total} entries`}
+              onChange={(page) => setCurrentPage(page - 1)}
+              style={{ marginBottom: '20px' }}
+            />
+          </div>
         </div>
       </div>
       <Modal
