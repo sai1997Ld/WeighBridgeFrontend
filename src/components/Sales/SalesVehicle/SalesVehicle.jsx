@@ -292,9 +292,12 @@ function SalesVehicle() {
                         className="form-control"
                         id="vehicleLoadCapacity"
                         placeholder={`Enter Vehicle Load Capacity in ${loadCapacityUnit}`}
-                        value={vehicleLoadCapacity}
+                        value={vehicleLoadCapacity || 0}
                         onChange={(e) => {
-                          const newValue = Math.max(0, parseFloat(e.target.value, 10));
+                          const newValue = e.target.value === "" ? 0 : Math.max(
+                            0,
+                            parseFloat(e.target.value, 10)
+                          );
                           setVehicleLoadCapacity(newValue);
                         }}
                       />
