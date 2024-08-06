@@ -184,16 +184,16 @@ const HomePage6 = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
-        <div>
+        <div className='d-flex gap-1'>
           <Tooltip title="View Sales Pass">
             <Button
               icon={<VisibilityIcon />}
               onClick={() => handleViewClick(record.saleOrderNo)}
-              style={{ marginRight: '8px' }}
+             
             />
           </Tooltip>
         
-          {record.balanceQty > 0 && record.balanceQty <= 8 && (
+          {/* {record.balanceQty > 0 && record.balanceQty <= 8 && ( */}
             <Tooltip title="Close Sales Order">
               <Button
                 icon={<FontAwesomeIcon icon={faTimes} />}
@@ -201,7 +201,7 @@ const HomePage6 = () => {
                 style={{ backgroundColor: "#ff4d4f", color: "white" }}
               />
             </Tooltip>
-          )}
+          
         </div>
       ),
     },
