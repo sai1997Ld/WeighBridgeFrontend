@@ -354,28 +354,34 @@ function ManagementQuality() {
     try {
       const selectedCompany = sessionStorage.getItem("company");
       const selectedSiteName = sessionStorage.getItem("site");
-  
+
       if (!selectedCompany || !selectedSiteName) {
         console.error("Company or site name not selected");
         return;
       }
-  
+
       let apiUrl = `http://localhost:8080/api/v1/management/completedQualities/GoodOrBad`;
-  
+
       if (selectedDate) {
-        // Format the selected date as "YYYY-MM-DD"
+        // Format the selected date as "YYYY-MM-DD" for the query parameter
         const formattedDate = selectedDate.format("YYYY-MM-DD");
         apiUrl += `?date=${formattedDate}`;
       }
-  
+
+      const payload = {
+        companyName: selectedCompany,
+        siteName: selectedSiteName,
+      };
+
       const response = await fetch(apiUrl, {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(payload),
         credentials: "include",
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setApiData(data);
@@ -387,16 +393,16 @@ function ManagementQuality() {
     }
   };
 
+  // This effect runs once when the component mounts
   useEffect(() => {
     fetchApiData();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+  }, []);
 
+  // This effect runs when selectedDate changes
   useEffect(() => {
-    if (selectedDate) {
-      fetchApiData();
-    }
+    fetchApiData();
   }, [selectedDate]);
-  
+
   useEffect(() => {
     if (filteredData.length !== allData.length) {
       setCurrentPage(0);
@@ -420,7 +426,7 @@ function ManagementQuality() {
             <div style={{ flex: "1" }}>
               <DatePicker
                 value={selectedDate}
-                onChange={handleDateChange}
+                onChange={(date) => setSelectedDate(date)}
                 disabledDate={disabledFutureDate}
                 format="DD-MM-YYYY"
                 style={{
