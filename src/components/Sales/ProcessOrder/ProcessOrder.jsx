@@ -201,7 +201,7 @@ function ProcessOrder() {
       .then((data) => {
         console.log("New order created:", data);
         Swal.fire({
-          title: "New order created successfully",
+          title: "New order sales pass created successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
