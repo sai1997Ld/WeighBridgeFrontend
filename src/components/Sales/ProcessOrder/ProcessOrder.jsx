@@ -172,7 +172,6 @@ function ProcessOrder() {
     });
   };
 
-
   const createNewOrder = () => {
     const salesProcessData = {
       saleOrderNo: formsaleOrderNo,
@@ -202,7 +201,7 @@ function ProcessOrder() {
       .then((data) => {
         console.log("New order created:", data);
         Swal.fire({
-          title: "New order created successfully",
+          title: "New order sales pass created successfully",
           icon: "success",
           confirmButtonText: "OK",
         });
@@ -220,6 +219,31 @@ function ProcessOrder() {
       });
   };
 
+  const fetchFollowOnOrders = () => {
+    const queryParams = new URLSearchParams({
+      customerName: formCustomerName,
+      customerAddress: formCustomerAddress,
+      productName: formProductName,
+      saleOrder: formsaleOrderNo,
+      productType: productType
+    });
+
+    fetch(`http://localhost:8080/api/v1/sales/saleOrderList?${queryParams}`)
+      .then(response => response.json())
+      .then(data => {
+        setFollowOnOrders(data);
+        setIsFollowOnModalVisible(true);
+      })
+      .catch(error => {
+        console.error('Error fetching follow-on orders:', error);
+        Swal.fire('Error', 'Failed to fetch follow-on orders', 'error');
+      });
+  };
+
+  const handleFollowOnOrderSelect = (value) => {
+    setSelectedFollowOnOrder(value);
+  };
+
   const saveSalesPass = () => {
     const salesProcessData = {
       saleOrderNo: formsaleOrderNo,
@@ -229,9 +253,10 @@ function ProcessOrder() {
       transporterName,
     };
   
-    const apiUrl = selectedFollowOnOrder
-      ? `http://localhost:8080/api/v1/salesProcess/salesProcess?saleOrder=${formsaleOrderNo}`
-      : "http://localhost:8080/api/v1/salesProcess/salesProcess";
+    let apiUrl = "http://localhost:8080/api/v1/salesProcess/salesProcess";
+    if (selectedFollowOnOrder) {
+      apiUrl += `?saleOrder=${selectedFollowOnOrder}`;
+    }
   
     fetch(apiUrl, {
       method: "POST",
@@ -278,62 +303,10 @@ function ProcessOrder() {
       });
   };
 
-  const fetchFollowOnOrders = () => {
-    const queryParams = new URLSearchParams({
-      customerName: formCustomerName,
-      customerAddress: formCustomerAddress,
-      productName: formProductName,
-      saleOrder: formsaleOrderNo,
-      productType: productType
-    });
-
-    fetch(`http://localhost:8080/api/v1/sales/saleOrderList?${queryParams}`)
-      .then(response => response.json())
-      .then(data => {
-        setFollowOnOrders(data);
-        setIsFollowOnModalVisible(true);
-      })
-      .catch(error => {
-        console.error('Error fetching follow-on orders:', error);
-        Swal.fire('Error', 'Failed to fetch follow-on orders', 'error');
-      });
-  };
-
-  const handleFollowOnOrderSelect = (value) => {
-    setSelectedFollowOnOrder(value);
-    const selectedOrder = followOnOrders.find(order => order.saleOrderNo === value);
-    if (selectedOrder) {
-      if (productType === "Lumps") {
-        setlumpsBalance(selectedOrder.lumps);
-      } else if (productType === "Fines") {
-        setfinesBalance(selectedOrder.fines);
-      }
-      setBalance(selectedOrder.balanceQuantity);
-      setFormCustomerName(selectedOrder.customerName);
-      setFormCustomerAddress(selectedOrder.customerAddress);
-    }
-  };
-  
   const handleFollowOnModalOk = () => {
     if (selectedFollowOnOrder) {
-      const selectedOrder = followOnOrders.find(order => order.saleOrderNo === selectedFollowOnOrder);
       setIsFollowOnModalVisible(false);
-      setFormsaleOrderNo(selectedOrder.saleOrderNo);
-      setBalance(selectedOrder.balanceQuantity);
-      setFormCustomerName(selectedOrder.customerName);
-      setFormCustomerAddress(selectedOrder.customerAddress);
-  
-      navigate('/ProcessOrder', { 
-        state: { 
-          saleOrderNo: selectedOrder.saleOrderNo,
-          customerName: selectedOrder.customerName,
-          customerAddress: selectedOrder.customerAddress,
-          balanceQty: selectedOrder.balanceQuantity,
-          lumpsBalance: selectedOrder.lumps,
-          finesBalance: selectedOrder.fines
-        } 
-      });
-      Swal.fire('Success', `${selectedOrder.saleOrderNo} order selected`, 'success');
+      saveSalesPass();
     } else {
       Swal.fire('Warning', 'Please select a follow-on order', 'warning');
     }
@@ -341,6 +314,7 @@ function ProcessOrder() {
 
   const handleFollowOnModalCancel = () => {
     setIsFollowOnModalVisible(false);
+    setSelectedFollowOnOrder(null);
   };
 
   return (
@@ -370,6 +344,11 @@ function ProcessOrder() {
                   <p style={{ color: "red" }}>
                     Please fill all * marked fields.
                   </p>
+                  <div className="row mb-3 border border-1 border-black p-2 bg-body-secondary font-monospace">
+                      <strong className="col-md-4">Balance: {balance}</strong>
+                      <strong className="col-md-4">Lumps-Balance: {lumpsBalance}</strong>
+                      <strong className="col-md-4">Fines-Balance: {finesBalance}</strong>
+                  </div>
                   <div className="row mb-2">
                     <div className="col-md-4">
                       <label
