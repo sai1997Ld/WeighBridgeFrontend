@@ -212,19 +212,32 @@ function QualityCompleted() {
     }
   };
 
-  const menu = (
-    <Menu onClick={handleMaterialFilter}>
-      <Menu.SubMenu key="1" title="Product/Material">
-        {materialOptions.map((option, index) => (
-          <Menu.Item key={`material-${index}`}>{option}</Menu.Item>
-        ))}
-      </Menu.SubMenu>
-      <Menu.SubMenu key="2" title="Transaction Type">
-        <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
-        <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
-  );
+  const menu = {
+    items: [
+      {
+        key: '1',
+        label: 'Product/Material',
+        children: materialOptions.map((option, index) => ({
+          key: `material-${index}`,
+          label: option,
+        })),
+      },
+      {
+        key: '2',
+        label: 'Transaction Type',
+        children: [
+          {
+            key: 'transaction-inbound',
+            label: 'Inbound',
+          },
+          {
+            key: 'transaction-outbound',
+            label: 'Outbound',
+          },
+        ],
+      },
+    ],
+  };
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -683,7 +696,7 @@ function QualityCompleted() {
                 </div>
               </div>
               <div className="col-12 col-md-3 d-flex justify-content-end">
-                <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
+              <Dropdown menu={{ items: menu, onClick: handleMaterialFilter }}>
                   <Button icon={<FilterOutlined />}>Filter</Button>
                 </Dropdown>
               </div>
@@ -892,7 +905,7 @@ function QualityCompleted() {
         </div>
         <Modal
           title="Print Report"
-          visible={showPrintModal}
+          open={showPrintModal}
           onCancel={() => setShowPrintModal(false)}
           footer={null}
         >

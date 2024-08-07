@@ -456,7 +456,7 @@ const QualityInboundDetails = () => {
       </div>
       <Modal
         title="Success"
-        visible={isSuccessModalVisible}
+        open={isSuccessModalVisible}
         onOk={handleSuccessOk}
         onCancel={handleSuccessOk}
         okText="OK"
@@ -465,7 +465,7 @@ const QualityInboundDetails = () => {
       </Modal>
       <Modal
         title="Error"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
         onCancel={handleOk}
         okText="OK"
