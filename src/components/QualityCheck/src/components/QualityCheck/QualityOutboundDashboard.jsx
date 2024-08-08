@@ -416,7 +416,7 @@ function QualityOutboundTransaction() {
 
             </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
-              <Dropdown menu={menu} onSelect={handleMaterialFilter}>
+              <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
                 <Button icon={<FilterOutlined />}>Filter</Button>
               </Dropdown>
             </div>

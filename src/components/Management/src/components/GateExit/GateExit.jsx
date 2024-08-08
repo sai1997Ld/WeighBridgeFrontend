@@ -227,13 +227,26 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     if (filterType === 'material') {
       setSelectedMaterial(filterValue);
       // Apply filter based on material only
-      fetchData(currentPage, selectedDate, filterValue); 
-
+      fetchData(currentPage, selectedDate, filterValue, selectedTransactionType); 
     } else if (filterType === 'transaction') {
       setSelectedTransactionType(filterValue);
+      // Apply filter based on transaction type only
+      fetchData(currentPage, selectedDate, selectedMaterial, filterValue);
     }
   };
+  
 
+  useEffect(() => {
+    if (currentPage !== null) {
+      fetchData(currentPage, selectedDate, selectedMaterial, selectedTransactionType);
+    }
+  }, [currentPage, selectedDate, selectedMaterial, selectedTransactionType]);
+  
+  useEffect(() => {
+    fetchData(0); // Initial fetch with page 0 and no date
+  }, []);
+
+  
   // Menu for material and transaction type filters
   const menu = (
     <Menu onClick={handleMaterialFilter}>
@@ -249,60 +262,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     </Menu>
   );
 
-  // const getFilteredData = () => {
-  //   return vehicleEntryDetails.filter((entry) => {
-  //     let matchesMaterial = true;
-  //     let matchesTransactionType = true;
-
-  //     if (selectedMaterial) {
-  //       matchesMaterial = entry.materialOrProduct === selectedMaterial;
-  //     }
-
-  //     if (selectedTransactionType) {
-  //       matchesTransactionType = entry.transactionType.toLowerCase() === selectedTransactionType;
-  //     }
-
-  //     return matchesMaterial && matchesTransactionType;
-  //   });
-  // };
-
-  // const filteredData = getFilteredData();
-
-  // const applyFilter = (data, material, transactionType) => {
-  //   const filtered = data.filter((entry) => {
-  //     let matchesMaterial = true;
-
-  //     if (material) {
-  //       matchesMaterial = entry.material.toLowerCase() === material.toLowerCase();
-  //     }
-
-  //     return matchesMaterial;
-  //   });
-
-  //   setFilteredData(filtered);
-  // };
-
-  const fetchDataByTransactionType = async (transactionType) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?vehicleStatus=completed&transactionType=${transactionType}`, {
-        credentials: "include" // Include credentials option here
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setFilteredData(data.transactions);
-    } catch (error) {
-      console.error('Error fetching vehicle entry details:', error);
-    }
-  };
-  // Fetch data by transaction type when selectedTransactionType changes
-  useEffect(() => {
-    if (selectedTransactionType) {
-      fetchDataByTransactionType(selectedTransactionType);
-    }
-  }, [selectedTransactionType]);
-
+  
   // API for Pagination:
 
   useEffect(() => {
@@ -348,7 +308,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
     fetchData(0); // Initial fetch with page 0 and no date
   }, []);
 
-  const fetchData = (pageNumber, date = selectedDate, material = selectedMaterial) => {
+  const fetchData = (pageNumber, date = selectedDate, material = selectedMaterial, transactionType = selectedTransactionType) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
   
@@ -369,11 +329,13 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
       const formattedDate = date.format('YYYY-MM-DD');
       apiUrl += `&date=${formattedDate}`;
     }
-
+  
     if (material) {
-
       apiUrl += `&materialName=${encodeURIComponent(material)}`;
-
+    }
+  
+    if (transactionType) {
+      apiUrl += `&transactionType=${transactionType}`;
     }
   
     fetch(apiUrl, {
@@ -407,6 +369,7 @@ const ManagementGateExit = ({ onConfirmTicket = () => { } }) => {
         console.error('Error fetching vehicle entry details:', error);
       });
   };
+  
 
 
   const pageCount = totalPage;

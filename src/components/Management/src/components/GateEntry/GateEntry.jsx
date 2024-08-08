@@ -228,12 +228,13 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     const [filterType, filterValue] = e.key.split('-');
     if (filterType === 'material') {
       setSelectedMaterial(filterValue);
-      fetchData(currentPage, selectedDate, filterValue); // This is correct
+      fetchData(currentPage, selectedDate, filterValue, selectedTransactionType);
     } else if (filterType === 'transaction') {
       setSelectedTransactionType(filterValue);
-      // You might want to handle transaction type filtering here
+      fetchData(currentPage, selectedDate, selectedMaterial, filterValue);
     }
   };
+  
 
   // Menu for material and transaction type filters
   const menu = (
@@ -283,26 +284,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
   //   setFilteredData(filtered);
   // };
 
-  const fetchDataByTransactionType = async (transactionType) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/v1/gate/transactions?transactionType=${transactionType}`, {
-        credentials: "include" // Include credentials option here
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setFilteredData(data.transactions);
-    } catch (error) {
-      console.error('Error fetching vehicle entry details:', error);
-    }
-  };
-  // Fetch data by transaction type when selectedTransactionType changes
-  useEffect(() => {
-    if (selectedTransactionType) {
-      fetchDataByTransactionType(selectedTransactionType);
-    }
-  }, [selectedTransactionType]);
+
 
   // API for Pagination:
 
@@ -349,7 +331,7 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
     fetchData(0); // Initial fetch with page 0 and no date
   }, []);
 
-  const fetchData = (pageNumber, date = selectedDate, material = selectedMaterial) => {
+  const fetchData = (pageNumber, date = selectedDate, material = selectedMaterial, transactionType = selectedTransactionType) => {
     const selectedCompany = sessionStorage.getItem('company');
     const selectedSiteName = sessionStorage.getItem('site');
 
@@ -373,6 +355,10 @@ const ManagementGateEntry = ({ onConfirmTicket = () => { } }) => {
 
     if (material) {
       apiUrl += `&materialName=${encodeURIComponent(material)}`;
+    }
+
+    if (transactionType) {
+      apiUrl += `&transactionType=${encodeURIComponent(transactionType)}`;
     }
 
     fetch(apiUrl, {

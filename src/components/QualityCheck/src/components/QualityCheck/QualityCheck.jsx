@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { Input, InputNumber, DatePicker, Select } from "antd";
 import moment from "moment";
 import { Button, Dropdown, Menu, Pagination } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, DownOutlined } from "@ant-design/icons";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
 import { Modal, Typography } from "antd";
@@ -269,25 +269,25 @@ function QualityCheck() {
 
   const fetchMaterialOptions = async () => {
     try {
-      const materialResponse = await fetch(
+      const response = await fetch(
         `http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials?userId=${userId}`,
         {
           credentials: "include",
         }
       );
-
-      if (materialResponse.ok) {
-        const materialData = await materialResponse.json();
-        const combinedOptions = [...materialData,];
-        setMaterialOptions(combinedOptions);
+      if (response.ok) {
+        const materialData = await response.json();
+        if (Array.isArray(materialData)) {
+          setMaterialOptions(materialData);
+        } else {
+          console.error("Material data is not an array:", materialData);
+          setMaterialOptions([]);
+        }
       } else {
-        console.error(
-          "Failed to fetch material or product options:",
-          materialResponse.status,
-        );
+        console.error("Failed to fetch material options:", response.status);
       }
     } catch (error) {
-      console.error("Error fetching material or product options:", error);
+      console.error("Error fetching material options:", error);
     }
   };
 
@@ -645,9 +645,11 @@ function QualityCheck() {
 
             </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
-            <Dropdown menu={{ items: menu, onClick: handleMaterialFilter }}>
-                <Button icon={<FilterOutlined />}>Filter</Button>
-              </Dropdown>
+            <Dropdown overlay={<Menu items={menu.items} onClick={handleMaterialFilter} />}>
+  <Button icon={<FilterOutlined />}>
+    Filter <DownOutlined />
+  </Button>
+</Dropdown>
             </div>
           </div>
 

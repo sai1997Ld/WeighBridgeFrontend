@@ -143,34 +143,33 @@ function ManagementQuality() {
   };
 
   const handleMaterialFilter = async ({ key }) => {
+    setCurrentPage(0);
+    let filteredData = [];
+  
     if (key === "transaction-inbound") {
       setSelectedTransactionType("Inbound");
-      setCurrentPage(0);
-      const inboundTransactions = await fetchInboundTransactions();
-      setApiData(inboundTransactions);
+      filteredData = await fetchInboundTransactions();
     } else if (key === "transaction-outbound") {
       setSelectedTransactionType("Outbound");
-      setCurrentPage(0);
-      const outboundTransactions = await fetchOutboundTransactions();
-      setApiData(outboundTransactions);
+      filteredData = await fetchOutboundTransactions();
     } else if (key === "quality-good") {
-      const goodQualities = await fetchGoodQualities();
-      setApiData(goodQualities);
+      filteredData = await fetchGoodQualities();
     } else if (key === "quality-bad") {
-      const badQualities = await fetchBadQualities();
-      setApiData(badQualities);
+      filteredData = await fetchBadQualities();
     }
+  
+    setApiData(filteredData);
   };
 
   const menu = (
     <Menu onClick={handleMaterialFilter}>
-      <Menu.SubMenu key="2" title="Transaction Type">
-        <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
-        <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
-      </Menu.SubMenu>
       <Menu.SubMenu key="3" title="Quality Type">
         <Menu.Item key="quality-good">Good</Menu.Item>
         <Menu.Item key="quality-bad">Bad</Menu.Item>
+      </Menu.SubMenu>
+      <Menu.SubMenu key="2" title="Transaction Type">
+        <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
+        <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
       </Menu.SubMenu>
     </Menu>
   );
@@ -262,26 +261,22 @@ function ManagementQuality() {
     try {
       const selectedCompany = sessionStorage.getItem("company");
       const selectedSiteName = sessionStorage.getItem("site");
-
+  
       if (!selectedCompany || !selectedSiteName) {
         console.error("Company or site name not selected");
-        return;
+        return [];
       }
-
+  
       const apiUrl = `http://localhost:8080/api/v1/management/goodQualities`;
-
-      // Format the selected date as "DD-MM-YYYY"
-      const year = selectedDate.year();
-      const month = String(selectedDate.month() + 1).padStart(2, "0");
-      const day = String(selectedDate.date()).padStart(2, "0");
-      const formattedDate = `${day}-${month}-${year}`;
-
+      const date = selectedDate ? selectedDate : moment();
+      const formattedDate = date.format("DD-MM-YYYY");
+  
       const requestPayload = {
         fromDate: formattedDate,
         companyName: selectedCompany,
         siteName: selectedSiteName,
       };
-
+  
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
@@ -290,10 +285,10 @@ function ManagementQuality() {
         body: JSON.stringify(requestPayload),
         credentials: "include",
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        return data;
+        return data.filter(item => item.qualityType === "Good");
       } else {
         console.error("Failed to fetch good qualities:", response.status);
         return [];
@@ -303,31 +298,27 @@ function ManagementQuality() {
       return [];
     }
   };
-
+  
   const fetchBadQualities = async () => {
     try {
       const selectedCompany = sessionStorage.getItem("company");
       const selectedSiteName = sessionStorage.getItem("site");
-
+  
       if (!selectedCompany || !selectedSiteName) {
         console.error("Company or site name not selected");
-        return;
+        return [];
       }
-
+  
       const apiUrl = `http://localhost:8080/api/v1/management/badQualities`;
-
-      // Format the selected date as "DD-MM-YYYY"
-      const year = selectedDate.year();
-      const month = String(selectedDate.month() + 1).padStart(2, "0");
-      const day = String(selectedDate.date()).padStart(2, "0");
-      const formattedDate = `${day}-${month}-${year}`;
-
+      const date = selectedDate ? selectedDate : moment();
+      const formattedDate = date.format("DD-MM-YYYY");
+  
       const requestPayload = {
         fromDate: formattedDate,
         companyName: selectedCompany,
         siteName: selectedSiteName,
       };
-
+  
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
@@ -336,10 +327,11 @@ function ManagementQuality() {
         body: JSON.stringify(requestPayload),
         credentials: "include",
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        return data;
+        console.log("Bad qualities data received:", data);
+        return data.filter(item => item.qualityType === "Bad");
       } else {
         console.error("Failed to fetch bad qualities:", response.status);
         return [];
@@ -349,7 +341,7 @@ function ManagementQuality() {
       return [];
     }
   };
-
+  
   const fetchApiData = async () => {
     try {
       const selectedCompany = sessionStorage.getItem("company");

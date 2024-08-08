@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { Input, InputNumber, DatePicker, Select, Modal } from "antd";
 import moment from "moment";
 import { Button, Dropdown, Menu, Pagination } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, DownOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
@@ -696,9 +696,11 @@ function QualityCompleted() {
                 </div>
               </div>
               <div className="col-12 col-md-3 d-flex justify-content-end">
-              <Dropdown menu={{ items: menu, onClick: handleMaterialFilter }}>
-                  <Button icon={<FilterOutlined />}>Filter</Button>
-                </Dropdown>
+              <Dropdown overlay={<Menu items={menu.items} onClick={handleMaterialFilter} />}>
+  <Button icon={<FilterOutlined />}>
+    Filter <DownOutlined />
+  </Button>
+</Dropdown>
               </div>
             </div>
             <div
