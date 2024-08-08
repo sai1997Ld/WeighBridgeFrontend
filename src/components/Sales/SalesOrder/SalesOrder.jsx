@@ -132,6 +132,17 @@ function SalesOrder() {
       });
       return;
     }
+    if ((lumps+fines) !== 100) {
+      Swal.fire({
+        title: "Lumps and Fines percentage should sum up to 100.",
+        icon: "warning",
+        confirmButtonText: "OK",
+        customClass: {
+          confirmButton: "btn btn-warning",
+        },
+      });
+      return;
+    }
     const salesData = {
       purchaseOrderedDate,
       purchaseOrderNo,
@@ -330,7 +341,7 @@ function SalesOrder() {
                         id="customerAddress"
                         placeholder="Customer Address"
                         value={customerAddress}
-                        readOnly
+                        disabled
                       />
                     </div>
                   </div>
