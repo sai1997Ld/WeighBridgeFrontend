@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import "./ProcessOrder.css";
 import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faHome, faTruck } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faTruck, faCarAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { Modal, Select as AntSelect } from 'antd';
@@ -91,6 +91,10 @@ function ProcessOrder() {
     setVehicleNo("");
     setTransporterName("");
   };
+
+  const handleAddTransporter = () => {
+        navigate("/SalesTransporter")
+  }
 
   const handleAddVehicle = () => {
     sessionStorage.setItem(
@@ -488,6 +492,25 @@ function ProcessOrder() {
                           *
                         </span>
                       </label>
+                      <button
+                      className="btn btn-sm border btn-success-1 btn-hover"
+                      style={{
+                        borderRadius: "5px",
+                        marginLeft: "5px",
+                        backgroundColor: "lightblue",
+                      }}
+                    >
+                      <div
+                        onClick={handleAddTransporter}
+                        style={{
+                          display: "block",
+                          textDecoration: "none",
+                          color: "black",
+                        }}
+                      >
+                        Add <FontAwesomeIcon icon={faCarAlt} />
+                      </div>
+                    </button>
                       <select
                         className="form-select"
                         id="transporterName"

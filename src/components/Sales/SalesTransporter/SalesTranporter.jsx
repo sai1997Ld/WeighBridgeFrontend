@@ -102,7 +102,6 @@ function SalesTransporter() {
           },
         });
         handleClear();
-        navigate("/SalesVehicle");
       })
       .catch((error) => {
         Swal.fire({
