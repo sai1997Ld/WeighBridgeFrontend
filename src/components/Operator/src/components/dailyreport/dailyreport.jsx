@@ -89,7 +89,7 @@ const DailyReport = () => {
   return (
     <SideBar5>
       <div className="container-fluid mt-0">
-        <div className="mb-3 mt-1 text-center">
+        <div className="mb-3 mt-3 text-center">
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>

@@ -97,7 +97,7 @@ const MonthlyReport = () => {
   return (
     <SideBar5>
       <div className="container-fluid">
-        <div className="mb-3 mt-1 text-center">
+        <div className="mb-3 mt-3 text-center">
           <button className="close-button" onClick={goBack}>
             <FontAwesomeIcon icon={faRectangleXmark} />
           </button>
