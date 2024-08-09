@@ -100,7 +100,7 @@ function ManagementQuality() {
   const fetchInboundTransactions = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/qualities/fetch-InboundTransaction?companyName=${selectedCompany}&siteName=${selectedSiteName}`,
+        `http://localhost:8080/api/v1/qualities/fetch-InboundTransaction/getquality?companyName=${selectedCompany}&siteName=${selectedSiteName}`,
         {
           credentials: "include",
         }
