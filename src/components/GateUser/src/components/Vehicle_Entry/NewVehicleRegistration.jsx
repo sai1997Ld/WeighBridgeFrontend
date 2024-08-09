@@ -1,41 +1,70 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import "./NewVehicleRegistration.css";
-import {
-  faSave,
-  faEraser,
-  faRectangleXmark,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import SideBar2 from "../../../../SideBar/SideBar2";
+import { faSave, faEraser, faRectangleXmark, faExchangeAlt, faCarAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import SideBar2 from "../../../../SideBar/SideBar2";
-import { Spin } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function NewVehicleRegistration() {
-  const navigate = useNavigate();
   const [vehicleNo, setVehicleNo] = useState("");
   const [transporter, setTransporter] = useState("");
   const [vehicleType, setVehicleType] = useState("");
   const [vehicleManufacturer, setVehicleManufacturer] = useState("");
   const [vehicleWheelsNo, setvehicleWheelsNo] = useState("");
   const [vehicleFitnessUpTo, setvehicleFitnessUpTo] = useState("");
-  const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState("");
+  const [vehicleLoadCapacity, setVehicleLoadCapacity] = useState(0);
+  const [loadCapacityUnit, setLoadCapacityUnit] = useState("kg");
   const [transporters, setTransporters] = useState([]);
-  const [error, setError] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
 
-  // To add session userid in frontend
-
-  const userId = sessionStorage.getItem("userId");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/transporter?userId=${userId}`)
+    // Load data from sessionStorage
+    const savedData = sessionStorage.getItem('salesVehicleData');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setVehicleNo(parsedData.vehicleNo || '');
+      setTransporter(parsedData.transporter || '');
+      setVehicleType(parsedData.vehicleType || '');
+      setVehicleManufacturer(parsedData.vehicleManufacturer || '');
+      setvehicleWheelsNo(parsedData.vehicleWheelsNo || '');
+      setvehicleFitnessUpTo(parsedData.vehicleFitnessUpTo || '');
+      setVehicleLoadCapacity(parsedData.vehicleLoadCapacity || 0);
+      setLoadCapacityUnit(parsedData.loadCapacityUnit || 'kg');
+    }
+
+    // Fetch transporters
+    fetch("http://localhost:8080/api/v1/transporter")
       .then((response) => response.json())
       .then((data) => setTransporters(data))
       .catch((error) => console.error("Error fetching transporters:", error));
   }, []);
+
+  useEffect(() => {
+    return () => {
+      saveFormToSession();
+    };
+  }, [vehicleNo, transporter, vehicleType, vehicleManufacturer, vehicleWheelsNo, vehicleFitnessUpTo, vehicleLoadCapacity, loadCapacityUnit]);
+
+  const saveFormToSession = () => {
+    const formData = {
+      vehicleNo,
+      transporter,
+      vehicleType,
+      vehicleManufacturer,
+      vehicleWheelsNo,
+      vehicleFitnessUpTo,
+      vehicleLoadCapacity,
+      loadCapacityUnit,
+    };
+    sessionStorage.setItem('salesVehicleData', JSON.stringify(formData));
+  };
+
+  const handleAddTransporter = () => {
+    saveFormToSession();
+    navigate("/SalesTransporter");
+  }
 
   const handleClear = () => {
     setVehicleNo("");
@@ -44,27 +73,24 @@ function NewVehicleRegistration() {
     setVehicleManufacturer("");
     setvehicleWheelsNo("");
     setvehicleFitnessUpTo("");
-    setVehicleLoadCapacity("");
+    setVehicleLoadCapacity(0);
+    setLoadCapacityUnit("kg");
+    sessionStorage.removeItem('salesVehicleData');
   };
 
   const handleSave = () => {
-    setIsSaving(true);
     if (
       vehicleNo.trim() === "" ||
       transporter.trim() === ""
-      // vehicleFitnessUpTo.trim() === "" ||
-      // vehicleLoadCapacity.toString().trim() === ""
     ) {
       Swal.fire({
-        title: "Please fill out all required fields.",
+        title: "Please fill in all required fields.",
         icon: "warning",
         confirmButtonText: "OK",
         customClass: {
           confirmButton: "btn btn-warning",
         },
       });
-      setIsSaving(false);
-
       return;
     }
 
@@ -74,32 +100,23 @@ function NewVehicleRegistration() {
       vehicleManufacturer,
       vehicleWheelsNo,
       vehicleFitnessUpTo,
-      vehicleLoadCapacity,
+      vehicleLoadCapacity: loadCapacityUnit === "kg" ? vehicleLoadCapacity : vehicleLoadCapacity * 1000,
     };
 
-    fetch(
-      `http://localhost:8080/api/v1/vehicles/${transporter}?userId=${userId} `,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(vehicleData),
-        credentials: "include",
-      }
-    )
+    fetch(`http://localhost:8080/api/v1/vehicles/${transporter}?userId=${sessionStorage.getItem("userId")}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(vehicleData),
+      credentials: "include",
+    })
       .then(async (response) => {
         if (response.ok) {
-          const d = JSON.parse(await sessionStorage.getItem("vehicleData"));
-          await sessionStorage.setItem(
-            "vehicleData",
-            JSON.stringify({ ...d, vehicleNo: vehicleNo })
-          );
           return response.text();
         } else {
-          return response.json().then((error) => {
-            throw new Error(error.message);
-          });
+          const error = await response.json();
+          throw new Error(error.message);
         }
       })
       .then((data) => {
@@ -112,14 +129,13 @@ function NewVehicleRegistration() {
             confirmButton: "btn btn-success",
           },
         });
-        setIsSaving(false);
-
         handleClear();
-        navigate("/VehicleEntryDetails"); // Navigate to VehicleEntryDetails page
+        navigate("/ProcessOrder")
+        sessionStorage.removeItem('salesVehicleData');
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
+
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -129,50 +145,42 @@ function NewVehicleRegistration() {
             confirmButton: "btn btn-danger",
           },
         });
-        setIsSaving(false);
       });
   };
 
-  // Add New Transporter
-  const handleNewTransporter = () => {
-    navigate("/new-transporter");
+  const toggleLoadCapacityUnit = () => {
+    if (loadCapacityUnit === "kg") {
+      setVehicleLoadCapacity(vehicleLoadCapacity / 1000);
+      setLoadCapacityUnit("ton");
+    } else {
+      setVehicleLoadCapacity(vehicleLoadCapacity * 1000);
+      setLoadCapacityUnit("kg");
+    }
   };
 
-  //Code for close icon
-  const goBack = () => {
-    navigate(-1);
+  const selectStyles = {
+    control: (provided) => ({
+      ...provided,
+      marginBottom: '20px',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
   };
 
   return (
     <SideBar2>
       <div className="vehicle-register">
         <div className="vehicle-content container-fluid">
-          <button
-            className="close-button"
-            onClick={goBack}
-            style={{
-              position: "absolute",
-              marginRight: 10,
-              backgroundColor: "transparent",
-              color: "#f11212",
-              border: "none",
-              cursor: "pointer",
-              fontSize: 30,
-              outline: "none",
-            }}
-          >
-            <FontAwesomeIcon icon={faRectangleXmark} />
-          </button>
-          <h2 className="text-center"> New Vehicle Registration</h2>
-          <div
-            className="vehicle-user-container card"
-            style={{
-              boxShadow:
-                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
-            }}
-          >
+        
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <h2 className="text-center mx-auto">Vehicle Registration</h2>
+            <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+          </div>
+ 
+          <div className="vehicle-user-container card" style={{boxShadow:"0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)"}}>
             <div className="card-body p-4">
-              <p style={{ color: "red" }}>Please fill all * marked fields.</p>
               <form>
   <p style={{ color: "red" }}>
                       Please fill all * marked fields.
@@ -180,10 +188,7 @@ function NewVehicleRegistration() {
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleNo" className="form-label">
-                      Vehicle Number{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
+                      Vehicle Number <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
                     <input
                       type="text"
@@ -197,31 +202,26 @@ function NewVehicleRegistration() {
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="transporter" className="form-label">
-                      Transporter{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        {" "}
-                        *{" "}
-                      </span>
+                      Transporter <span style={{ color: "red", fontWeight: "bold" }}>*</span>
                     </label>
+                    
                     <button
-                      type="button"
                       className="btn btn-sm border btn-success-1 btn-hover"
                       style={{
                         borderRadius: "5px",
                         marginLeft: "5px",
                         backgroundColor: "lightblue",
-                        // width: "200px",
                       }}
                     >
                       <div
-                        onClick={handleNewTransporter}
+                        onClick={handleAddTransporter}
                         style={{
                           display: "block",
                           textDecoration: "none",
                           color: "black",
                         }}
                       >
-                        <FontAwesomeIcon icon={faPlus} /> Add
+                        Add <FontAwesomeIcon icon={faCarAlt} />
                       </div>
                     </button>
                     <Select
@@ -229,21 +229,19 @@ function NewVehicleRegistration() {
                         value: transporter,
                         label: transporter,
                       }))}
-                      value={{ value: transporter, label: transporter }}
-                      onChange={(selectedOption) =>
-                        setTransporter(selectedOption.value)
-                      }
+                      value={transporter ? { value: transporter, label: transporter } : null}
+                      onChange={(selectedOption) => setTransporter(selectedOption.value)}
                       placeholder="Select Transporter"
                       isSearchable
-                      // required
+                      required
+                      styles={selectStyles}
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleType" className="form-label">
-                      Vehicle Type{" "}
-                      {/* <span style={{ color: "red", fontWeight: "bold" }}> </span> */}
+                      Vehicle Type
                     </label>
                     <Select
                       options={[
@@ -251,12 +249,11 @@ function NewVehicleRegistration() {
                         { value: "large-truck", label: "Large Truck" },
                         { value: "others", label: "Others" },
                       ]}
-                      value={{ value: vehicleType, label: vehicleType }}
-                      onChange={(selectedOption) =>
-                        setVehicleType(selectedOption.value)
-                      }
+                      value={vehicleType ? { value: vehicleType, label: vehicleType } : null}
+                      onChange={(selectedOption) => setVehicleType(selectedOption.value)}
                       placeholder="Select Vehicle Type"
                       isSearchable
+                      styles={selectStyles}
                     />
                   </div>
                   <div className="col-md-6">
@@ -266,58 +263,55 @@ function NewVehicleRegistration() {
                     <Select
                       options={[
                         { value: "Tata Motors", label: "Tata Motors" },
-                        {
-                          value: "Ashok Leyland Limited",
-                          label: "Ashok Leyland Limited",
-                        },
-                        {
-                          value: "VE Commercial Vehicles Limited",
-                          label: "VE Commercial Vehicles Limited",
-                        },
-                        {
-                          value: "Mahindra & Mahindra Limited",
-                          label: "Mahindra & Mahindra Limited",
-                        },
+                        { value: "Ashok Leyland Limited", label: "Ashok Leyland Limited" },
+                        { value: "VE Commercial Vehicles Limited", label: "VE Commercial Vehicles Limited" },
+                        { value: "Mahindra & Mahindra Limited", label: "Mahindra & Mahindra Limited" },
                         { value: "Piaggio India", label: "Piaggio India" },
-                        {
-                          value: "Scania Commercial Vehicle India Pvt Ltd",
-                          label: "Scania Commercial Vehicle India Pvt Ltd",
-                        },
+                        { value: "Scania Commercial Vehicle India Pvt Ltd", label: "Scania Commercial Vehicle India Pvt Ltd" },
                         { value: "Force Motors", label: "Force Motors" },
                         { value: "Bharat Benz", label: "Bharat Benz" },
                         { value: "others", label: "Others" },
                       ]}
-                      value={{
-                        value: vehicleManufacturer,
-                        label: vehicleManufacturer,
-                      }}
-                      onChange={(selectedOption) =>
-                        setVehicleManufacturer(selectedOption.value)
-                      }
+                      value={vehicleManufacturer ? { value: vehicleManufacturer, label: vehicleManufacturer } : null}
+                      onChange={(selectedOption) => setVehicleManufacturer(selectedOption.value)}
                       placeholder="Select Manufacturer"
                       isSearchable
+                      styles={selectStyles}
                     />
                   </div>
                 </div>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="vehicleLoadCapacity" className="form-label">
-                      Vehicle Load Capacity (In kgs){" "}
-                      {/* <span style={{ color: "red", fontWeight: "bold" }}> </span> */}
+                      Vehicle Load Capacity ({loadCapacityUnit})
                     </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="vehicleLoadCapacity"
-                      placeholder="Enter Vehicle Load Capacity"
-                      value={vehicleLoadCapacity}
-                      onChange={(e) => setVehicleLoadCapacity(e.target.value)}
-                      min={0}
-                    />
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="vehicleLoadCapacity"
+                        placeholder={`Enter Vehicle Load Capacity in ${loadCapacityUnit}`}
+                        value={vehicleLoadCapacity || 0}
+                        onChange={(e) => {
+                          const newValue = e.target.value === "" ? 0 : Math.max(
+                            0,
+                            parseFloat(e.target.value, 10)
+                          );
+                          setVehicleLoadCapacity(newValue);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={toggleLoadCapacityUnit}
+                      >
+                        <FontAwesomeIcon icon={faExchangeAlt} />
+                      </button>
+                    </div>
                   </div>
                   <div className="col-md-3">
                     <label htmlFor="vehicleFitnessUpTo" className="form-label">
-                      Fitness Upto{" "}
+                      Fitness Upto
                     </label>
                     <input
                       type="date"
@@ -337,7 +331,7 @@ function NewVehicleRegistration() {
                       value={vehicleWheelsNo}
                       onChange={(e) => setvehicleWheelsNo(e.target.value)}
                     >
-                      {[4, 6, 8, 10, 12, 14, 16, 18, 20, 22].map((wheel) => (
+                      {["select wheel", 4, 6, 8, 10, 12, 14, 16, 18, 20, 22].map((wheel) => (
                         <option key={wheel} value={wheel}>
                           {wheel}
                         </option>
@@ -370,15 +364,9 @@ function NewVehicleRegistration() {
                       border: "1px solid #cccccc",
                     }}
                     onClick={handleSave}
-                    disabled={isSaving}
                   >
-                    {isSaving ? (
-                      <Spin size="small" />
-                    ) : (
-                      <>
-                        <FontAwesomeIcon icon={faSave} className="me-1" /> Save
-                      </>
-                    )}
+                    <FontAwesomeIcon icon={faSave} className="me-1" />
+                    Save
                   </button>
                 </div>
               </form>

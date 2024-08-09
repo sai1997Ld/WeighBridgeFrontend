@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import "./ProcessOrder.css";
 import SideBar6 from "../../SideBar/Sidebar6";
-import { faSave, faEraser, faHome, faTruck } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faHome, faTruck, faCarAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { Modal, Select as AntSelect } from 'antd';
@@ -29,7 +29,6 @@ function ProcessOrder() {
   const [balance, setBalance] = useState(balanceQty || 0);
   const [lumpsbalance, setlumpsBalance] = useState(lumpsBalance || 0);
   const [finesbalance, setfinesBalance] = useState(finesBalance || 0);
-
   const [isFollowOnModalVisible, setIsFollowOnModalVisible] = useState(false);
   const [followOnOrders, setFollowOnOrders] = useState([]);
   const [selectedFollowOnOrder, setSelectedFollowOnOrder] = useState(null);
@@ -92,6 +91,10 @@ function ProcessOrder() {
     setVehicleNo("");
     setTransporterName("");
   };
+
+  const handleAddTransporter = () => {
+        navigate("/SalesTransporter")
+  }
 
   const handleAddVehicle = () => {
     sessionStorage.setItem(
@@ -346,8 +349,8 @@ function ProcessOrder() {
                   </p>
                   <div className="row mb-3 border border-1 border-black p-2 bg-body-secondary font-monospace">
                       <strong className="col-md-4">Balance: {balance}</strong>
-                      <strong className="col-md-4">Lumps-Balance: {lumpsBalance}</strong>
-                      <strong className="col-md-4">Fines-Balance: {finesBalance}</strong>
+                      <strong className="col-md-4">Lumps-Balance: {lumpsbalance}</strong>
+                      <strong className="col-md-4">Fines-Balance: {finesbalance}</strong>
                   </div>
                   <div className="row mb-2">
                     <div className="col-md-4">
@@ -489,6 +492,25 @@ function ProcessOrder() {
                           *
                         </span>
                       </label>
+                      <button
+                      className="btn btn-sm border btn-success-1 btn-hover"
+                      style={{
+                        borderRadius: "5px",
+                        marginLeft: "5px",
+                        backgroundColor: "lightblue",
+                      }}
+                    >
+                      <div
+                        onClick={handleAddTransporter}
+                        style={{
+                          display: "block",
+                          textDecoration: "none",
+                          color: "black",
+                        }}
+                      >
+                        Add <FontAwesomeIcon icon={faCarAlt} />
+                      </div>
+                    </button>
                       <select
                         className="form-select"
                         id="transporterName"

@@ -5,40 +5,35 @@ import SideBar2 from "../../../../SideBar/SideBar2";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faEraser,
-  faRectangleXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSave, faEraser, faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import { Spin } from "antd";
-const userId = sessionStorage.getItem("userId");
+
 function NewMaterial() {
-  const navigate = useNavigate();
   const [supplierName, setSupplierName] = useState("");
-  const [supplierAddress, setSupplierAddress] = useState("");
+  const [supplierAddresses, setSupplierAddresses] = useState([]);
+const [selectedAddress, setSelectedAddress] = useState("");
   const [supplierNames, setSupplierNames] = useState([]);
   const [materialName, setMaterialName] = useState("");
   const [materialName2, setMaterialName2] = useState("");
   const [materialTypeName, setMaterialTypeName] = useState("");
   const [materialNames, setMaterialNames] = useState([]);
   const [materialTypeNames, setMaterialTypeNames] = useState([]);
-  const [error, setError] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [showTypeInput, setShowTypeInput] = useState(false);
   const [userInputName, setUserInputName] = useState("");
   const [userInputType, setUserInputType] = useState("");
-  const [isSavingParameter, setIsSavingParameter] = useState(false);
-  const [isSaving, setIsSaving] = useState("");
   const [parameters, setParameters] = useState([
     { parameterName: "", rangeFrom: 0, rangeTo: 0 },
   ]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMaterialNames();
     fetchSupplierNames("");
   }, []);
+
+  const userId = sessionStorage.getItem("userId");
 
   const fetchMaterialNames = () => {
     fetch("http://localhost:8080/api/v1/materials/names")
@@ -54,7 +49,6 @@ function NewMaterial() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -81,7 +75,6 @@ function NewMaterial() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -106,19 +99,18 @@ function NewMaterial() {
 
   const handleClear2 = () => {
     setSupplierName("");
-    setSupplierAddress("");
+    setSupplierAddresses([]);
+    setSelectedAddress("");
     setMaterialName2("");
     setParameters([{ parameterName: "", rangeFrom: 0, rangeTo: 0 }]);
   };
 
   const handleSave = () => {
-    setIsSaving(true);
     let finalMaterialName = materialName;
     let finalMaterialTypeName;
 
     if (showNameInput && userInputName.trim() !== "") {
       finalMaterialName = userInputName.trim();
-      setIsSaving(false);
     } else if (materialName.trim() === "" || materialTypeName.trim() === "") {
       Swal.fire({
         title: "Please fill in all the required fields.",
@@ -128,16 +120,13 @@ function NewMaterial() {
           confirmButton: "btn btn-warning",
         },
       });
-      setIsSaving(false);
       return;
     }
 
     if (showTypeInput && userInputType.trim() !== "") {
       finalMaterialTypeName = userInputType.trim();
-      setIsSaving(false);
     } else if (!showTypeInput && materialTypeName.trim() !== "") {
       finalMaterialTypeName = materialTypeName.trim();
-      setIsSaving(false);
     }
 
     const materialData = {
@@ -174,7 +163,6 @@ function NewMaterial() {
           handleClear();
           fetchMaterialNames();
         });
-        setIsSaving(false);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -187,15 +175,13 @@ function NewMaterial() {
             confirmButton: "btn btn-danger",
           },
         });
-        setIsSaving(false);
       });
   };
 
   const handleSaveParameters = () => {
-    setIsSavingParameter(true);
     if (
       supplierName.trim() === "" ||
-      supplierAddress.trim() === "" ||
+      selectedAddress.trim() === "" ||
       materialName2.trim() === "" ||
       parameters.some((param) => param.parameterName.trim() === "")
     ) {
@@ -207,14 +193,13 @@ function NewMaterial() {
           confirmButton: "btn btn-warning",
         },
       });
-      setIsSavingParameter(false);
       return;
     }
 
     const materialData = {
       materialName: materialName2.trim(),
       supplierName: supplierName.trim(),
-      supplierAddress: supplierAddress.trim(),
+      supplierAddress: selectedAddress.trim(),
       parameters: parameters.map((param) => ({
         parameterName: param.parameterName.trim(),
         rangeFrom: param.rangeFrom,
@@ -251,7 +236,6 @@ function NewMaterial() {
           handleClear2();
           fetchMaterialNames();
           fetchSupplierNames("");
-          setIsSavingParameter(false);
         });
       })
       .catch((error) => {
@@ -265,7 +249,6 @@ function NewMaterial() {
             confirmButton: "btn btn-danger",
           },
         });
-        setIsSavingParameter(false);
       });
   };
 
@@ -283,7 +266,6 @@ function NewMaterial() {
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -295,7 +277,6 @@ function NewMaterial() {
         });
       });
   };
-
   const fetchSupplierAddress = (supplierName) => {
     fetch(`http://localhost:8080/api/v1/supplier/get/${supplierName}`)
       .then((response) => {
@@ -306,11 +287,10 @@ function NewMaterial() {
         }
       })
       .then((data) => {
-        setSupplierAddress(data[0]); // Assuming the address is the first item in the response array
+        setSupplierAddresses(data);
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error.message);
         Swal.fire({
           title: "Error",
           text: error.message,
@@ -375,288 +355,16 @@ function NewMaterial() {
     setParameters(updatedParameters);
   };
 
-  const goBack = () => {
-    navigate("/VehicleEntryDetails");
-  };
-
-    return (
-        <SideBar2>
-            <div className="material-management">
-                <div className="material-management-main-content container-fluid">
-                    <div className="d-flex justify-content-between align-items-center">
-                        <button
-                            className="close-button"
-                            onClick={goBack}
-                            style={{
-                                position: 'absolute',
-                                marginRight: 10,
-                                backgroundColor: 'transparent',
-                                color: '#f11212',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 30,
-                                outline: 'none',
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faRectangleXmark} />
-                        </button>
-                        <h2 className="text-center mx-auto"> New Material Registration</h2>
-                    </div>
-                    <div
-                        className="material-card-container-2 card"
-                        style={{
-                            boxShadow:
-                                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
-                        }}
-                    >
-                        <h6
-                            className="card-header text-start"
-                            style={{ backgroundColor: "#0077b6", color: "white" }}
-                        >
-                            <strong style={{ fontFamily: "monospace" }}>Add Material</strong>
-                        </h6>
-                        <div className="card-body p-4">
-                            <form>
-  <p style={{ color: "red" }}>
-                      Please fill all * marked fields.
-                    </p>
-                                <div className="row mb-2">
-                                    <div className="col-md-6">
-                                        <label htmlFor="materialName" className="form-label">
-                                            Material Name{" "}
-                                            <span style={{ color: "red", fontWeight: "bold" }}>
-                                                *
-                                            </span>
-                                        </label>
-                                        {showNameInput ? (
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="materialName"
-                                                value={userInputName}
-                                                onChange={handleNameInputChange}
-                                                required
-                                                placeholder="Enter Material Name"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <select
-                                                className="form-select"
-                                                id="materialName"
-                                                value={materialName}
-                                                onChange={handleSelectChange}
-                                                required
-                                            >
-                                                <option value="">Select Material Name</option>
-                                                {materialNames.map((name, index) => (
-                                                    <option key={index} value={name}>
-                                                        {name}
-                                                    </option>
-                                                ))}
-                                                <option value="add a material">Add Material</option>
-                                            </select>
-                                        )}
-                                    </div>
-                                    <div className="col-md-6">
-                                        <label htmlFor="materialTypeName" className="form-label">
-                                            Material Type{" "}
-                                        </label>
-                                        {showTypeInput ? (
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="materialTypeName"
-                                                value={userInputType}
-                                                onChange={handleTypeInputChange}
-                                                placeholder="Enter Material Type"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <div>
-                                                {materialTypeNames.length > 0 ? (
-                                                    <select
-                                                        className="form-select"
-                                                        id="materialTypeName"
-                                                        value={materialTypeName}
-                                                        onChange={handleTypeSelectChange}
-                                                    >
-                                                        <option value="">Select Material Type</option>
-                                                        {materialTypeNames.map((type, index) => (
-                                                            <option key={index} value={type}>
-                                                                {type}
-                                                            </option>
-                                                        ))}
-                                                        <option value="add a type">Add Type</option>
-                                                    </select>
-                                                ) : (
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        id="materialTypeName"
-                                                        value={userInputType}
-                                                        onChange={handleTypeInputChange}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="d-flex justify-content-end mt-3">
-                                    <button
-                                        type="button"
-                                        className="btn btn-danger me-4 btn-hover"
-                                        style={{
-                                            backgroundColor: "white",
-                                            color: "black",
-                                            border: "1px solid #cccccc",
-                                            width: "100px",
-                                        }}
-                                        onClick={handleClear}
-                                    >
-                                        <FontAwesomeIcon icon={faEraser} className="me-1" />
-                                        Clear
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-success-1 btn-hover"
-                                        style={{
-                                            backgroundColor: "white",
-                                            color: "black",
-                                            width: "100px",
-                                            border: "1px solid #cccccc",
-                                        }}
-                                        onClick={handleSave}
-                                    >
-                                        <FontAwesomeIcon icon={faSave} className="me-1" />
-                                        Save
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div
-                        className="material-card-container card mt-5"
-                        style={{
-                            boxShadow:
-                                "0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)",
-                        }}
-                    >
-                        <h6
-                            className="card-header text-start"
-                            style={{ backgroundColor: "#0077b6", color: "white" }}
-                        >
-                            <strong style={{ fontFamily: "monospace" }}>Add Parameter</strong>
-                        </h6>
-                        <div className="card-body p-4">
-                            <form>
-  <p style={{ color: "red" }}>
-                      Please fill all * marked fields.
-                    </p>
-                                <div className="row mb-2">
-                                    <div className="col-md-4">
-                                        <label htmlFor="supplierName" className="form-label">
-                                            Supplier Name{" "}
-                                            <span style={{ color: "red", fontWeight: "bold" }}>
-                                                *
-                                            </span>
-                                        </label>
-                                        <Select
-                                            id="supplierName"
-                                            value={supplierName ? { value: supplierName, label: supplierName } : null}
-                                            onChange={(selectedOption) =>
-                                                setSupplierName(selectedOption.label)
-                                            } // use label
-                                            options={supplierNames.map((name) => ({
-                                                value: name,
-                                                label: name,
-                                            }))}
-                                            isSearchable
-                                            isRequired
-                                            placeholder="Select Supplier Name"
-                                        />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <label
-                                            htmlFor="supplierAddressLine1"
-                                            className="form-label"
-                                        >
-                                            Supplier Address{" "}
-                                            <span style={{ color: "red", fontWeight: "bold" }}>
-                                                *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="supplierAddressLine1"
-                                            value={supplierAddress}
-                                            onChange={(e) => setSupplierAddress(e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <label htmlFor="materialName" className="form-label">
-                                            Material Name{" "}
-                                            <span style={{ color: "red", fontWeight: "bold" }}>
-                                                *
-                                            </span>
-                                        </label>
-                                        {showNameInput ? (
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="materialName"
-                                                value={userInputName}
-                                                onChange={handleNameInputChange}
-                                                required
-                                                placeholder="Enter Material Name"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <select
-                                                className="form-select"
-                                                id="materialName2"
-                                                value={materialName2}
-                                                onChange={(e) => setMaterialName2(e.target.value)}
-                                                required
-                                            >
-                                                <option value="">Select Material Name</option>
-                                                {materialNames.map((name, index) => (
-                                                    <option key={index} value={name}>
-                                                        {name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        )}
-                                    </div>
-                                </div>
-                                {/* <div className="row mb-2">
   return (
     <SideBar2>
       <div className="material-management">
         <div className="material-management-main-content container-fluid">
-          <div className="d-flex justify-content-between align-items-center">
-            <button
-              className="close-button"
-              onClick={goBack}
-              style={{
-                position: "absolute",
-                marginRight: 10,
-                backgroundColor: "transparent",
-                color: "#f11212",
-                border: "none",
-                cursor: "pointer",
-                fontSize: 30,
-                outline: "none",
-              }}
-            >
-              <FontAwesomeIcon icon={faRectangleXmark} />
-            </button>
-            <h2 className="text-center mx-auto my-3">
-              {" "}
-              New Material Registration
-            </h2>
-          </div>
+        <div className="d-flex justify-content-between align-items-center mt-3">
+              <h2 className="text-center mx-auto">Material Registration</h2>
+   
+              <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
+ 
+        </div>
           <div
             className="material-card-container-2 card"
             style={{
@@ -671,8 +379,10 @@ function NewMaterial() {
               <strong style={{ fontFamily: "monospace" }}>Add Material</strong>
             </h6>
             <div className="card-body p-4">
-              <p style={{ color: "red" }}>Please fill all * marked fields.</p>
               <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <label htmlFor="materialName" className="form-label">
@@ -779,16 +489,9 @@ function NewMaterial() {
                       border: "1px solid #cccccc",
                     }}
                     onClick={handleSave}
-                    disabled={isSaving}
                   >
-                    {isSaving ? (
-                      <Spin size="small" />
-                    ) : (
-                      <>
-                        <FontAwesomeIcon icon={faSave} className="me-1" />
-                        Save
-                      </>
-                    )}
+                    <FontAwesomeIcon icon={faSave} className="me-1" />
+                    Save
                   </button>
                 </div>
               </form>
@@ -808,9 +511,10 @@ function NewMaterial() {
               <strong style={{ fontFamily: "monospace" }}>Add Parameter</strong>
             </h6>
             <div className="card-body p-4">
-              <p style={{ color: "red" }}>Please fill all * marked fields.</p>
-
               <form>
+  <p style={{ color: "red" }}>
+                      Please fill all * marked fields.
+                    </p>
                 <div className="row mb-2">
                   <div className="col-md-4">
                     <label htmlFor="supplierName" className="form-label">
@@ -839,24 +543,27 @@ function NewMaterial() {
                     />
                   </div>
                   <div className="col-md-4">
-                    <label
-                      htmlFor="supplierAddressLine1"
-                      className="form-label"
-                    >
-                      Supplier Address{" "}
-                      <span style={{ color: "red", fontWeight: "bold" }}>
-                        *
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="supplierAddressLine1"
-                      value={supplierAddress}
-                      onChange={(e) => setSupplierAddress(e.target.value)}
-                      required
-                    />
-                  </div>
+  <label htmlFor="supplierAddress" className="form-label">
+    Supplier Address{" "}
+    <span style={{ color: "red", fontWeight: "bold" }}>*</span>
+  </label>
+  <Select
+  id="supplierAddress"
+  value={
+    selectedAddress
+      ? { value: selectedAddress, label: selectedAddress }
+      : null
+  }
+  onChange={(selectedOption) => setSelectedAddress(selectedOption ? selectedOption.value : "")}
+  options={supplierAddresses.map((address) => ({
+    value: address,
+    label: address,
+  }))}
+  isSearchable
+  isRequired
+  placeholder="Select Supplier Address"
+/>
+</div>  
                   <div className="col-md-4">
                     <label htmlFor="materialName" className="form-label">
                       Material Name{" "}
@@ -1065,16 +772,9 @@ function NewMaterial() {
                       border: "1px solid #cccccc",
                     }}
                     onClick={handleSaveParameters}
-                    disabled={isSavingParameter}
                   >
-                    {isSavingParameter ? (
-                      <Spin size="small" />
-                    ) : (
-                      <>
-                        <FontAwesomeIcon icon={faSave} className="me-1" />
-                        Save
-                      </>
-                    )}
+                    <FontAwesomeIcon icon={faSave} className="me-1" />
+                    Save
                   </button>
                 </div>
               </form>
