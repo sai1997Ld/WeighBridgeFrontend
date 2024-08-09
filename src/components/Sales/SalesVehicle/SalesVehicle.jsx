@@ -197,7 +197,7 @@ function SalesVehicle() {
                       id="vehicleNo"
                       placeholder="Enter Vehicle Number"
                       value={vehicleNo}
-                      onChange={(e) => setVehicleNo(e.target.value)}
+                      onChange={(e) => setVehicleNo(e.target.value.toUpperCase())}
                       required
                     />
                   </div>
