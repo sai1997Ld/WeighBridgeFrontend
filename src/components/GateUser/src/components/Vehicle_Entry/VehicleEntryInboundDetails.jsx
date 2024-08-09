@@ -489,7 +489,7 @@ const VehicleEntryInboundDetails = ({ ticketNo }) => {
   return (
     <div className="VehicleEntryDetailsMainContent">
       <div className="d-flex justify-content-between align-items-center mt-3">
-              <h2 className="text-center mx-auto">Vehicle Entry Inbound Details</h2>
+              <h2 className="text-center mx-auto">Inbound Details</h2>
    
               <FontAwesomeIcon icon={faRectangleXmark} style={{float: "right", fontSize: "1.5em", color: "red", cursor: "pointer"}}  className="mb-2" onClick={() => navigate(-1)}/>
  

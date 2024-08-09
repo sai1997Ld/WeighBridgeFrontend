@@ -334,7 +334,7 @@ function VehicleEntryDetails() {
     <SideBar2>
 <div className="container-fluid d-flex justify-content-center align-items-center" style={{ marginTop: "-50px" }}>    <div className="row justify-content-center">
       <div className="col-md-10">
-            <h2 className="text-center mb-4">Vehicle Entry Inbound Details</h2>
+            <h2 className="text-center mb-4">Inbound Details</h2>
             <div className="row">
               <div className="col-md-3 mb-3">
                 <label htmlFor="poNo" className="form-label">PO No:<span className="text-danger fw-bold">*</span></label>
