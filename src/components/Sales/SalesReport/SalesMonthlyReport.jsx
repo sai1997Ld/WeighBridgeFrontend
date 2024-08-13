@@ -92,7 +92,7 @@ const SalesMonthlyReport = () => {
   return (
     <Sidebar6>
       <div className="container-fluid">
-        <div className="mb-3 mt-3 text-center">
+        <div className="mb-3 mt-1 text-center">
         <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-center mx-auto">Monthly Transaction Report</h2>
    
