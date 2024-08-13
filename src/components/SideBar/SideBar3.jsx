@@ -128,7 +128,7 @@ const Sidebar3 = ({ children }) => {
               sx={{
                 color: "white",
                 marginRight: "8px",
-                fontFamily: "monospace", // Adjust the spacing between roles and Avatar
+                fontFamily: "monospace", 
               }}
             >
               {userName.split(" ")[0]}
