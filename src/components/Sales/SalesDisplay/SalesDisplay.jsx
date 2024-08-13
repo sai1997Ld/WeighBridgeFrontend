@@ -57,6 +57,12 @@ const SalesDisplay = () => {
       dataIndex: "vehicleNo",
       key: "vehicleNo",
     },
+    {
+      title: "Net Weight",
+      dataIndex: 'netWeight',
+    key: 'netWeight',
+
+    }
   ];
 
   return (
