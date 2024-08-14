@@ -393,6 +393,8 @@ function SalesOrder() {
                     </div>
                   </div>
 
+
+                   {productName === "Sponge Iron"  && 
                   <div className="row mb-2">
                     <div className="col-md-6">
                       <label htmlFor="lumps" className="form-label">
@@ -433,7 +435,7 @@ function SalesOrder() {
                         }}
                       />
                     </div>
-                  </div>
+                  </div>}
 
                   <div className="row mb-2">
                     <div className="col-md-6">
