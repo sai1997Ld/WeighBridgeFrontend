@@ -548,7 +548,7 @@ const VehicleEntry = () => {
                   textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
                 }}
               >
-                Gate User In/Out Transactions
+               In/Out Transactions
               </h2>
             </div>
             <div style={{ flex: "1" }}></div> {/* To balance the layout */}

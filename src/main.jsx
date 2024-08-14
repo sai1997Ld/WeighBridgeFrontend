@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import "./index.css";
 import Spinner from "./Spinner";
+import ErrorBoundary from "./ErrorBoundary.jsx";
 
 const HomePage1 = lazy(() => import("./components/HomePages/HomePage1.jsx"));
 const HomePage2 = lazy(() => import("./components/HomePages/HomePage2.jsx"));
@@ -507,8 +508,10 @@ const router = createBrowserRouter(
 
 startTransition(() => {
   ReactDOM.createRoot(document.getElementById("root")).render(
-    <Suspense fallback={<Spinner />}>
-      <RouterProvider router={router} />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<Spinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </ErrorBoundary>
   );
 });

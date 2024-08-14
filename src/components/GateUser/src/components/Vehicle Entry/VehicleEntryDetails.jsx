@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { Chart, ArcElement } from "chart.js/auto";
+import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+
 import SideBar2 from "../../../../SideBar/SideBar2";
 import scanner from "../../assets/scanner.png";
 import Camera_Icon from "../../assets/Camera_Icon.png";
@@ -12,11 +12,8 @@ import Swal from "sweetalert2";
 
 function VehicleEntryDetails() {
   const navigate = useNavigate();
-  const chartRef = useRef(null);
-  const chartRef2 = useRef(null);
-  const homeMainContentRef = useRef(null);
+
   const [suppliers, setSuppliers] = useState([]);
-  const [suppliersAddressLine1, setSuppliersAddressLine1] = useState();
   const [transporter, setTransporter] = useState();
   const [materials, setMaterials] = useState([]);
 
@@ -41,9 +38,7 @@ function VehicleEntryDetails() {
     transactionType: "Inbound"
   });
 
-  const departmentOptions = ["Department 1", "Department 2", "Department 3"];
-  const materialType = ["Lumps", "Fines", "ROM"];
-  const transactionType = ["Inbound"];
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -334,7 +329,7 @@ function VehicleEntryDetails() {
     <SideBar2>
 <div className="container-fluid d-flex justify-content-center align-items-center" style={{ marginTop: "-50px" }}>    <div className="row justify-content-center">
       <div className="col-md-10">
-            <h2 className="text-center mb-4">Vehicle Entry Inbound Details</h2>
+            <h2 className="text-center mb-4">Inbound Details</h2>
             <div className="row">
               <div className="col-md-3 mb-3">
                 <label htmlFor="poNo" className="form-label">PO No:<span className="text-danger fw-bold">*</span></label>
