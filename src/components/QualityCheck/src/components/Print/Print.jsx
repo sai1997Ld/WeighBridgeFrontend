@@ -107,12 +107,16 @@ const QPrint = () => {
                           <th>Parameter</th>
                           <th>Value</th>
                         </tr>
-                        ${Object.entries(data.qualityParameters)
-          .map(
-            ([key, value]) =>
-              `<tr><td>${key}</td><td>${value}</td></tr>`
-          )
-          .join("")}
+                        ${Object.entries({
+                ...data.qualityParameters,
+                size: data.size // Add the size to the quality parameters
+              })
+                .filter(([key, value]) => value !== null && value !== undefined && value !== "")
+                .map(
+                  ([key, value]) =>
+                    `<tr><td>${key}</td><td>${value}</td></tr>`
+                )
+                .join("")}
                       </table>
                     </td>
                   </tr>`

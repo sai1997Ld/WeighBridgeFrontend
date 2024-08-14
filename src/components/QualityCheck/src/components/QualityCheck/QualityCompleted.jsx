@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { Input, InputNumber, DatePicker, Select, Modal } from "antd";
 import moment from "moment";
 import { Button, Dropdown, Menu, Pagination } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, DownOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
@@ -212,19 +212,32 @@ function QualityCompleted() {
     }
   };
 
-  const menu = (
-    <Menu onClick={handleMaterialFilter}>
-      <Menu.SubMenu key="1" title="Product/Material">
-        {materialOptions.map((option, index) => (
-          <Menu.Item key={`material-${index}`}>{option}</Menu.Item>
-        ))}
-      </Menu.SubMenu>
-      <Menu.SubMenu key="2" title="Transaction Type">
-        <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
-        <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
-  );
+  const menu = {
+    items: [
+      {
+        key: '1',
+        label: 'Product/Material',
+        children: materialOptions.map((option, index) => ({
+          key: `material-${index}`,
+          label: option,
+        })),
+      },
+      {
+        key: '2',
+        label: 'Transaction Type',
+        children: [
+          {
+            key: 'transaction-inbound',
+            label: 'Inbound',
+          },
+          {
+            key: 'transaction-outbound',
+            label: 'Outbound',
+          },
+        ],
+      },
+    ],
+  };
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -370,7 +383,7 @@ function QualityCompleted() {
         `Material/Product Type: ${data.materialTypeOrProductType}`,
         `Supplier/Customer Name: ${data.supplierOrCustomerName}`,
         `Supplier/Customer Address: ${data.supplierOrCustomerAddress}`,
-        `Transaction Type: ${data.transactionType}`
+        `Transaction Type: ${data.transactionType}`,
       ];
 
       doc.setFontSize(14);
@@ -383,17 +396,19 @@ function QualityCompleted() {
       // Move the table start position down to avoid overlapping with details
       yPosition += 10;
 
-      const filteredEntries = Object.entries(data.qualityParameters).filter(
+      const filteredEntries = Object.entries({
+        ...data.qualityParameters,
+        size: data.size // Add the size to the quality parameters
+      }).filter(
         ([key, value]) => value !== null && value !== undefined && value !== ""
       );
-
+      
       const tableBody = filteredEntries.map(([key, value]) => [key, value]);
       doc.autoTable({
         startY: yPosition,
         head: [["Field", "Value"]],
         body: tableBody,
       });
-
       doc.save("quality_report.pdf");
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -483,27 +498,31 @@ function QualityCompleted() {
                 }</td></tr>`;
               })
               .join("")}
-            ${
-              data.qualityParameters
-                ? `<tr>
-                      <th>Quality Parameters</th>
-                      <td>
-                        <table class="nested-table">
-                          <tr>
-                            <th>Parameter</th>
-                            <th>Value</th>
-                          </tr>
-                          ${Object.entries(data.qualityParameters)
-                            .map(
-                              ([key, value]) =>
-                                `<tr><td>${key}</td><td>${value}</td></tr>`
-                            )
-                            .join("")}
-                        </table>
-                      </td>
-                    </tr>`
-                : ""
-            }
+             ${
+    data.qualityParameters || data.size
+      ? `<tr>
+          <th>Quality Parameters</th>
+          <td>
+            <table class="nested-table">
+              <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+              </tr>
+              ${Object.entries({
+                ...data.qualityParameters,
+                size: data.size // Add the size to the quality parameters
+              })
+                .filter(([key, value]) => value !== null && value !== undefined && value !== "")
+                .map(
+                  ([key, value]) =>
+                    `<tr><td>${key}</td><td>${value}</td></tr>`
+                )
+                .join("")}
+            </table>
+          </td>
+        </tr>`
+      : ""
+  }
           </tbody>
         </table>
         <div class="signature-line">
@@ -677,9 +696,11 @@ function QualityCompleted() {
                 </div>
               </div>
               <div className="col-12 col-md-3 d-flex justify-content-end">
-                <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
-                  <Button icon={<FilterOutlined />}>Filter</Button>
-                </Dropdown>
+              <Dropdown overlay={<Menu items={menu.items} onClick={handleMaterialFilter} />}>
+  <Button icon={<FilterOutlined />}>
+    Filter <DownOutlined />
+  </Button>
+</Dropdown>
               </div>
             </div>
             <div
@@ -886,7 +907,7 @@ function QualityCompleted() {
         </div>
         <Modal
           title="Print Report"
-          visible={showPrintModal}
+          open={showPrintModal}
           onCancel={() => setShowPrintModal(false)}
           footer={null}
         >

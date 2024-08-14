@@ -260,17 +260,17 @@ const QualityOutboundDetails = () => {
       event.preventDefault();
     }
   };
-  const StyledInput = styled.input`
-  &.form-control.is-invalid {
-    border-color: #dc3545;
-    background-color: #fff;
-  }
+//   const StyledInput = styled.input`
+//   &.form-control.is-invalid {
+//     border-color: #dc3545;
+//     background-color: #fff;
+//   }
 
-  &.form-control.is-invalid:focus {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-  }
-`;
+//   &.form-control.is-invalid:focus {
+//     border-color: #dc3545;
+//     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+//   }
+// `;
 
 const renderFieldWithBox = (
   fieldName,
@@ -516,7 +516,7 @@ const renderFieldWithBox = (
       </div>
       <Modal
         title="Success"
-        visible={isSuccessModalVisible}
+        open={isSuccessModalVisible}
         onOk={handleSuccessOk}
         onCancel={handleSuccessOk}
         okText="OK"
@@ -525,7 +525,7 @@ const renderFieldWithBox = (
       </Modal>
       <Modal
         title="Error"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
         onCancel={handleOk}
         okText="OK"

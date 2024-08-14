@@ -86,23 +86,33 @@ function TransactionFrom2() {
     try {
       setIsSaving(true);
 
-      const blobFront = await fetch(capturedFrontImage).then((res) =>
-        res.blob()
-      );
-      const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
-      const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
-      const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
+      // const blobFront = await fetch(capturedFrontImage).then((res) =>
+      //   res.blob()
+      // );
+      // const blobRear = await fetch(capturedRearImage).then((res) => res.blob());
+      // const blobSide = await fetch(capturedSideImage).then((res) => res.blob());
+      // const blobTop = await fetch(capturedTopImage).then((res) => res.blob());
       const payload = {
         machineId: "1",
         ticketNo: ticketNumber,
         weight: inputValue,
       };
 
+      const fetchAndAppendBlob = async (capturedImage, name) => {
+        if (capturedImage) {
+          const blob = await fetch(capturedImage).then((res) => res.blob());
+          return formD.append(name, blob, `${ticketNumber}_weigh_${name}_${Date.now()}.jpg`);
+        }
+      };
+   
       const formD = new FormData();
-      formD.append("frontImg1", blobFront, Date.now());
-      formD.append("backImg2", blobRear, Date.now());
-      formD.append("leftImg5", blobSide, Date.now());
-      formD.append("topImg3", blobTop, Date.now());
+      await Promise.all([
+        fetchAndAppendBlob(capturedFrontImage, "frontImg1"),
+        fetchAndAppendBlob(capturedRearImage, "backImg2"),
+        fetchAndAppendBlob(capturedSideImage, "leftImg5"),
+        fetchAndAppendBlob(capturedTopImage, "topImg3"),
+      ]);
+   
       formD.append("weighmentRequest", JSON.stringify(payload));
       const response = await axios({
         method: "post",

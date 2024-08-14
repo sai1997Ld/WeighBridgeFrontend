@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { Input, InputNumber, DatePicker, Select } from "antd";
 import moment from "moment";
 import { Button, Dropdown, Menu, Pagination } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, DownOutlined } from "@ant-design/icons";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import PlaylistRemoveIcon from "@mui/icons-material/PlaylistRemove";
 import { Modal, Typography } from "antd";
@@ -14,6 +14,8 @@ import { Stack } from "@mui/material";
 import PendingIcon from '@mui/icons-material/Pending';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { StyleSheetManager } from 'styled-components';
+import isPropValid from '@emotion/is-prop-valid';
 
 
 
@@ -34,8 +36,10 @@ const TransactionUpdatesContainer = styled.div`
   }
 `;
 
-const TransactionUpdateBox = styled.div`
-  background-color: ${(props) => props.bgColor};
+const TransactionUpdateBox = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'bgColor'
+})`
+  background-color: ${(props) => props.$bgColor};
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   flex: 1;
@@ -265,25 +269,25 @@ function QualityCheck() {
 
   const fetchMaterialOptions = async () => {
     try {
-      const materialResponse = await fetch(
+      const response = await fetch(
         `http://localhost:8080/api/v1/qualities/fetch-ProductsOrMaterials?userId=${userId}`,
         {
           credentials: "include",
         }
       );
-
-      if (materialResponse.ok) {
-        const materialData = await materialResponse.json();
-        const combinedOptions = [...materialData,];
-        setMaterialOptions(combinedOptions);
+      if (response.ok) {
+        const materialData = await response.json();
+        if (Array.isArray(materialData)) {
+          setMaterialOptions(materialData);
+        } else {
+          console.error("Material data is not an array:", materialData);
+          setMaterialOptions([]);
+        }
       } else {
-        console.error(
-          "Failed to fetch material or product options:",
-          materialResponse.status,
-        );
+        console.error("Failed to fetch material options:", response.status);
       }
     } catch (error) {
-      console.error("Error fetching material or product options:", error);
+      console.error("Error fetching material options:", error);
     }
   };
 
@@ -358,19 +362,32 @@ function QualityCheck() {
   };
 
 
-  const menu = (
-    <Menu onClick={handleMaterialFilter}>
-      <Menu.SubMenu key="1" title="Product/Material">
-        {materialOptions.map((option, index) => (
-          <Menu.Item key={`material-${index}`}>{option}</Menu.Item>
-        ))}
-      </Menu.SubMenu>
-      <Menu.SubMenu key="2" title="Transaction Type">
-        <Menu.Item key="transaction-inbound">Inbound</Menu.Item>
-        <Menu.Item key="transaction-outbound">Outbound</Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
-  );
+  const menu = {
+    items: [
+      {
+        key: '1',
+        label: 'Product/Material',
+        children: materialOptions.map((option, index) => ({
+          key: `material-${index}`,
+          label: option,
+        })),
+      },
+      {
+        key: '2',
+        label: 'Transaction Type',
+        children: [
+          {
+            key: 'transaction-inbound',
+            label: 'Inbound',
+          },
+          {
+            key: 'transaction-outbound',
+            label: 'Outbound',
+          },
+        ],
+      },
+    ],
+  };
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -549,6 +566,7 @@ function QualityCheck() {
 
 
   return (
+    <StyleSheetManager shouldForwardProp={isPropValid}>
     <SideBar3>
       <div
         style={{ height: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', fontFamily: "Arial", color: "#333", "--table-border-radius": "30px" }}
@@ -627,14 +645,16 @@ function QualityCheck() {
 
             </div>
             <div className="col-12 col-md-3 d-flex justify-content-end">
-              <Dropdown overlay={menu} onSelect={handleMaterialFilter}>
-                <Button icon={<FilterOutlined />}>Filter</Button>
-              </Dropdown>
+            <Dropdown overlay={<Menu items={menu.items} onClick={handleMaterialFilter} />}>
+  <Button icon={<FilterOutlined />}>
+    Filter <DownOutlined />
+  </Button>
+</Dropdown>
             </div>
           </div>
 
           <TransactionUpdatesContainer>
-            <TransactionUpdateBox bgColor="#CACDD1">
+          <TransactionUpdateBox $bgColor="#CACDD1">
               <Stack direction="row" alignItems="center" spacing={1}>
                 <PendingIcon />
                 <Typography variant="body1" color="textSecondary">
@@ -902,6 +922,7 @@ function QualityCheck() {
   }}
 />
     </SideBar3>
+    </StyleSheetManager>
   );
 }
 export default QualityCheck;

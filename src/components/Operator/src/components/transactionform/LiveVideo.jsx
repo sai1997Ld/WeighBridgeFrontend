@@ -38,25 +38,28 @@ const CaptureFrame = ({
     };
   }, [imageRef, wsUrl]);
 
+  
   const capturePhoto = async () => {
     const canvas = document.createElement("canvas");
     const img = imageRef.current;
-
-    canvas.width = img.width;
-    canvas.height = img.height;
-
+  
+    // Set the canvas dimensions to match the original image dimensions
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+  
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-
-    const base64Image = canvas.toDataURL("image/jpeg");
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  
+    // Increase the image quality when converting to data URL
+    const base64Image = canvas.toDataURL("image/jpeg", 0.9); // 0.9 is 90% quality
     const blob = await fetch(base64Image).then((res) => res.blob());
-
+  
     setCapturedImage(base64Image);
-
+  
     const formData = new FormData();
     formData.append("file", blob, "capture.jpg");
     console.log({ base64Image, blob, formData });
-
+  
     // Optional: Post formData to your server if needed.
   };
 
@@ -94,7 +97,7 @@ const CaptureFrame = ({
       }
     };
 
-    const handleImageFullScreenChange = () => {
+    const handleImageFullScreenChange = ()=> {
       setIsImageFullScreen(!!document.fullscreenElement);
       if (document.fullscreenElement) {
         imageContainerRef.current.classList.add("fullscreen");
