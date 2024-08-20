@@ -132,7 +132,7 @@ function SalesOrder() {
       });
       return;
     }
-    if ((lumps+fines) !== 100) {
+    if ((productName === "Sponge Iron" &&(lumps+fines) !== 100)) {
       Swal.fire({
         title: "Lumps and Fines percentage should sum up to 100.",
         icon: "warning",
@@ -393,6 +393,8 @@ function SalesOrder() {
                     </div>
                   </div>
 
+
+                   {productName === "Sponge Iron"  && 
                   <div className="row mb-2">
                     <div className="col-md-6">
                       <label htmlFor="lumps" className="form-label">
@@ -433,7 +435,7 @@ function SalesOrder() {
                         }}
                       />
                     </div>
-                  </div>
+                  </div>}
 
                   <div className="row mb-2">
                     <div className="col-md-6">

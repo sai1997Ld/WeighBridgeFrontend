@@ -383,6 +383,17 @@ const Completed_Transaction = () => {
                       Ticket No.
                     </th>
                     <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
+                    TP No.
+                  </th>
+                    <th
                       className="ant-table-cell"
                       style={{
                         whiteSpace: "nowrap",
@@ -519,6 +530,12 @@ const Completed_Transaction = () => {
                         </td>
                         <td
                           className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.tpNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
                           style={{
                             whiteSpace: "nowrap",
                             textAlign: "center",
@@ -617,6 +634,12 @@ const Completed_Transaction = () => {
                             > */}
                           {weighment.ticketNo}
                           {/* </Button> */}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.tpNo}
                         </td>
                         <td
                           className="ant-table-cell"

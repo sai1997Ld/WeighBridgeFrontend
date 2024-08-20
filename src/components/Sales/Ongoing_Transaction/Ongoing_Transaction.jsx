@@ -523,6 +523,17 @@ const Ongoing_Transaction = () => {
                       borderRight: "1px solid white",
                     }}
                   >
+                    TP No.
+                  </th>
+                  <th
+                    className="ant-table-cell"
+                    style={{
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#0077b6",
+                      borderRight: "1px solid white",
+                    }}
+                  >
                     Transaction Type
                   </th>
                   <th
@@ -653,6 +664,12 @@ const Ongoing_Transaction = () => {
                           className="ant-table-cell"
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
                         >
+                          {weighment.tpNo}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
                           {weighment.transactionType}
                         </td>
                         <td
@@ -731,6 +748,12 @@ const Ongoing_Transaction = () => {
                           > */}
                             {weighment.ticketNo}
                           {/* </Button> */}
+                        </td>
+                        <td
+                          className="ant-table-cell"
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          {weighment.tpNo}
                         </td>
                         <td
                           className="ant-table-cell"
